@@ -25,8 +25,20 @@ final class HomeViewModel {
 
     func load() async {
         guard case .idle = state else { return }
-        state = .loading
+        await fetch()
+    }
 
+    func refresh() async {
+        await fetch()
+    }
+
+    func retry() {
+        state = .idle
+        Task { await load() }
+    }
+
+    private func fetch() async {
+        state = .loading
         do {
             let coordinates = try await resolveCoordinates()
             let result = try await fetchNearbyPOIs.execute(

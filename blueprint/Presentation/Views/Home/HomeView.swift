@@ -41,10 +41,18 @@ struct HomeView: View {
                     .accessibilityLabel(accessibilityLabel(for: poi))
                     .accessibilityHint("Double tap to see details")
                 }
+                .refreshable {
+                    await viewModel.refresh()
+                }
             case .failure:
-                Text("Something went wrong.")
-                    .foregroundStyle(.secondary)
-                    .accessibilityLabel("Failed to load places. Pull to refresh.")
+                VStack(spacing: 16) {
+                    Text("Something went wrong.")
+                        .foregroundStyle(.secondary)
+                        .accessibilityLabel("Failed to load places.")
+                    Button("Try again") {
+                        viewModel.retry()
+                    }
+                }
             }
         }
         .navigationTitle("Discover")
