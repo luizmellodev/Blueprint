@@ -5,11 +5,10 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
+import DesignSystem
 // TODO: Explicar as decisões de acessibilidade: accessibilityElement, labels compostos, ProgressView label
 // TODO: Explicar o skeleton como substituto de ProgressView — feedback imediato sem layout shift
-
 import SwiftUI
-import DesignSystem
 
 struct HomeView: View {
     @State var viewModel: HomeViewModel
@@ -33,7 +32,7 @@ struct HomeView: View {
                     .padding(.top, DSSpacing.sm)
                 }
 
-            case .success(_):
+            case .success:
                 ScrollView {
                     LazyVStack(spacing: DSSpacing.sm) {
                         ForEach(viewModel.visiblePOIs, id: \.id) { poi in
@@ -56,7 +55,7 @@ struct HomeView: View {
                         }
 
                         if viewModel.isLoadingMore {
-                            ProgressView()
+                            ProgressView("Loading more places")
                                 .frame(maxWidth: .infinity)
                                 .padding(DSSpacing.md)
                         }
@@ -74,6 +73,7 @@ struct HomeView: View {
                     Image(systemName: "wifi.exclamationmark")
                         .font(.system(size: 48))
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                     Text("Something went wrong.")
                         .font(DSTypography.headline)
                         .foregroundStyle(.secondary)

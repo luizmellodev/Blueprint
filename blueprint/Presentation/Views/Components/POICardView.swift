@@ -5,8 +5,8 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct POICardView: View {
     let poi: POI
@@ -52,7 +52,8 @@ struct POICardView: View {
                 Text(poi.name)
                     .font(DSTypography.headline)
                     .foregroundStyle(.primary)
-                    .lineLimit(2)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if let city = poi.city {
                     Text(city)

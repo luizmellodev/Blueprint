@@ -5,11 +5,10 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
+import DesignSystem
 // TODO: Explicar porque não usamos tamanhos fixos de fonte (Dynamic Type)
 // TODO: Explicar o padrão de placeholder inline para dados async (evita layout shift vs animação de entrada)
-
 import SwiftUI
-import DesignSystem
 
 struct DetailView: View {
     @State var viewModel: DetailViewModel
@@ -65,6 +64,7 @@ struct DetailView: View {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 48))
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                     Text("Something went wrong.")
                         .font(DSTypography.headline)
                         .foregroundStyle(.secondary)
@@ -89,6 +89,7 @@ struct DetailView: View {
                     .font(.system(size: 32))
                     .foregroundStyle(categoryColor)
             }
+            .accessibilityHidden(true)
 
             VStack(spacing: DSSpacing.xs) {
                 Text(poi.name)
@@ -149,7 +150,12 @@ struct DetailView: View {
 
             if let website = poi.website {
                 Link(destination: website) {
-                    DetailRowView(icon: "safari.fill", iconColor: .blue, title: "Website", value: website.host() ?? website.absoluteString, isLink: true)
+                    DetailRowView(
+                        icon: "safari.fill", iconColor: .blue,
+                        title: "Website",
+                        value: website.host() ?? website.absoluteString,
+                        isLink: true
+                    )
                 }
                 .foregroundStyle(.primary)
                 Divider().padding(.leading, 56)
@@ -159,38 +165,8 @@ struct DetailView: View {
                 DetailRowPlaceholder()
                 Divider().padding(.leading, 56)
                 DetailRowPlaceholder()
-            } else {
-                if let wheelchair = details?.isWheelchairAccessible {
-                    DetailRowView(
-                        icon: wheelchair ? "figure.roll" : "figure.roll.runningpace",
-                        iconColor: wheelchair ? .green : .secondary,
-                        title: "Accessibility",
-                        value: wheelchair ? "Wheelchair accessible" : "Not wheelchair accessible"
-                    )
-                    Divider().padding(.leading, 56)
-                }
-
-                if let fee = details?.fee {
-                    DetailRowView(
-                        icon: fee ? "creditcard.fill" : "gift.fill",
-                        iconColor: fee ? .orange : .green,
-                        title: "Admission",
-                        value: fee ? "Paid admission" : "Free admission"
-                    )
-                    Divider().padding(.leading, 56)
-                }
-
-                if let timezone = details?.timezone {
-                    DetailRowView(icon: "clock.badge.fill", iconColor: .purple, title: "Timezone", value: timezone)
-                    Divider().padding(.leading, 56)
-                }
-
-                if let wikipedia = details?.wikipediaURL {
-                    Link(destination: wikipedia) {
-                        DetailRowView(icon: "book.fill", iconColor: .indigo, title: "Wikipedia", value: "Open article", isLink: true)
-                    }
-                    .foregroundStyle(.primary)
-                }
+            } else if let details {
+                detailsRows(details)
             }
         }
         .background(.background)
@@ -198,5 +174,44 @@ struct DetailView: View {
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
         .padding(.horizontal, DSSpacing.md)
         .animation(.easeOut(duration: 0.2), value: isLoading)
+    }
+
+    @ViewBuilder
+    private func detailsRows(_ details: PlaceDetails) -> some View {
+        if let wheelchair = details.isWheelchairAccessible {
+            DetailRowView(
+                icon: wheelchair ? "figure.roll" : "figure.roll.runningpace",
+                iconColor: wheelchair ? .green : .secondary,
+                title: "Accessibility",
+                value: wheelchair ? "Wheelchair accessible" : "Not wheelchair accessible"
+            )
+            Divider().padding(.leading, 56)
+        }
+
+        if let fee = details.fee {
+            DetailRowView(
+                icon: fee ? "creditcard.fill" : "gift.fill",
+                iconColor: fee ? .orange : .green,
+                title: "Admission",
+                value: fee ? "Paid admission" : "Free admission"
+            )
+            Divider().padding(.leading, 56)
+        }
+
+        if let timezone = details.timezone {
+            DetailRowView(icon: "clock.badge.fill", iconColor: .purple, title: "Timezone", value: timezone)
+            Divider().padding(.leading, 56)
+        }
+
+        if let wikipedia = details.wikipediaURL {
+            Link(destination: wikipedia) {
+                DetailRowView(
+                    icon: "book.fill", iconColor: .indigo,
+                    title: "Wikipedia", value: "Open article",
+                    isLink: true
+                )
+            }
+            .foregroundStyle(.primary)
+        }
     }
 }

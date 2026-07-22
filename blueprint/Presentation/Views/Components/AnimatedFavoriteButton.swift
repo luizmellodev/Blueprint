@@ -16,13 +16,14 @@ struct AnimatedFavoriteButton: View {
 
     var body: some View {
         ZStack {
-            ForEach(particles) { p in
+            ForEach(particles) { particle in
                 Circle()
-                    .fill(p.color)
-                    .frame(width: p.size, height: p.size)
-                    .offset(x: p.offsetX, y: p.offsetY)
-                    .opacity(p.opacity)
+                    .fill(particle.color)
+                    .frame(width: particle.size, height: particle.size)
+                    .offset(x: particle.offsetX, y: particle.offsetY)
+                    .opacity(particle.opacity)
             }
+            .accessibilityHidden(true)
 
             Image(systemName: isLiked ? "heart.fill" : "heart")
                 .font(.system(size: 28, weight: .semibold))
@@ -42,6 +43,9 @@ struct AnimatedFavoriteButton: View {
         .accessibilityLabel(isLiked ? "Remove from favorites" : "Add to favorites")
         .accessibilityValue(isLiked ? "Saved" : "Not saved")
         .accessibilityAddTraits(.isButton)
+        .accessibilityAction {
+            onTap()
+        }
     }
 
     private func triggerAnimation() {
@@ -53,10 +57,10 @@ struct AnimatedFavoriteButton: View {
     private func emitParticles() {
         let colors: [Color] = [.red, .pink, .orange, .yellow, .purple]
         let count = 12
-        particles = (0..<count).map { i in
-            let angle = Double(i) / Double(count) * 2 * .pi
+        particles = (0..<count).map { idx in
+            let angle = Double(idx) / Double(count) * 2 * .pi
             return FavoriteParticle(
-                color: colors[i % colors.count],
+                color: colors[idx % colors.count],
                 size: CGFloat.random(in: 4...8),
                 targetX: cos(angle) * CGFloat.random(in: 28...44),
                 targetY: sin(angle) * CGFloat.random(in: 28...44)
@@ -64,10 +68,10 @@ struct AnimatedFavoriteButton: View {
         }
 
         withAnimation(.easeOut(duration: 0.55)) {
-            for i in particles.indices {
-                particles[i].offsetX = particles[i].targetX
-                particles[i].offsetY = particles[i].targetY
-                particles[i].opacity = 0
+            for idx in particles.indices {
+                particles[idx].offsetX = particles[idx].targetX
+                particles[idx].offsetY = particles[idx].targetY
+                particles[idx].opacity = 0
             }
         }
 

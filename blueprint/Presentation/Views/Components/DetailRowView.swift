@@ -5,8 +5,8 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct DetailRowView: View {
     let icon: String
@@ -25,6 +25,7 @@ struct DetailRowView: View {
                     .font(.system(size: 16))
                     .foregroundStyle(iconColor)
             }
+            .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -41,9 +42,13 @@ struct DetailRowView: View {
                 Image(systemName: "arrow.up.right")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
             }
         }
         .padding(.horizontal, DSSpacing.md)
         .padding(.vertical, DSSpacing.sm)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title): \(value)")
+        .accessibilityAddTraits(isLink ? [.isLink] : [])
     }
 }

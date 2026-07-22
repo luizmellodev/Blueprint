@@ -5,8 +5,8 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct LocationSearchView: View {
     @State var viewModel: HomeViewModel
@@ -31,6 +31,7 @@ struct LocationSearchView: View {
                                 .foregroundStyle(.secondary)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel("Clear search")
                     }
                 }
             }
@@ -61,7 +62,12 @@ struct LocationSearchView: View {
                             }
                         }
                         .accessibilityElement(children: .combine)
-                        .accessibilityLabel(result.displayName)
+                        .accessibilityLabel({
+                            if let country = result.country {
+                                return "\(result.displayName), \(country)"
+                            }
+                            return result.displayName
+                        }())
                         .accessibilityHint("Double tap to load places in this location")
                     }
                 }
