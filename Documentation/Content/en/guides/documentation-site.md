@@ -1,31 +1,24 @@
 ---
 title: Documentation Site
-summary: Build and preview the Saga documentation site locally.
+summary: Quick start for local preview. Full stack docs live in the Website section.
 order: 5
 ---
 # Documentation Site
 
-The website is **not** the documentation, it is a beautiful way to navigate Markdown files in `Documentation/`.
+The website is **not** the documentation. It is a navigation layer over Markdown in `Documentation/`.
 
-## Requirements
+For the full guide (Saga, Tailwind, templates, Mermaid, deploy), read the **[Website](/website/)** section.
+
+## Quick start
 
 ```bash
 brew install loopwerk/tap/saga
-```
-
-## Development
-
-```bash
-# from repo root
 ./scripts/saga dev --port 3000
-
-# or from Website/
-cd Website && saga dev --port 3000
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-> Run saga from `Website/` or via `./scripts/saga`. Running from the repo root without the script fails, `Package.swift` lives inside `Website/`.
+> Use `./scripts/saga` from the repo root. Running `saga` at the root fails because `Package.swift` lives in `Website/`.
 
 ## Build
 
@@ -35,24 +28,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Output: `Website/deploy/`
 
-## Content structure
+## CI
 
-```
-Documentation/
-├── ROADMAP.md
-└── Content/
-    ├── en/
-    │   ├── guides/
-    │   ├── architecture/
-    │   ├── concepts/
-    │   └── decisions/
-    └── pt-BR/          (coming soon)
-```
-
-## Deploy
-
-Saga requires macOS. Vercel serves pre-built static files via GitHub Actions. See `Website/README.md`.
+Pushes and PRs run the **Website** workflow (build on macOS). See [Build & Preview](/website/deploy/) and [CI/CD](/guides/ci-cd/).
 
 ## Related
 
+- [Website section](/website/)
 - [ADR 0007: Saga for Documentation](/decisions/0007-saga-documentation-site/)
+- `Website/README.md`

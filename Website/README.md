@@ -62,6 +62,9 @@ Saga reads from `Documentation/Content/en/` and outputs to `Website/deploy/`.
 | Architecture | `/architecture/` | Engineering decisions |
 | Concepts | `/concepts/` | Cross-cutting patterns |
 | ADRs | `/decisions/` | Formal decision records |
+| Website | `/website/` | How this site is built (Saga, Tailwind, build) |
+
+Meta-docs source: `Documentation/Content/en/website/`
 
 ## Deploy to Vercel
 

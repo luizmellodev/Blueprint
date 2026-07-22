@@ -52,6 +52,6 @@ Markdown in `Documentation/Content/en/` remains authoritative. `Website/` runs S
 
 ## References
 
-- [Documentation Site](/guides/documentation-site/)
+- [Documentation Site](/guides/documentation-site/) (quick start; full stack in [Website](/website/))
 - [Future Directions](/guides/future-directions/)
 - `Website/`, `Documentation/`

@@ -63,6 +63,7 @@ See [Getting Started](/guides/getting-started/) to configure the API key locally
 | [Architecture](/architecture/) | Engineering decisions: layers, patterns, trade-offs |
 | [Concepts](/concepts/) | Cross-cutting patterns (Use Cases, Logging) |
 | [ADRs](/decisions/) | Formal decision records with context and consequences |
+| [Website](/website/) | How this docs site is built (Saga, Tailwind, deploy) |
 | [Roadmap](/guides/roadmap/) | Chapter-by-chapter project evolution |
 | [Future Directions](/guides/future-directions/) | Study ideas, alternatives, and fork prompts (open) |
 | [Contributing](/guides/contributing/) | PR format, ADR journal template, local checks |

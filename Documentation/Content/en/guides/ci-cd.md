@@ -62,11 +62,14 @@ swiftlint lint --strict
 Documentation has a separate workflow (`.github/workflows/website.yml`):
 
 - Builds Saga site on macOS
-- Deploys static output to Vercel
+- Uploads `Website/deploy` as a CI artifact
+
+See [Build & Preview](/website/deploy/) for local dev and build output.
 
 ## Related
 
 - [Running Tests](/guides/running-tests/)
 - [Contributing](/guides/contributing/)
+- [Website section](/website/)
 - [Documentation Site](/guides/documentation-site/)
 - [API Key Setup](/guides/api-key-setup/)

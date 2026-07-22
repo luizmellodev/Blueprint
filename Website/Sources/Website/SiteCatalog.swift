@@ -5,6 +5,7 @@ enum DocSection: String, CaseIterable, Sendable {
   case architecture
   case concepts
   case decisions
+  case website
 
   var label: String {
     switch self {
@@ -12,6 +13,7 @@ enum DocSection: String, CaseIterable, Sendable {
     case .architecture: "Architecture"
     case .concepts: "Concepts"
     case .decisions: "ADRs"
+    case .website: "Website"
     }
   }
 
@@ -66,6 +68,15 @@ let siteCatalog: [SiteEntry] = [
   SiteEntry(section: .decisions, slug: "0005-swiftdata-domain-separation", title: "0005: SwiftData Separation", order: 5),
   SiteEntry(section: .decisions, slug: "0006-xcconfig-api-keys", title: "0006: xcconfig API Keys", order: 6),
   SiteEntry(section: .decisions, slug: "0007-saga-documentation-site", title: "0007: Saga Documentation", order: 7),
+  // Website
+  SiteEntry(section: .website, slug: "overview", title: "Site Overview", order: 0),
+  SiteEntry(section: .website, slug: "saga", title: "What is Saga?", order: 1),
+  SiteEntry(section: .website, slug: "pipeline", title: "Saga Pipeline", order: 2),
+  SiteEntry(section: .website, slug: "content-model", title: "Content Model", order: 3),
+  SiteEntry(section: .website, slug: "templates-and-theme", title: "Templates & Theme", order: 4),
+  SiteEntry(section: .website, slug: "tailwind", title: "Tailwind CSS", order: 5),
+  SiteEntry(section: .website, slug: "mermaid", title: "Mermaid Diagrams", order: 6),
+  SiteEntry(section: .website, slug: "deploy", title: "Build & Preview", order: 7),
 ]
 
 func entries(for section: DocSection) -> [SiteEntry] {

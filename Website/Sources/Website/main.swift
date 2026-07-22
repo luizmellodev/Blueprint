@@ -77,6 +77,16 @@ try await Saga(input: "../Documentation/Content/en", output: "deploy")
     ]
   )
   .register(
+    folder: "website",
+    metadata: DocMetadata.self,
+    readers: [.parsleyMarkdownReader],
+    sorting: { ($0.metadata.order ?? 0) < ($1.metadata.order ?? 0) },
+    writers: [
+      .itemWriter(swim(renderWebsite)),
+      .listWriter(swim(renderWebsiteIndex), output: "index.html"),
+    ]
+  )
+  .register(
     metadata: EmptyMetadata.self,
     readers: [.parsleyMarkdownReader],
     writers: [.itemWriter(swim(renderHome))]

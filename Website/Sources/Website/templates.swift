@@ -186,6 +186,32 @@ func adrIndexTiles(items: [Item<ADRMetadata>]) -> Node {
   }
 }
 
+// MARK: - Website
+
+func renderWebsite(context: ItemRenderingContext<DocMetadata>) -> Node {
+  let slug = slugFromURL(context.item.url)
+  return docsShell(title: "\(context.item.title) | Blueprint", activeSection: .website, activeSlug: slug) {
+    article(class: Theme.prose) {
+      docHeader(eyebrow: "Website", title: context.item.title, summary: context.item.metadata.summary)
+      proseBody(context.item.body)
+      footerNav(section: .website, slug: slug)
+    }
+  }
+}
+
+func renderWebsiteIndex(context: ItemsRenderingContext<DocMetadata>) -> Node {
+  docsShell(title: "Website | Blueprint", activeSection: .website) {
+    article(class: Theme.prose) {
+      docHeader(
+        eyebrow: "Website",
+        title: "Documentation Site",
+        summary: "How Blueprint builds this site with Saga, Swift, and Tailwind."
+      )
+      sectionIndexTiles(section: .website, items: context.items)
+    }
+  }
+}
+
 // MARK: - Home
 
 func renderHome(context: ItemRenderingContext<EmptyMetadata>) -> Node {
