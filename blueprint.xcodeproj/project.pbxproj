@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		79C37E48301113F400B647DD /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 79C37E47301113F400B647DD /* DesignSystem */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		79C37E0D30110C7200B647DD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		79C37DFD30110C6F00B647DD /* blueprint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = blueprint.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79C37E0C30110C7200B647DD /* blueprintTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79C37E1630110C7200B647DD /* blueprintUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		79C37E453011127F00B647DD /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = DesignSystem; path = ../DesignSystem; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79C37E48301113F400B647DD /* DesignSystem in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +81,7 @@
 		79C37DF430110C6F00B647DD = {
 			isa = PBXGroup;
 			children = (
+				79C37E443011126500B647DD /* Packages */,
 				79C37DFF30110C6F00B647DD /* blueprint */,
 				79C37E0F30110C7200B647DD /* blueprintTests */,
 				79C37E1930110C7200B647DD /* blueprintUITests */,
@@ -90,6 +97,14 @@
 				79C37E1630110C7200B647DD /* blueprintUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		79C37E443011126500B647DD /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				79C37E453011127F00B647DD /* DesignSystem */,
+			);
+			path = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +127,7 @@
 			);
 			name = blueprint;
 			packageProductDependencies = (
+				79C37E47301113F400B647DD /* DesignSystem */,
 			);
 			productName = blueprint;
 			productReference = 79C37DFD30110C6F00B647DD /* blueprint.app */;
@@ -195,6 +211,9 @@
 			);
 			mainGroup = 79C37DF430110C6F00B647DD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				79C37E46301113F400B647DD /* XCLocalSwiftPackageReference "Packages/DesignSystem" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 79C37DFE30110C6F00B647DD /* Products */;
 			projectDirPath = "";
@@ -413,6 +432,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.luizmello.blueprint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -445,6 +468,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.luizmello.blueprint;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -578,6 +605,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		79C37E46301113F400B647DD /* XCLocalSwiftPackageReference "Packages/DesignSystem" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/DesignSystem;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		79C37E47301113F400B647DD /* DesignSystem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DesignSystem;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 79C37DF530110C6F00B647DD /* Project object */;
 }
