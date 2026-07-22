@@ -120,14 +120,26 @@ xcodebuild test -project blueprint.xcodeproj -scheme blueprint \
 
 ## Documentation
 
-Each chapter lives in [`Documentation/chapters/`](Documentation/chapters/). The static site is built with [Saga](https://getsaga.dev/) from the [`Website/`](Website/) folder.
+Blueprint documentation lives in [`Documentation/`](Documentation/) — Markdown is the source of truth; the site is navigation only.
+
+```
+Documentation/
+├── ROADMAP.md
+└── Content/
+    ├── en/
+    │   ├── guides/           Setup, tests, CI, deploy
+    │   ├── architecture/     Engineering decisions by layer
+    │   ├── concepts/       Patterns (Observation, Repository, etc.)
+    │   └── decisions/        ADRs
+    └── pt-BR/                Coming soon
+```
+
+**Philosophy:** Code explains HOW. Documentation explains WHY.
 
 ```bash
 brew install loopwerk/tap/saga
 ./scripts/saga dev --port 3000
 ```
-
-The TODOs in the source code (`// TODO: Explain why X`) are the source material — they become prose after each chapter closes.
 
 Deploy instructions: [`Website/README.md`](Website/README.md).
 

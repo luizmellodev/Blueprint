@@ -36,29 +36,32 @@ saga build
 
 Output goes to `Website/deploy/`.
 
-## Content
-
-Chapters live in [`../Documentation/`](../Documentation/):
+## Content structure
 
 ```
 Documentation/
-├── index.md              # Home page
-├── chapters/             # One .md per chapter
-└── static/               # CSS and assets
+├── ROADMAP.md
+└── Content/
+    ├── en/
+    │   ├── index.md
+    │   ├── guides/
+    │   ├── architecture/
+    │   ├── concepts/
+    │   ├── decisions/      ADRs
+    │   └── static/
+    └── pt-BR/              Coming soon
 ```
 
-Front matter example:
+Saga reads from `Documentation/Content/en/` and outputs to `Website/deploy/`.
 
-```markdown
----
-title: Networking
-summary: NetworkClient, Geoapify API, DTOs, and caching.
-chapter: 6
-status: done
----
-```
+## Site sections
 
-Status values: `done`, `in-progress`, `coming-soon`.
+| Section | URL | Purpose |
+|---|---|---|
+| Guides | `/guides/` | Practical setup |
+| Architecture | `/architecture/` | Engineering decisions |
+| Concepts | `/concepts/` | Cross-cutting patterns |
+| ADRs | `/decisions/` | Formal decision records |
 
 ## Deploy to Vercel
 
