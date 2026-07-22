@@ -9,12 +9,18 @@ import Foundation
 
 final class POIDependencies {
     let fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol
+    let fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol
 
     init(network: NetworkDependencies) {
         let repository = POIRepository(
             client: network.client,
             apiKey: Secrets.geoapifyAPIKey
         )
+        let detailsRepository = PlaceDetailsRepository(
+            client: network.client,
+            apiKey: Secrets.geoapifyAPIKey
+        )
         self.fetchNearbyPOIs = FetchNearbyPOIsUseCase(repository: repository)
+        self.fetchPlaceDetails = FetchPlaceDetailsUseCase(repository: detailsRepository)
     }
 }

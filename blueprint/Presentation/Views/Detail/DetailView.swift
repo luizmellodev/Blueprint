@@ -54,6 +54,13 @@ struct DetailView: View {
                                 .accessibilityHint("Opens in Safari")
                         }
                     }
+
+                    if let details = viewModel.details {
+                        detailsSection(details)
+                    }
+                }
+                .task {
+                    await viewModel.loadDetails()
                 }
             case .failure:
                 Text("Something went wrong.")
@@ -74,6 +81,36 @@ struct DetailView: View {
                     .accessibilityLabel(viewModel.isFavorite ? "Remove from favorites" : "Add to favorites")
                     .accessibilityValue(viewModel.isFavorite ? "Saved" : "Not saved")
                 }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func detailsSection(_ details: PlaceDetails) -> some View {
+        Section("More Info") {
+            if let wheelchair = details.isWheelchairAccessible {
+                Label(
+                    wheelchair ? "Wheelchair accessible" : "Not wheelchair accessible",
+                    systemImage: wheelchair ? "figure.roll" : "figure.roll.runningpace"
+                )
+            }
+
+            if let fee = details.fee {
+                Label(
+                    fee ? "Paid admission" : "Free admission",
+                    systemImage: fee ? "creditcard" : "gift"
+                )
+            }
+
+            if let timezone = details.timezone {
+                Label(timezone, systemImage: "clock.fill")
+            }
+        }
+
+        if let wikipedia = details.wikipediaURL {
+            Section("Learn More") {
+                Link("Wikipedia", destination: wikipedia)
+                    .accessibilityHint("Opens Wikipedia in Safari")
             }
         }
     }

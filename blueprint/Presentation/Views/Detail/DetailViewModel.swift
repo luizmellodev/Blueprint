@@ -11,16 +11,28 @@ import Foundation
 @Observable
 final class DetailViewModel {
     private(set) var state: DetailUIState
+    private(set) var details: PlaceDetails?
     private(set) var isFavorite: Bool = false
     private(set) var showFavoriteButton: Bool = false
 
+    private let fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol
     private let favorites: any FavoritesUseCaseProtocol
 
-    init(poi: POI, favorites: any FavoritesUseCaseProtocol, featureFlags: any FeatureFlagServiceProtocol) {
+    init(poi: POI, fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol, favorites: any FavoritesUseCaseProtocol, featureFlags: any FeatureFlagServiceProtocol) {
         self.state = .success(poi)
+        self.fetchPlaceDetails = fetchPlaceDetails
         self.favorites = favorites
         self.isFavorite = favorites.isFavorite(id: poi.id)
         self.showFavoriteButton = featureFlags.isEnabled(.favorites)
+    }
+
+    func loadDetails() async {
+        guard case .success(let poi) = state else { return }
+        do {
+            details = try await fetchPlaceDetails.execute(poiID: poi.id)
+        } catch {
+            // details são opcionais — falha silenciosa, o POI básico ainda aparece
+        }
     }
 
     func toggleFavorite() {
