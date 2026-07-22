@@ -22,7 +22,7 @@ struct HomeView: View {
                 ProgressView("Loading nearby places…")
                     .accessibilityLabel("Loading nearby places")
             case .success(let pois):
-                List(pois, id: \.id) { poi in
+                List(viewModel.visiblePOIs, id: \.id) { poi in
                     Button {
                         router.push(.detail(poi: poi))
                     } label: {
@@ -56,6 +56,10 @@ struct HomeView: View {
             }
         }
         .navigationTitle("Discover")
+        .searchable(text: $viewModel.searchQuery, prompt: "Search places")
+        .onChange(of: viewModel.searchQuery) {
+            viewModel.onSearchQueryChanged()
+        }
         .task {
             await viewModel.load()
         }
