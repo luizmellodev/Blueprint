@@ -5,7 +5,7 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-// TODO: Explicar porque FavoritePOI existe separado do POI do domínio (SwiftData @Model não pode entrar na camada Domain)
+// TODO: Explicar porque FavoritePOI existe separado do POI do domínio (@Model não pertence ao Domain)
 
 import SwiftData
 
@@ -50,4 +50,3 @@ final class FavoritePOI {
         )
     }
 }
-

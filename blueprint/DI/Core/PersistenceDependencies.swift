@@ -13,6 +13,7 @@ final class PersistenceDependencies {
     private let container: ModelContainer
 
     init() {
+        // swiftlint:disable:next force_try
         let container = try! ModelContainer(for: FavoritePOI.self)
         self.container = container
         let repository = FavoritesRepository(context: container.mainContext)

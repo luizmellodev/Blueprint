@@ -14,7 +14,12 @@ final class HomeFactory {
     private let persistence: PersistenceDependencies
     private let featureFlags: FeatureFlagDependencies
 
-    init(poi: POIDependencies, location: LocationDependencies, persistence: PersistenceDependencies, featureFlags: FeatureFlagDependencies) {
+    init(
+        poi: POIDependencies,
+        location: LocationDependencies,
+        persistence: PersistenceDependencies,
+        featureFlags: FeatureFlagDependencies
+    ) {
         self.poi = poi
         self.location = location
         self.persistence = persistence

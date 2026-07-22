@@ -20,7 +20,10 @@ final class DIContainer {
         let location = LocationDependencies()
         let persistence = PersistenceDependencies()
         let featureFlags = FeatureFlagDependencies()
-        self.homeFactory = HomeFactory(poi: poi, location: location, persistence: persistence, featureFlags: featureFlags)
+        self.homeFactory = HomeFactory(
+            poi: poi, location: location,
+            persistence: persistence, featureFlags: featureFlags
+        )
         self.detailFactory = DetailFactory(persistence: persistence, featureFlags: featureFlags, poi: poi)
     }
 }

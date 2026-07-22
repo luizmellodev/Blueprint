@@ -5,13 +5,12 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
+import CoreLocation
 // TODO: Explicar porque usamos @Observable ao invés de ObservableObject
 // TODO: Explicar o guard case .idle para evitar reload ao voltar da navegação
 // TODO: Explicar o padrão de debounce com Task.sleep + cancel (sem dependência externa)
 // TODO: Explicar a estratégia de pagination com offset
-
 import Foundation
-import CoreLocation
 
 @MainActor
 @Observable

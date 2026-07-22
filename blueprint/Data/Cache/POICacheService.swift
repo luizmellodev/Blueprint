@@ -5,7 +5,7 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-// TODO: Explicar porque usamos @MainActor ao invés de actor isolado (todo o app já roda no MainActor — SwiftData @Model, ViewModels, Repositories)
+// TODO: Explicar porque usamos @MainActor ao invés de actor isolado (SwiftData exige main actor)
 // TODO: Explicar a estratégia de TTL e porque 5 minutos
 
 import Foundation

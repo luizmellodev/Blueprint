@@ -18,7 +18,12 @@ final class DetailViewModel {
     private let fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol
     private let favorites: any FavoritesUseCaseProtocol
 
-    init(poi: POI, fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol, favorites: any FavoritesUseCaseProtocol, featureFlags: any FeatureFlagServiceProtocol) {
+    init(
+        poi: POI,
+        fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol,
+        favorites: any FavoritesUseCaseProtocol,
+        featureFlags: any FeatureFlagServiceProtocol
+    ) {
         self.state = .success(poi)
         self.fetchPlaceDetails = fetchPlaceDetails
         self.favorites = favorites
