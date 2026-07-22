@@ -5,14 +5,16 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
+// TODO: Explicar porque usamos @MainActor ao invés de actor isolado (todo o app já roda no MainActor — SwiftData @Model, ViewModels, Repositories)
+// TODO: Explicar a estratégia de TTL e porque 5 minutos
+
 import Foundation
 import OSLog
 
-// TODO: Explicar porque usamos actor ao invés de final class para o cache (proteção contra data races)
-// TODO: Explicar a estratégia de TTL e porque 5 minutos
-actor POICacheService {
+@MainActor
+final class POICacheService {
     private let fileName = "poi_cache.json"
-    private let maxAgeSeconds: TimeInterval = 300 // 5 minutes
+    private let maxAgeSeconds: TimeInterval = 300
 
     private var cacheURL: URL? {
         FileManager.default
@@ -23,7 +25,7 @@ actor POICacheService {
 
     func save(_ pois: [POI]) {
         guard let url = cacheURL else { return }
-        let entry = CacheEntry(pois: pois.map(CodablePOI.init), savedAt: Date())
+        let entry = CacheEntry(pois: pois, savedAt: Date())
         do {
             try JSONEncoder().encode(entry).write(to: url)
             Logger.cache.info("✓ Saved \(pois.count) POIs to cache")
@@ -43,57 +45,13 @@ actor POICacheService {
         }
 
         Logger.cache.info("✓ Cache hit — \(entry.pois.count) POIs")
-        return entry.pois.map(\.poi)
+        return entry.pois
     }
 }
 
 // MARK: - Private types
 
-private struct CacheEntry: Codable {
-    let pois: [CodablePOI]
+private struct CacheEntry: Codable, Sendable {
+    let pois: [POI]
     let savedAt: Date
-}
-
-private struct CodablePOI: Codable {
-    let id: String
-    let name: String
-    let categories: [String]
-    let latitude: Double
-    let longitude: Double
-    let address: String?
-    let city: String?
-    let country: String?
-    let openingHours: String?
-    let website: URL?
-    let phone: String?
-
-    init(_ poi: POI) {
-        id = poi.id
-        name = poi.name
-        categories = poi.categories
-        latitude = poi.latitude
-        longitude = poi.longitude
-        address = poi.address
-        city = poi.city
-        country = poi.country
-        openingHours = poi.openingHours
-        website = poi.website
-        phone = poi.phone
-    }
-
-    var poi: POI {
-        POI(
-            id: id,
-            name: name,
-            categories: categories,
-            latitude: latitude,
-            longitude: longitude,
-            address: address,
-            city: city,
-            country: country,
-            openingHours: openingHours,
-            website: website,
-            phone: phone
-        )
-    }
 }

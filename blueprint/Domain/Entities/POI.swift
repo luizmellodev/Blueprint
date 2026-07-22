@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct POI: Hashable, Sendable {
+struct POI: Hashable, Sendable, Codable {
     let id: String
     let name: String
     let categories: [String]

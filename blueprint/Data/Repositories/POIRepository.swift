@@ -7,10 +7,6 @@
 
 import Foundation
 
-protocol POIRepositoryProtocol: Sendable {
-    func fetchNearby(lat: Double, lon: Double, limit: Int) async throws -> [POI]
-}
-
 final class POIRepository: POIRepositoryProtocol {
     private let client: NetworkClient
     private let apiKey: String
@@ -22,7 +18,7 @@ final class POIRepository: POIRepositoryProtocol {
     }
 
     func fetchNearby(lat: Double, lon: Double, limit: Int) async throws -> [POI] {
-        if let cached = await cache.load() {
+        if let cached = cache.load() {
             return cached
         }
 
@@ -55,7 +51,7 @@ final class POIRepository: POIRepositoryProtocol {
         }
 
         let pois = decoded.features.compactMap(GeoapifyMapper.map)
-        await cache.save(pois)
+        cache.save(pois)
         return pois
     }
 }
