@@ -11,8 +11,20 @@ import Testing
 @MainActor
 struct HomeViewModelTests {
 
+    private func makeViewModel(
+        fetchNearbyPOIs: MockFetchNearbyPOIsUseCase = MockFetchNearbyPOIsUseCase(),
+        searchLocation: MockSearchLocationUseCase = MockSearchLocationUseCase(),
+        locationService: MockLocationService = MockLocationService()
+    ) -> HomeViewModel {
+        HomeViewModel(
+            fetchNearbyPOIs: fetchNearbyPOIs,
+            searchLocation: searchLocation,
+            locationService: locationService
+        )
+    }
+
     @Test func startsIdle() {
-        let viewModel = HomeViewModel(fetchNearbyPOIs: MockFetchNearbyPOIsUseCase(), locationService: MockLocationService())
+        let viewModel = makeViewModel()
         #expect(viewModel.state == .idle)
     }
 
@@ -21,7 +33,7 @@ struct HomeViewModelTests {
         let useCase = MockFetchNearbyPOIsUseCase()
         useCase.result = .success(PagedResult(items: [poi], hasMore: false))
 
-        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase, locationService: MockLocationService())
+        let viewModel = makeViewModel(fetchNearbyPOIs: useCase)
         await viewModel.load()
 
         #expect(viewModel.state == .success([poi]))
@@ -31,7 +43,7 @@ struct HomeViewModelTests {
         let useCase = MockFetchNearbyPOIsUseCase()
         useCase.result = .failure(AppError.networking)
 
-        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase, locationService: MockLocationService())
+        let viewModel = makeViewModel(fetchNearbyPOIs: useCase)
         await viewModel.load()
 
         #expect(viewModel.state == .failure(.networking))
@@ -41,7 +53,7 @@ struct HomeViewModelTests {
         let useCase = MockFetchNearbyPOIsUseCase()
         useCase.result = .success(PagedResult(items: [.mock()], hasMore: false))
 
-        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase, locationService: MockLocationService())
+        let viewModel = makeViewModel(fetchNearbyPOIs: useCase)
         await viewModel.load()
         await viewModel.load()
 

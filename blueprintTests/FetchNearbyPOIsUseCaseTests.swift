@@ -8,6 +8,7 @@
 import Testing
 @testable import blueprint
 
+@MainActor
 struct FetchNearbyPOIsUseCaseTests {
 
     @Test func returnsPagedResultFromRepository() async throws {
