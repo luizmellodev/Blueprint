@@ -71,6 +71,15 @@ struct HomeView: View {
         .onChange(of: viewModel.searchQuery) {
             viewModel.onSearchQueryChanged()
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    LocationSearchView(viewModel: viewModel)
+                } label: {
+                    Label("Search location", systemImage: "magnifyingglass.circle")
+                }
+            }
+        }
         .task {
             await viewModel.load()
         }

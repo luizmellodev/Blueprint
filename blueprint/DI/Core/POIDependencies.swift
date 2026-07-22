@@ -10,6 +10,7 @@ import Foundation
 final class POIDependencies {
     let fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol
     let fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol
+    let searchLocation: SearchLocationUseCaseProtocol
 
     init(network: NetworkDependencies) {
         let repository = POIRepository(
@@ -20,7 +21,12 @@ final class POIDependencies {
             client: network.client,
             apiKey: Secrets.geoapifyAPIKey
         )
+        let geocodingRepository = GeocodingRepository(
+            client: network.client,
+            apiKey: Secrets.geoapifyAPIKey
+        )
         self.fetchNearbyPOIs = FetchNearbyPOIsUseCase(repository: repository)
         self.fetchPlaceDetails = FetchPlaceDetailsUseCase(repository: detailsRepository)
+        self.searchLocation = SearchLocationUseCase(repository: geocodingRepository)
     }
 }

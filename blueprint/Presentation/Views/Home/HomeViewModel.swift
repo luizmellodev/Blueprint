@@ -19,14 +19,19 @@ final class HomeViewModel {
     private(set) var state: HomeUIState = .idle
     private(set) var isLoadingMore = false
     private(set) var hasMore = false
+    private(set) var locationSuggestions: [GeocodingResult] = []
+    private(set) var isSearchingLocation = false
     var searchQuery: String = ""
+    var locationQuery: String = ""
 
     private let fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol
+    private let searchLocation: SearchLocationUseCaseProtocol
     private let locationService: any LocationServiceProtocol
     private var allPOIs: [POI] = []
     private var currentOffset = 0
     private let pageSize = 20
     private var searchTask: Task<Void, Never>?
+    private var locationSearchTask: Task<Void, Never>?
     private var lastCoordinates: (latitude: Double, longitude: Double)?
 
     var visiblePOIs: [POI] {
@@ -37,8 +42,13 @@ final class HomeViewModel {
         }
     }
 
-    init(fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol, locationService: any LocationServiceProtocol) {
+    init(
+        fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol,
+        searchLocation: SearchLocationUseCaseProtocol,
+        locationService: any LocationServiceProtocol
+    ) {
         self.fetchNearbyPOIs = fetchNearbyPOIs
+        self.searchLocation = searchLocation
         self.locationService = locationService
     }
 
@@ -72,6 +82,38 @@ final class HomeViewModel {
             guard !Task.isCancelled else { return }
             state = .success(visiblePOIs)
         }
+    }
+
+    func onLocationQueryChanged() {
+        locationSearchTask?.cancel()
+        guard !locationQuery.trimmingCharacters(in: .whitespaces).isEmpty else {
+            locationSuggestions = []
+            return
+        }
+        locationSearchTask = Task {
+            try? await Task.sleep(for: .milliseconds(400))
+            guard !Task.isCancelled else { return }
+            isSearchingLocation = true
+            defer { isSearchingLocation = false }
+            locationSuggestions = (try? await searchLocation.execute(query: locationQuery)) ?? []
+        }
+    }
+
+    func selectLocation(_ result: GeocodingResult) async {
+        locationQuery = result.displayName
+        locationSuggestions = []
+        lastCoordinates = (latitude: result.latitude, longitude: result.longitude)
+        currentOffset = 0
+        allPOIs = []
+        await fetch(offset: 0)
+    }
+
+    func clearLocationSearch() {
+        locationQuery = ""
+        locationSuggestions = []
+        lastCoordinates = nil
+        state = .idle
+        Task { await load() }
     }
 
     private func fetch(offset: Int) async {
