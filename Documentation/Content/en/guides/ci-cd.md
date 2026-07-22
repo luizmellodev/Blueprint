@@ -10,8 +10,8 @@ order: 4
 Every pull request to `main` runs on `macos-15`:
 
 1. **SwiftLint** (`swiftlint lint --strict`)
-2. **Checkout**
-3. **Select Xcode 16.3**
+2. **Select Xcode** (`latest-stable` on the runner)
+3. **Resolve iOS Simulator** (first available iPhone)
 4. **Create `Config.xcconfig`** from `GEOAPIFY_API_KEY` secret
 5. **`xcodebuild test`** with `-enableCodeCoverage YES`
 6. **Coverage gate:** `./scripts/check-coverage.sh build/coverage.xcresult 70`
@@ -41,7 +41,7 @@ Local usage:
 xcodebuild test \
   -project blueprint.xcodeproj \
   -scheme blueprint \
-  -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
   -enableCodeCoverage YES \
   -resultBundlePath /tmp/blueprint-coverage.xcresult \
   CODE_SIGNING_ALLOWED=NO
