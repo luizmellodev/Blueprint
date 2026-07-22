@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum HomeUIState {
+enum HomeUIState: Equatable {
     case idle
     case loading
     case success([POI])

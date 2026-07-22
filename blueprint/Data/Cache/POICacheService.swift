@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class POICacheService: Sendable {
+actor POICacheService {
     private let fileName = "poi_cache.json"
     private let maxAgeSeconds: TimeInterval = 300 // 5 minutes
 
