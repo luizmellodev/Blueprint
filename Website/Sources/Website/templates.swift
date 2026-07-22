@@ -220,7 +220,7 @@ func renderHome(context: ItemRenderingContext<EmptyMetadata>) -> Node {
       docHeader(
         eyebrow: "Overview",
         title: "Blueprint",
-        summary: "A public iOS architecture study project. Best practices in the open, not a universal reference. Based on Native Birds by Sebastian Panesso."
+        summary: "A public iOS architecture study project. Best practices in the open, not a universal reference."
       )
       proseBody(context.item.body)
     }

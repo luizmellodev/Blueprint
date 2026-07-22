@@ -8,7 +8,7 @@ Blueprint is not a template, a snippet collection, or a course. Every technical 
 
 **It should not be used as a 100% correct reference.** Architecture depends on each project: team size, product scope, client decisions, deadlines, and existing code. Use Blueprint to understand patterns and trade-offs, then adapt to your context.
 
-Blueprint started from **[Native Birds](https://github.com/spanesso/native-birds)** by [Sebastian Panesso](https://github.com/spanesso) (`spanesso`), adapted to a POI domain with its own chapters, documentation, and ADRs.
+Adapted from Native Birds by Sebastian Panesso.
 
 Blueprint follows **Clean Architecture with protocol-driven boundaries**: Presentation and Data depend on Domain through protocols, so UseCases, Repositories, and services are testable in isolation.
 

@@ -9,7 +9,7 @@ slug: index
 
 **It should not be used as a 100% correct reference.** Architecture depends on each project: team size, product scope, client decisions, deadlines, and existing code. Use Blueprint to understand patterns and trade-offs, then adapt to your context.
 
-Blueprint started from **[Native Birds](https://github.com/spanesso/native-birds)** by [Sebastian Panesso](https://github.com/spanesso) (`spanesso`), adapted to a POI domain with its own chapters, documentation, and ADRs.
+Adapted from Native Birds by Sebastian Panesso.
 
 The repository ships a runnable example app and this documentation site. Markdown in `Documentation/` is the source of truth. The site is navigation and rendering.
 
@@ -29,7 +29,7 @@ The domain is deliberately small (Home list + Detail screen) so architecture sta
 | **UI framework** | SwiftUI with `@Observable` |
 | **Product intro** | [About Discover](/guides/about-discover/) |
 
-Blueprint follows **Clean Architecture with protocol-driven boundaries**, inspired by [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
+Blueprint follows **Clean Architecture with protocol-driven boundaries**.
 
 | Layer | Protocol examples |
 |---|---|
