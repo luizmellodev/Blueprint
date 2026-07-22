@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		79C37E48301113F400B647DD /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 79C37E47301113F400B647DD /* DesignSystem */; };
+		79C37E7E3011167A00B647DD /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 79C37E7D3011167A00B647DD /* DesignSystem */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,7 +31,6 @@
 		79C37DFD30110C6F00B647DD /* blueprint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = blueprint.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79C37E0C30110C7200B647DD /* blueprintTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79C37E1630110C7200B647DD /* blueprintUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		79C37E453011127F00B647DD /* DesignSystem */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = DesignSystem; path = ../DesignSystem; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -57,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				79C37E48301113F400B647DD /* DesignSystem in Frameworks */,
+				79C37E7E3011167A00B647DD /* DesignSystem in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,7 +80,6 @@
 		79C37DF430110C6F00B647DD = {
 			isa = PBXGroup;
 			children = (
-				79C37E443011126500B647DD /* Packages */,
 				79C37DFF30110C6F00B647DD /* blueprint */,
 				79C37E0F30110C7200B647DD /* blueprintTests */,
 				79C37E1930110C7200B647DD /* blueprintUITests */,
@@ -97,14 +95,6 @@
 				79C37E1630110C7200B647DD /* blueprintUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		79C37E443011126500B647DD /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				79C37E453011127F00B647DD /* DesignSystem */,
-			);
-			path = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,7 +117,7 @@
 			);
 			name = blueprint;
 			packageProductDependencies = (
-				79C37E47301113F400B647DD /* DesignSystem */,
+				79C37E7D3011167A00B647DD /* DesignSystem */,
 			);
 			productName = blueprint;
 			productReference = 79C37DFD30110C6F00B647DD /* blueprint.app */;
@@ -614,8 +604,9 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		79C37E47301113F400B647DD /* DesignSystem */ = {
+		79C37E7D3011167A00B647DD /* DesignSystem */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 79C37E46301113F400B647DD /* XCLocalSwiftPackageReference "Packages/DesignSystem" */;
 			productName = DesignSystem;
 		};
 /* End XCSwiftPackageProductDependency section */
