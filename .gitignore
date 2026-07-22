@@ -10,10 +10,9 @@ DerivedData/
 *.dSYM.zip
 *.dSYM
 
-# Swift Package Manager
+# Swift Package Manager (build artifacts only — Packages/ source is committed)
 .build/
 .swiftpm/
-Packages/
 
 # CocoaPods (not used, but just in case)
 Pods/
