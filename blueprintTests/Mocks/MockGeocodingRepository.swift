@@ -8,7 +8,8 @@
 import Foundation
 @testable import blueprint
 
-final class MockGeocodingRepository: GeocodingRepositoryProtocol, @unchecked Sendable {
+@MainActor
+final class MockGeocodingRepository: GeocodingRepositoryProtocol {
     var result: Result<[GeocodingResult], Error> = .success([])
     var searchCallCount = 0
     var lastQuery: String?

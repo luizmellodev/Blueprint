@@ -8,6 +8,7 @@
 import CoreLocation
 import Foundation
 
+@MainActor
 final class LocationService: NSObject, LocationServiceProtocol, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     private var authContinuation: CheckedContinuation<LocationAuthorizationStatus, Never>?

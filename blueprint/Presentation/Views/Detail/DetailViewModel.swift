@@ -14,6 +14,7 @@ final class DetailViewModel {
     private(set) var details: PlaceDetails?
     private(set) var isFavorite: Bool = false
     private(set) var showFavoriteButton: Bool = false
+    private(set) var favoriteError: String?
 
     private let fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol
     private let favorites: any FavoritesUseCaseProtocol
@@ -42,7 +43,16 @@ final class DetailViewModel {
 
     func toggleFavorite() {
         guard case .success(let poi) = state else { return }
-        try? favorites.toggle(poi)
-        isFavorite = favorites.isFavorite(id: poi.id)
+        do {
+            try favorites.toggle(poi)
+            isFavorite = favorites.isFavorite(id: poi.id)
+            favoriteError = nil
+        } catch {
+            favoriteError = "Could not save favorite. Please try again."
+        }
+    }
+
+    func clearFavoriteError() {
+        favoriteError = nil
     }
 }

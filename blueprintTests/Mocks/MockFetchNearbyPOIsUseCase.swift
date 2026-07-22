@@ -8,7 +8,8 @@
 import Foundation
 @testable import blueprint
 
-final class MockFetchNearbyPOIsUseCase: FetchNearbyPOIsUseCaseProtocol, @unchecked Sendable {
+@MainActor
+final class MockFetchNearbyPOIsUseCase: FetchNearbyPOIsUseCaseProtocol {
     var result: Result<PagedResult<POI>, Error> = .success(PagedResult(items: [], hasMore: false))
     var executeCallCount = 0
 

@@ -8,7 +8,8 @@
 import CoreLocation
 @testable import blueprint
 
-final class MockLocationService: LocationServiceProtocol, @unchecked Sendable {
+@MainActor
+final class MockLocationService: LocationServiceProtocol {
     var authorizationStatusToReturn: LocationAuthorizationStatus = .authorized
     var coordinatesToReturn: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: -23.5505, longitude: -46.6333)
     var shouldThrow = false

@@ -8,7 +8,8 @@
 import Foundation
 @testable import blueprint
 
-final class MockPOIRepository: POIRepositoryProtocol, @unchecked Sendable {
+@MainActor
+final class MockPOIRepository: POIRepositoryProtocol {
     var result: Result<[POI], Error> = .success([])
     var fetchCallCount = 0
 

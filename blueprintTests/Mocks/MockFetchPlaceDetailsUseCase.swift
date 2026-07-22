@@ -8,7 +8,8 @@
 import Foundation
 @testable import blueprint
 
-final class MockFetchPlaceDetailsUseCase: FetchPlaceDetailsUseCaseProtocol, @unchecked Sendable {
+@MainActor
+final class MockFetchPlaceDetailsUseCase: FetchPlaceDetailsUseCaseProtocol {
     var result: Result<PlaceDetails, Error> = .success(.mock())
     var executeCallCount = 0
     var lastPoiID: String?

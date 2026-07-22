@@ -66,7 +66,7 @@ struct HomeViewModelGeocodingTests {
         viewModel.locationQuery = "Paris"
         viewModel.onLocationQueryChanged()
 
-        try await Task.sleep(for: .milliseconds(500))
+        try await Task.sleep(for: .milliseconds(800))
 
         #expect(searchUseCase.lastQuery == "Paris")
     }

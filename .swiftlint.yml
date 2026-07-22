@@ -28,7 +28,7 @@ type_body_length:
   error: 300
 
 file_length:
-  warning: 250
+  warning: 270
   error: 400
 
 type_name:

@@ -8,7 +8,8 @@
 import Foundation
 @testable import blueprint
 
-final class MockPlaceDetailsRepository: PlaceDetailsRepositoryProtocol, @unchecked Sendable {
+@MainActor
+final class MockPlaceDetailsRepository: PlaceDetailsRepositoryProtocol {
     var result: Result<PlaceDetails, Error> = .success(.mock())
     var fetchCallCount = 0
 

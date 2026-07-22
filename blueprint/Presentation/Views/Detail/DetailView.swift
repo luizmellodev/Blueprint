@@ -76,6 +76,14 @@ struct DetailView: View {
             return "Detail"
         }())
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Error", isPresented: .init(
+            get: { viewModel.favoriteError != nil },
+            set: { if !$0 { viewModel.clearFavoriteError() } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(viewModel.favoriteError ?? "")
+        }
     }
 
     @ViewBuilder
