@@ -1,6 +1,8 @@
 # Blueprint
 
-A public iOS architecture **study project** built with modern SwiftUI. The example app, **Discover**, shows Points of Interest (POIs) using the [Geoapify API](https://www.geoapify.com/).
+A public iOS architecture **study project** built with modern SwiftUI. The example app, **Discover**, helps you explore **places near you** (restaurants, museums, parks, hotels) using the [Geoapify API](https://www.geoapify.com/).
+
+**POI** means *Point of Interest*: any place worth showing on a map. See [About Discover](Documentation/Content/en/guides/about-discover.md) for a plain-language product intro.
 
 Blueprint is not a template, a snippet collection, or a course. Every technical decision exists to teach and to explore best practices in the open.
 

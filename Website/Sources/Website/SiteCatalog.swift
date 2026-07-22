@@ -29,6 +29,7 @@ struct SiteEntry: Sendable {
 
 let siteCatalog: [SiteEntry] = [
   // Guides
+  SiteEntry(section: .guides, slug: "about-discover", title: "About Discover", order: 0),
   SiteEntry(section: .guides, slug: "getting-started", title: "Getting Started", order: 1),
   SiteEntry(section: .guides, slug: "api-key-setup", title: "API Key Setup", order: 2),
   SiteEntry(section: .guides, slug: "running-tests", title: "Running Tests", order: 3),

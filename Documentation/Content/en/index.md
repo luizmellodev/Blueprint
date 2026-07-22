@@ -15,9 +15,11 @@ The repository ships a runnable example app and this documentation site. Markdow
 
 ## Discover
 
-**Discover** is the app target inside Blueprint. It lists Points of Interest (POIs) near the user's location: restaurants, museums, parks, hotels, and more.
+**Discover** is the example app you run in the simulator. It helps you find **places near you**: restaurants, museums, parks, hotels, and similar spots.
 
-The domain is deliberately generic so architecture stays in focus. Navigation, dependency injection, networking, caching, location, persistence, and SwiftUI presentation are the subject, not product features.
+> **POI** = **P**oint **o**f **I**nterest. Industry jargon for "a place on a map." In code it is the main entity (`POI` struct). If that term is new, read **[About Discover](/guides/about-discover/)** first.
+
+The domain is deliberately small (Home list + Detail screen) so architecture stays in focus. Navigation, dependency injection, networking, caching, location, and persistence are the subject, not a full consumer product.
 
 | | |
 |---|---|
@@ -25,6 +27,7 @@ The domain is deliberately generic so architecture stays in focus. Navigation, d
 | **Repository** | Blueprint |
 | **Minimum deployment** | iOS 17 |
 | **UI framework** | SwiftUI with `@Observable` |
+| **Product intro** | [About Discover](/guides/about-discover/) |
 
 Blueprint follows **Clean Architecture with protocol-driven boundaries**, inspired by [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
 
@@ -56,7 +59,7 @@ See [Getting Started](/guides/getting-started/) to configure the API key locally
 
 | Section | Purpose |
 |---|---|
-| [Guides](/guides/) | Practical setup: clone, build, test, deploy |
+| [Guides](/guides/) | Practical setup and product context |
 | [Architecture](/architecture/) | Engineering decisions: layers, patterns, trade-offs |
 | [Concepts](/concepts/) | Cross-cutting patterns (Use Cases, Logging) |
 | [ADRs](/decisions/) | Formal decision records with context and consequences |
@@ -87,4 +90,4 @@ Packages/
 
 ## Next step
 
-[Getting Started](/guides/getting-started/): clone the repo, add your Geoapify key, and run Discover in the simulator.
+New to the project? Start with [About Discover](/guides/about-discover/) (what the app does and what POI means), then [Getting Started](/guides/getting-started/) to clone, add your Geoapify key, and run the simulator.

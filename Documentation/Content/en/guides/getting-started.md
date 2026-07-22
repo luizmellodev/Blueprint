@@ -58,10 +58,11 @@ Blueprint/
 
 ## What to read first
 
-1. [Architecture Overview](/architecture/overview/), layers, data flow, and key features
-2. [Modularization](/architecture/modularization/), why packages from day one
-3. [Navigation](/architecture/navigation/), type-safe routing
-4. [Dependency Injection](/architecture/dependency-injection/), wiring without frameworks
+1. [About Discover](/guides/about-discover/), what the app does and what POI means
+2. [Architecture Overview](/architecture/overview/), layers, data flow, and key features
+3. [Modularization](/architecture/modularization/), why packages from day one
+4. [Navigation](/architecture/navigation/), type-safe routing
+5. [Dependency Injection](/architecture/dependency-injection/), wiring without frameworks
 
 ## Related
 

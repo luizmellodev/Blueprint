@@ -5,6 +5,8 @@ order: 0
 ---
 # Architecture Overview (Clean Architecture)
 
+Discover is a places app: it lists **POIs** (Points of Interest, such as restaurants and museums) near the user. New to the product vocabulary? Read [About Discover](/guides/about-discover/) before the layers below.
+
 Discover is structured in layers. Dependencies point inward: outer layers depend on inner layers, never the reverse.
 
 ```mermaid
