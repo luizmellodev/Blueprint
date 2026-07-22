@@ -14,6 +14,7 @@ protocol POIRepositoryProtocol: Sendable {
 final class POIRepository: POIRepositoryProtocol {
     private let client: NetworkClient
     private let apiKey: String
+    private let cache = POICacheService()
 
     init(client: NetworkClient, apiKey: String) {
         self.client = client
@@ -21,6 +22,10 @@ final class POIRepository: POIRepositoryProtocol {
     }
 
     func fetchNearby(lat: Double, lon: Double, limit: Int) async throws -> [POI] {
+        if let cached = cache.load() {
+            return cached
+        }
+
         guard var components = URLComponents(string: "https://api.geoapify.com/v2/places") else {
             throw NetworkError.invalidURL
         }
@@ -49,6 +54,8 @@ final class POIRepository: POIRepositoryProtocol {
             throw NetworkError.decoding
         }
 
-        return decoded.features.compactMap(GeoapifyMapper.map)
+        let pois = decoded.features.compactMap(GeoapifyMapper.map)
+        cache.save(pois)
+        return pois
     }
 }
