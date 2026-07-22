@@ -78,18 +78,21 @@ Saga requires macOS to build. Vercel serves static files, the build runs in GitH
 4. Add `VERCEL_TOKEN` to GitHub repository secrets ([create token](https://vercel.com/account/tokens))
 5. Add `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` from `.vercel/project.json` after linking
 
-### Vercel project settings (GitHub Actions deploy)
+### Vercel project settings (required for GitHub Actions)
 
-When deploy runs from GitHub Actions (pre-built static files), use:
+The deploy job uploads pre-built files from CI. **Root Directory must be empty.**
+
+Go to [Project Settings → General](https://vercel.com/luizmellodev/blueprint/settings):
 
 | Setting | Value |
 |---|---|
-| Root Directory | **empty** (repository root, not `Website`) |
-| Build Command | **off / empty** |
-| Output Directory | **off / empty** |
-| Ignored Build Step | `exit 1` |
+| **Root Directory** | **empty** (delete `Website` if present, then Save) |
+| **Build Command** | off / empty |
+| **Output Directory** | off / empty |
+| **Install Command** | off / empty |
+| **Ignored Build Step** | `exit 1` |
 
-Root Directory `Website` conflicts with the CLI and causes `Website/deploy/Website` path errors.
+If Root Directory is `Website`, the CLI looks for paths like `site/Website` and deploy fails.
 
 ### Automatic deploy
 
