@@ -1,90 +1,157 @@
 # Blueprint — CLAUDE.md
 
-## O que é esse projeto
+## What is this project
 
-**Blueprint** é uma referência pública de arquitetura moderna em SwiftUI. O app de exemplo se chama **Discover** e usa POIs (Points of Interest) via Geoapify API. Cada decisão técnica existe para ensinar — nada entra sem justificativa didática.
+**Blueprint** is a public iOS architecture reference built with modern SwiftUI. The example app is called **Discover** and shows Points of Interest (POIs) using the Geoapify API. Every technical decision exists to teach — nothing enters the project without a didactic reason.
 
-## Regras obrigatórias
+- **Repository name:** Blueprint
+- **App name:** Discover
+- **Domain:** Points of Interest (POIs) — places, restaurants, museums, parks, hotels
+- **API:** Geoapify (free tier, 3000 req/day)
+- **Minimum deployment target:** iOS 17
+
+---
+
+## Rules
 
 ### Git
-- **Nunca** rodar `git commit` ou `git push` — apenas fornecer o comando para o usuário rodar
-- Um commit por mudança lógica (não acumular tudo em um commit gigante)
+- **Never** run `git commit` or `git push` — always provide the command for the user to run
+- One commit per logical change — never accumulate everything into one giant commit
 
-### Arquivos Swift
-- Todo arquivo Swift começa com o header padrão do Xcode:
+### Swift files
+Every Swift file must start with the standard Xcode header:
 ```swift
 //
-//  NomeDoArquivo.swift
+//  FileName.swift
 //  blueprint
 //
 //  Created by Luiz Mello on DD/MM/YY.
 //
 ```
 
-### Xcode
-- Nunca pedir para o usuário criar grupos, mover arquivos ou deletar via terminal — essas ações são feitas no Xcode
-- Quando um arquivo novo precisar ser adicionado a um target, informar o usuário para fazer no Xcode
+### Xcode actions
+- Never use the terminal to create groups, move files, or delete files — these are done inside Xcode
+- When a new file needs to be added to a target, tell the user to do it in Xcode
 
-### Código
-- Sem comentários explicando O QUE o código faz — só `TODO:` para documentação futura
-- Formato dos TODOs: `// TODO: Explicar porque X` (viram `.md` depois que o capítulo fecha)
-- Sem abstrações além do necessário para a tarefa atual
+### Code style
+- No comments explaining WHAT the code does — only `TODO:` markers for future documentation
+- TODO format: `// TODO: Explain why X` — these become `.md` files after the chapter closes
+- No abstractions beyond what the current task requires
+- No error handling for scenarios that can't happen
+- No backwards-compatibility shims
+- **One type per file** — each `struct`, `class`, `enum`, `protocol`, and `actor` gets its own file named after it. Exception: `private` helper types that only make sense in the context of their parent file (e.g. `CodablePOI` inside `POICacheService.swift`)
 
-## Arquitetura
+---
+
+## Architecture
 
 ```
 App Target (blueprint)
-├── App/                    # @main, entry point
-├── Navigation/             # AppRoute, AppRouter, RouterProtocol, AppRouterView
+├── App/                        # @main entry point
+├── Navigation/                 # AppRoute, AppRouter, RouterProtocol, AppRouterView
 ├── DI/
-│   ├── DIContainer         # Assembler raiz (@MainActor)
-│   ├── Core/               # NetworkDependencies, POIDependencies, LocationDependencies, PersistenceDependencies
-│   └── Factories/          # HomeFactory, DetailFactory
+│   ├── DIContainer             # Root assembler (@MainActor, created once)
+│   ├── Core/                   # Dependency bundles per concern
+│   │   ├── NetworkDependencies
+│   │   ├── POIDependencies
+│   │   ├── LocationDependencies
+│   │   ├── PersistenceDependencies
+│   │   └── FeatureFlagDependencies
+│   └── Factories/              # One factory per screen
+│       ├── HomeFactory
+│       └── DetailFactory
 ├── Domain/
-│   ├── Entities/           # POI, AppError, PagedResult (sem dependências externas)
-│   └── Networking/         # NetworkClient protocol + URLSessionNetworkClient
+│   ├── Entities/               # POI, AppError, PagedResult — no external dependencies
+│   └── Networking/             # NetworkClient protocol + URLSessionNetworkClient
 ├── Data/
-│   ├── DTO/                # GeoapifyDTOs + GeoapifyMapper
-│   ├── Cache/              # POICacheService (actor, TTL 5min)
-│   ├── Location/           # LocationServiceProtocol, LocationService
-│   ├── Persistence/        # FavoritePOI (@Model), FavoritesRepository, FavoritesUseCase
-│   └── Repositories/       # POIRepository, FetchNearbyPOIsUseCase
+│   ├── DTO/                    # GeoapifyDTOs + GeoapifyMapper
+│   ├── Cache/                  # POICacheService (actor, 5-min TTL)
+│   ├── Location/               # LocationServiceProtocol, LocationService
+│   ├── Persistence/            # FavoritePOI (@Model), FavoritesRepository, FavoritesUseCase
+│   ├── FeatureFlags/           # FeatureFlag enum, FeatureFlagService
+│   └── Repositories/           # POIRepository, FetchNearbyPOIsUseCase
 └── Presentation/
     └── Views/
-        ├── Home/           # HomeView, HomeViewModel, HomeUIState
-        └── Detail/         # DetailView, DetailViewModel, DetailUIState
+        ├── Home/               # HomeView, HomeViewModel, HomeUIState
+        └── Detail/             # DetailView, DetailViewModel, DetailUIState
 
 Packages/
-└── DesignSystem/           # DSSpacing, DSTypography, DSRadius (tokens públicos)
+└── DesignSystem/               # DSSpacing, DSTypography, DSRadius (public tokens, iOS 17+)
 
-Documentation/              # .md por capítulo (escrito após fechar o capítulo)
+Documentation/                  # One .md per chapter, written after the chapter closes
 ```
 
-## Padrões
+---
 
-| Padrão | Decisão |
-|---|---|
-| State management | `@Observable` (iOS 17+), não `ObservableObject` |
-| Navigation | `NavigationStack` + `AppRoute` enum + `RouterProtocol` |
-| DI | DIContainer + Factories, sem framework externo |
-| UseCase | `struct` conformando protocolo `Sendable` |
-| Cache | `actor` para proteção contra data races |
-| Persistence | SwiftData — `@Model` fica na camada Data, nunca no Domain |
-| Testes | Swift Testing (`@Test`, `#expect`), mocks via protocolo |
+## Patterns and decisions
 
-## Segurança
+| Topic | Decision | Why |
+|---|---|---|
+| State management | `@Observable` (iOS 17+) | Simpler than ObservableObject, no need to import Combine |
+| Navigation | `NavigationStack` + `AppRoute` enum | Programmatic, type-safe, testable |
+| Router abstraction | `RouterProtocol` | ViewModels depend on the protocol, not the concrete AppRouter |
+| DI | DIContainer + Factories, no framework | Explicit wiring, easy to trace, no magic |
+| Dependency grouping | Bundles (NetworkDependencies, etc.) | Prevents flat container from growing unmanageable |
+| UseCase | `struct` conforming to `Sendable` protocol | Stateless, value semantics, easy to test |
+| Cache | `actor` | Protects file I/O from data races without manual locks |
+| Persistence | SwiftData — `@Model` stays in Data layer | Domain stays clean; `POI` never becomes a SwiftData class |
+| Feature flags | `FeatureFlag` enum + `FeatureFlagServiceProtocol` | Type-safe flags, swappable backend (local → RemoteConfig) |
+| Tests | Swift Testing (`@Test`, `#expect`) | Modern, expressive, ships with Xcode |
 
-- `blueprint/Secrets.swift` está no `.gitignore` e **nunca** deve ser commitado
-- Contém: `enum Secrets { static let geoapifyAPIKey = "..." }`
+---
+
+## Layer rules
+
+- **Domain** knows nothing about SwiftData, Combine, UIKit, or any framework
+- **Data** knows Domain, but Domain does not know Data
+- **Presentation** knows Domain and calls UseCases — never calls Repositories directly
+- **Navigation** stays in the app target (not a Package) — AppRoute references domain types from all features
+- **DesignSystem** is a local Swift Package with no app-layer dependencies
+
+---
+
+## Security
+
+- `blueprint/Secrets.swift` is in `.gitignore` and must **never** be committed
+- Structure: `enum Secrets { static let geoapifyAPIKey = "..." }`
+- The file must be created manually after cloning
+
+---
+
+## Documentation strategy
+
+Following the project's own guidelines:
+1. During development: leave `// TODO: Explain why X` in the relevant files
+2. After a chapter closes: write `Documentation/ChapterName.md` converting those TODOs into prose
+3. After ~10 chapters: build a website that reads those Markdown files
+
+---
 
 ## Roadmap
 
-- **Semana 1** ✅ Projeto → Packages → Navigation → DI
-- **Semana 2** ✅ Networking → API → Cache → Swift Testing
-- **Semana 3** 🔄 Persistence → Feature Flags → Accessibility
-- **Semana 4** Location Service ✅ → SwiftData ✅ → Feature Flags → Accessibility
-- **Semana 4** Website → Diagramas → CI robusto → Deploy
+| Week | Topics | Status |
+|---|---|---|
+| 1 | Project setup → Packages → Navigation → DI | ✅ Done |
+| 2 | Networking → API → Cache → Swift Testing | ✅ Done |
+| 3 | Location → SwiftData → Feature Flags → Accessibility | 🔄 In progress |
+| 4 | Website → Diagrams → Robust CI → Deploy | ⏳ Pending |
 
-## Packages externos
+### Chapters (for Documentation/)
+1. Creating the project
+2. Modularization
+3. Design System
+4. Navigation
+5. Dependency Injection
+6. Networking
+7. Persistence
+8. Testing
+9. Accessibility
+10. CI/CD
+11. Performance
+12. Deploying documentation
 
-Nenhum (além de Firebase no projeto template de referência — não usamos aqui).
+---
+
+## Reference project
+
+The native-birds project (`~/Downloads/native-birds-main 2/`) was used as architecture reference. Key patterns borrowed: DIContainer + Factories, RouterProtocol, UIState enum per screen, dependency bundles. Key differences: Blueprint uses `@Observable` instead of `ObservableObject + Combine`, and modularizes with Swift Packages from the start.
