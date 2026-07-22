@@ -15,8 +15,8 @@ final class HomeFactory {
         self.poi = poi
     }
 
-    func makeView() -> some View {
+    func makeView(router: AppRouter) -> some View {
         let viewModel = HomeViewModel(fetchNearbyPOIs: poi.fetchNearbyPOIs)
-        return HomeView(viewModel: viewModel)
+        return HomeView(viewModel: viewModel, router: router)
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State var viewModel: HomeViewModel
+    let router: AppRouter
 
     var body: some View {
         Group {
@@ -19,13 +20,18 @@ struct HomeView: View {
                 ProgressView()
             case .success(let pois):
                 List(pois, id: \.id) { poi in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(poi.name)
-                            .font(.headline)
-                        if let city = poi.city {
-                            Text(city)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                    Button {
+                        router.push(.detail(poi: poi))
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(poi.name)
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            if let city = poi.city {
+                                Text(city)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }

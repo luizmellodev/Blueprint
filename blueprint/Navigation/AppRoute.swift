@@ -7,4 +7,5 @@
 
 enum AppRoute: Hashable {
     case home
+    case detail(poi: POI)
 }

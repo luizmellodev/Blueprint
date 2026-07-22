@@ -13,11 +13,13 @@ struct AppRouterView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            container.homeFactory.makeView()
+            container.homeFactory.makeView(router: router)
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case .home:
-                        container.homeFactory.makeView()
+                        container.homeFactory.makeView(router: router)
+                    case .detail(let poi):
+                        container.detailFactory.makeView(poi: poi)
                     }
                 }
         }
