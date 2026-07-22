@@ -54,5 +54,14 @@ struct DetailView: View {
         }
         .navigationTitle("Detail")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    viewModel.toggleFavorite()
+                } label: {
+                    Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                }
+            }
+        }
     }
 }

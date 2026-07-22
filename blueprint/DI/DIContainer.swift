@@ -18,7 +18,8 @@ final class DIContainer {
         let network = NetworkDependencies()
         let poi = POIDependencies(network: network)
         let location = LocationDependencies()
-        self.homeFactory = HomeFactory(poi: poi, location: location)
-        self.detailFactory = DetailFactory()
+        let persistence = PersistenceDependencies()
+        self.homeFactory = HomeFactory(poi: poi, location: location, persistence: persistence)
+        self.detailFactory = DetailFactory(persistence: persistence)
     }
 }

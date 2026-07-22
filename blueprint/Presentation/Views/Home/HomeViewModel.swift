@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 // TODO: Explicar porque usamos @Observable ao invés de ObservableObject
 // TODO: Explicar o guard case .idle para evitar reload ao voltar da navegação

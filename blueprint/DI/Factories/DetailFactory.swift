@@ -9,8 +9,14 @@ import SwiftUI
 
 @MainActor
 final class DetailFactory {
+    private let persistence: PersistenceDependencies
+
+    init(persistence: PersistenceDependencies) {
+        self.persistence = persistence
+    }
+
     func makeView(poi: POI) -> some View {
-        let viewModel = DetailViewModel(poi: poi)
+        let viewModel = DetailViewModel(poi: poi, favorites: persistence.favoritesUseCase)
         return DetailView(viewModel: viewModel)
     }
 }

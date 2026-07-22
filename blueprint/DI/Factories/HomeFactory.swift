@@ -11,10 +11,12 @@ import SwiftUI
 final class HomeFactory {
     private let poi: POIDependencies
     private let location: LocationDependencies
+    private let persistence: PersistenceDependencies
 
-    init(poi: POIDependencies, location: LocationDependencies) {
+    init(poi: POIDependencies, location: LocationDependencies, persistence: PersistenceDependencies) {
         self.poi = poi
         self.location = location
+        self.persistence = persistence
     }
 
     func makeView(router: any RouterProtocol) -> some View {
