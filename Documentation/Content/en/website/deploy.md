@@ -57,7 +57,9 @@ Pull requests and pushes to `main` run `.github/workflows/website.yml`:
 3. Verify `Website/deploy/index.html` exists
 4. Upload `deploy/` as a CI artifact (retained 7 days)
 
-On `main`, a follow-up job also publishes the built site. Hosting config lives outside this documentation section (`Website/README.md`, workflow file).
+On `main`, a follow-up job also publishes the built site when `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` are set in GitHub secrets.
+
+**404 on Vercel?** The `deploy/` folder is gitignored. Vercel Git integration alone cannot build Saga (macOS only). Disable Vercel Git auto-deploy or set Ignored Build Step to `exit 1`, then deploy via GitHub Actions or `./scripts/saga build && cd Website && vercel deploy deploy --prod`.
 
 PRs **build only** (no publish) so doc changes are validated before merge.
 

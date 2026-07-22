@@ -106,5 +106,12 @@ try await Saga(input: "../Documentation/Content/en", output: "deploy")
     if fileManager.fileExists(atPath: deployInput) {
       try fileManager.removeItem(atPath: deployInput)
     }
+    if fileManager.fileExists(atPath: "vercel.json") {
+      let deployConfig = "deploy/vercel.json"
+      if fileManager.fileExists(atPath: deployConfig) {
+        try fileManager.removeItem(atPath: deployConfig)
+      }
+      try fileManager.copyItem(atPath: "vercel.json", toPath: deployConfig)
+    }
   }
   .run()

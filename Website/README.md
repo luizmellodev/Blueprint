@@ -80,15 +80,25 @@ Saga requires macOS to build. Vercel serves static files, the build runs in GitH
 
 ### Automatic deploy
 
-Push to `main` or `website`, GitHub Actions builds the site and deploys to Vercel.
+Push to `main` triggers GitHub Actions: `saga build` on macOS, then `vercel deploy deploy --prod`.
+
+**Important:** `Website/deploy/` is gitignored. A deploy triggered only by the Vercel Git integration (without the GitHub Actions build) will be empty and return **404**.
+
+In Vercel → Settings → Git, either disable production deployments from Git, or set **Ignored Build Step** to `exit 1` so only GitHub Actions publishes the site.
+
+Required GitHub secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 
 ### Manual deploy
 
 ```bash
+./scripts/saga build
 cd Website
-saga build
 vercel deploy deploy --prod
 ```
+
+### 404 after Vercel import
+
+The congratulations screen from Vercel imports the repo, but `deploy/` does not exist in git. Run the manual deploy above once, or push to `main` with GitHub secrets configured and let the Website workflow deploy.
 
 ## Project layout
 
