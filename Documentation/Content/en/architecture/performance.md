@@ -17,9 +17,9 @@ Blueprint avoids micro-optimizations. Focus: reduce unnecessary network calls, k
 
 | Strategy | Implementation |
 |---|---|
-| Cache | `POICacheService` — 5 min TTL, file-backed |
+| Cache | `POICacheService`, 5 min TTL, file-backed |
 | Pagination | Offset-based, 20 items per page |
-| Debounce | `Task.sleep` + cancel — 300ms search, 400ms geocoding |
+| Debounce | `Task.sleep` + cancel, 300ms search, 400ms geocoding |
 | Idle guard | `guard case .idle` prevents reload on navigation back |
 | Logging | OSLog with subsystem/category |
 
@@ -36,6 +36,6 @@ Blueprint avoids micro-optimizations. Focus: reduce unnecessary network calls, k
 
 ## Further reading
 
-- [Caching](/concepts/caching/)
+- [Caching](/architecture/caching/)
 - [Logging](/concepts/logging/)
-- [Feature Flags](/concepts/feature-flags/)
+- [Feature Flags](/architecture/feature-flags/)

@@ -2,44 +2,88 @@
 title: Blueprint
 slug: index
 ---
-# Blueprint
 
-A living handbook for modern SwiftUI architecture.
+## What this is
 
-**Blueprint** is not a template, not a snippet collection, not a course. It is a public reference where every decision is documented and every technology exists to solve a real problem.
+**Blueprint** is a public iOS architecture **study project** built with modern SwiftUI. It is not a template, a snippet collection, or a course. Every technical decision exists to teach and to explore best practices in the open.
 
-The example app is **Discover** — it explores Points of Interest (POIs) using the Geoapify API. The domain is deliberately generic so architecture stays in focus.
+**It should not be used as a 100% correct reference.** Architecture depends on each project: team size, product scope, client decisions, deadlines, and existing code. Use Blueprint to understand patterns and trade-offs, then adapt to your context.
 
-<div class="cta-row">
-  <a class="btn btn-primary" href="/guides/getting-started/">Get started</a>
-  <a class="btn btn-secondary" href="/architecture/">Architecture</a>
-</div>
+Blueprint started from **[Native Birds](https://github.com/spanesso/native-birds)** by [Sebastian Panesso](https://github.com/spanesso) (`spanesso`), adapted to a POI domain with its own chapters, documentation, and ADRs.
 
-## Code explains HOW. Documentation explains WHY.
+The repository ships a runnable example app and this documentation site. Markdown in `Documentation/` is the source of truth. The site is navigation and rendering.
 
-| Layer | Purpose |
+## Discover
+
+**Discover** is the app target inside Blueprint. It lists Points of Interest (POIs) near the user's location: restaurants, museums, parks, hotels, and more.
+
+The domain is deliberately generic so architecture stays in focus. Navigation, dependency injection, networking, caching, location, persistence, and SwiftUI presentation are the subject, not product features.
+
+| | |
 |---|---|
-| [Guides](/guides/) | Practical setup — clone, build, test, deploy |
-| [Architecture](/architecture/) | Engineering decisions by layer |
-| [Concepts](/concepts/) | Patterns used across the codebase |
-| [ADRs](/decisions/) | Formal decision records |
-| [Roadmap](/guides/roadmap/) | Chapter-by-chapter project evolution |
+| **App name** | Discover |
+| **Repository** | Blueprint |
+| **Minimum deployment** | iOS 17 |
+| **UI framework** | SwiftUI with `@Observable` |
 
-## Architecture at a glance
+Blueprint follows **Clean Architecture with protocol-driven boundaries**, inspired by [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
+
+| Layer | Protocol examples |
+|---|---|
+| Presentation | ViewModels depend on `FetchNearbyPOIsUseCaseProtocol`, `RouterProtocol` |
+| Domain | UseCases depend on `POIRepositoryProtocol`, `FavoritesRepositoryProtocol` |
+| Data | Repositories depend on `NetworkClient`, `ModelContext` (internal) |
+
+Presentation never calls Repositories directly. Data never imports SwiftUI.
+
+## Geoapify API
+
+Discover loads POI data from [Geoapify](https://www.geoapify.com/), a free-tier geolocation API (3,000 requests/day, no credit card).
+
+| | |
+|---|---|
+| **Used for** | Nearby places, place details, city geocoding |
+| **Authentication** | API key in `Config.xcconfig`, injected into `Info.plist` |
+| **Caching** | 5-minute TTL on disk via `POICacheService` |
+
+See [Getting Started](/guides/getting-started/) to configure the API key locally.
+
+## How this documentation is organized
+
+**Code explains HOW.** The Swift codebase shows implementation: ViewModels, UseCases, Repositories, actors for cache.
+
+**Documentation explains WHY.** Each article records the problem, alternatives considered, and trade-offs accepted.
+
+| Section | Purpose |
+|---|---|
+| [Guides](/guides/) | Practical setup: clone, build, test, deploy |
+| [Architecture](/architecture/) | Engineering decisions: layers, patterns, trade-offs |
+| [Concepts](/concepts/) | Cross-cutting patterns (Use Cases, Logging) |
+| [ADRs](/decisions/) | Formal decision records with context and consequences |
+| [Roadmap](/guides/roadmap/) | Chapter-by-chapter project evolution |
+| [Future Directions](/guides/future-directions/) | Study ideas, alternatives, and fork prompts (open) |
+
+## Architecture
+
+Start with the full layer diagram, data flow, and feature breakdown:
+
+**[Architecture Overview](/architecture/overview/)**
+
+At a glance:
 
 ```
 App Target (blueprint)
 ├── Navigation/       AppRoute, AppRouter, RouterProtocol
 ├── DI/               DIContainer, bundles, factories
-├── Domain/           Entities, UseCases — zero framework imports
+├── Domain/           Entities, UseCases (zero framework imports)
 ├── Data/             Repositories, DTOs, SwiftData, cache
 └── Presentation/     Views, ViewModels, UIState
 
 Packages/
-├── DesignSystem/
-└── Networking/
+├── DesignSystem/     Shared tokens (spacing, typography, radius)
+└── Networking/       NetworkClient protocol
 ```
 
-## Identity
+## Next step
 
-> Blueprint is a public architecture reference built in the open. Each decision is documented, each chapter adds a layer, and each technology solves a real problem — not because it is trending.
+[Getting Started](/guides/getting-started/): clone the repo, add your Geoapify key, and run Discover in the simulator.

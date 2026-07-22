@@ -21,9 +21,9 @@ Making `POI` a `@Model` couples Domain to SwiftData. Swapping persistence backen
 
 ## Alternatives
 
-1. **@Model on POI** — simple but violates clean architecture
-2. **UserDefaults** — doesn't scale for rich favorites
-3. **Separate FavoritePOI + Repository mapping** — clean boundary
+1. **@Model on POI:** simple but violates clean architecture
+2. **UserDefaults:** doesn't scale for rich favorites
+3. **Separate FavoritePOI + Repository mapping:** clean boundary
 
 ## Decision
 
@@ -42,5 +42,5 @@ Making `POI` a `@Model` couples Domain to SwiftData. Swapping persistence backen
 
 ## References
 
-- [Persistence](/architecture/persistence/)
+- [SwiftData](/architecture/swiftdata/)
 - `blueprint/Data/Persistence/FavoritePOI.swift`

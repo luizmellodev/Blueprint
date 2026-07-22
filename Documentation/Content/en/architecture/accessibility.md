@@ -43,4 +43,4 @@ Design System tokens use semantic styles. POI cards expose composed VoiceOver la
 ## Further reading
 
 - [Design System](/architecture/design-system/)
-- [Observation](/concepts/observation/)
+- [Observation](/architecture/observation/)

@@ -13,7 +13,7 @@ Accepted
 
 ## Context
 
-Blueprint aims to teach iOS architecture. A monolithic target makes it easy to violate layer boundaries — Domain importing SwiftUI, DTOs leaking into ViewModels.
+Blueprint aims to teach iOS architecture. A monolithic target makes it easy to violate layer boundaries, Domain importing SwiftUI, DTOs leaking into ViewModels.
 
 ## Problem
 
@@ -21,9 +21,9 @@ Without compile-time boundaries, dependency direction relies on convention and c
 
 ## Alternatives
 
-1. **Single app target** — simplest, no boundaries
-2. **Xcode frameworks** — heavier, less SPM-native
-3. **Local Swift Packages** — SPM boundaries, portable modules
+1. **Single app target:** simplest, no boundaries
+2. **Xcode frameworks:** heavier, less SPM-native
+3. **Local Swift Packages:** SPM boundaries, portable modules
 
 ## Decision
 

@@ -1,47 +1,60 @@
 ---
 title: Navigation
-summary: NavigationStack, AppRoute, AppRouter, and RouterProtocol for testable routing.
-order: 3
+summary: NavigationStack, AppRoute enum, AppRouter, and RouterProtocol for typed programmatic routing.
+order: 6
 ---
-# Navigation
+# Why Navigation?
 
-## The problem
+Discover has two primary destinations: **Home** and **Detail(POI)**. Navigation must be type-safe, testable, and owned outside individual views.
 
-Views that manipulate `NavigationPath` directly are hard to test and tightly coupled to SwiftUI navigation APIs.
+## What problem does this solve?
 
-## Why NavigationStack + typed routes
+Views that mutate `NavigationPath` directly are hard to unit test and tightly coupled to SwiftUI APIs. ViewModels that know about `NavigationStack` cannot run in isolation.
 
-`AppRoute` enum makes every destination explicit. `RouterProtocol` lets ViewModels push routes without owning navigation state.
+## Why this solution?
 
-## Alternatives considered
+| Piece | Role |
+|---|---|
+| `AppRoute` | Hashable enum: `.home`, `.detail(poi:)` |
+| `AppRouter` | `@Observable` holder of `path: [AppRoute]` |
+| `RouterProtocol` | ViewModels call `push` / `pop` / `popToRoot` |
+| `AppRouterView` | Root `NavigationStack`, injects container + router |
+
+ViewModels depend on `any RouterProtocol`, not `AppRouter`.
+
+## Alternatives
 
 | Approach | Verdict |
 |---|---|
-| Coordinator (UIKit-style) | Heavy for SwiftUI |
-| Environment-based navigation | Implicit, hard to test |
-| **NavigationStack + RouterProtocol** | ✅ Chosen |
+| UIKit Coordinator | Rejected: heavy in SwiftUI-first app |
+| EnvironmentObject router | Rejected: implicit, harder to mock |
+| Untyped `[Hashable]` routes | Rejected: loses compile-time POI payload |
+| **NavigationStack + AppRoute + protocol** | Chosen |
 
 ## Trade-offs
 
-- **Pro:** Type-safe, testable, programmatic
-- **Pro:** `@Observable` router — no Combine
-- **Con:** Router stays in app target (references domain types from all features)
+- **Pro:** Compiler validates route payloads (`POI` in `.detail`)
+- **Pro:** Router tested/mocked independently
+- **Pro:** `@Observable` router, no Combine
+- **Con:** Lives in app target (references Domain types)
+- **Con:** Zoom transitions require extra `Namespace` wiring in factory
 
 ## How Blueprint implements it
 
-```swift
-enum AppRoute: Hashable {
-    case detail(poi: POI)
-}
+`HomeViewModel` pushes `.detail(poi:)` through injected router.
 
-@MainActor @Observable
-final class AppRouter: RouterProtocol {
-    var path: [AppRoute] = []
-    func push(_ route: AppRoute) { ... }
-}
+`AppRouterView` hosts `NavigationStack(path: $router.path)` and uses factories for destination builders.
+
+iOS 18 zoom transition: `HomeFactory` receives `Namespace.ID` for matched geometry between list and detail.
+
+```mermaid
+flowchart LR
+  VM[HomeViewModel]
+  R[RouterProtocol]
+  AR[AppRouter path]
+  NS[NavigationStack]
+  VM -->|push detail| R --> AR --> NS
 ```
-
-Views receive `any RouterProtocol`, not `AppRouter`.
 
 ## Related code
 
@@ -49,8 +62,10 @@ Views receive `any RouterProtocol`, not `AppRouter`.
 - `blueprint/Navigation/AppRouter.swift`
 - `blueprint/Navigation/RouterProtocol.swift`
 - `blueprint/Navigation/AppRouterView.swift`
+- `blueprint/Presentation/Views/Components/ZoomTransitionModifier.swift`
 
 ## Further reading
 
 - [ADR 0002: Navigation](/decisions/0002-navigation/)
-- [Observation](/concepts/observation/)
+- [Observation](/architecture/observation/)
+- [MVVM](/architecture/mvvm/)

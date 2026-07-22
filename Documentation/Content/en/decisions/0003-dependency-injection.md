@@ -13,7 +13,7 @@ Accepted
 
 ## Context
 
-Discover's object graph grows with each chapter — networking, location, persistence, feature flags, multiple screens.
+Discover's object graph grows with each chapter, networking, location, persistence, feature flags, multiple screens.
 
 ## Problem
 
@@ -21,9 +21,9 @@ Singletons and service locators hide dependencies. DI frameworks add magic that 
 
 ## Alternatives
 
-1. **Swinject / Factory** — powerful, runtime resolution
-2. **Service locator** — global access, hidden deps
-3. **DIContainer + bundles + factories** — explicit, compile-time
+1. **Swinject / Factory:** powerful, runtime resolution
+2. **Service locator:** global access, hidden deps
+3. **DIContainer + bundles + factories:** explicit, compile-time
 
 ## Decision
 
@@ -38,7 +38,7 @@ Single `DIContainer` at app launch. Dependencies grouped in bundles (`POIDepende
 
 **Negative:**
 - Manual wiring when adding screens
-- Container grows — mitigated by bundles
+- Container grows, mitigated by bundles
 
 ## References
 

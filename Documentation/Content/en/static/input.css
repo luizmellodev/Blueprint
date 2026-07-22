@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@source "../../../../Website/Sources/Website/**/*.swift";
+@source "../**/*.md";
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+  --color-brand-500: #2563eb;
+  --color-brand-600: #1d4ed8;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .prose .mermaid {
+    margin-block: 2rem;
+    overflow-x: auto;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-zinc-200);
+    background: white;
+    padding: 1rem;
+  }
+
+  .prose .mermaid svg {
+    display: block;
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  .prose pre:has(code.language-mermaid) {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .dark .prose .mermaid {
+    border-color: var(--color-zinc-800);
+    background: var(--color-zinc-900);
+  }
+}

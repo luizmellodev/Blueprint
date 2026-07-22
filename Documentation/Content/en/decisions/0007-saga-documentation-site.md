@@ -1,6 +1,6 @@
 ---
 title: "0007: Saga for Documentation Site"
-summary: Swift static site generator — Markdown as source of truth, site as navigation layer.
+summary: Swift static site generator, Markdown as source of truth, site as navigation layer.
 status: accepted
 date: 2026-07-22
 order: 7
@@ -21,9 +21,9 @@ Documentation in Notion/Wikipedia-style CMS creates vendor lock-in. Hand-written
 
 ## Alternatives
 
-1. **GitHub-rendered Markdown only** — functional but not a polished reading experience
-2. **Next.js / Astro** — great DX, wrong language
-3. **Saga (Swift SSG)** — Swift templates, Moon syntax highlight, same ecosystem
+1. **GitHub-rendered Markdown only:** functional but not a polished reading experience
+2. **Next.js / Astro:** great DX, wrong language
+3. **Saga (Swift SSG):** Swift templates, Moon syntax highlight, same ecosystem
 
 ## Decision
 
@@ -34,10 +34,10 @@ Markdown in `Documentation/Content/en/` is the source of truth. Saga in `Website
 **Positive:**
 - Documentation and app share Swift ecosystem
 - Type-safe HTML templates (Swim)
-- Markdown stays authoritative — site is navigation only
+- Markdown stays authoritative, site is navigation only
 
 **Negative:**
-- Saga requires macOS to build — not Vercel-native
+- Saga requires macOS to build, not Vercel-native
 - Bilingual content requires duplicate folders or Saga i18n setup
 
 ## References

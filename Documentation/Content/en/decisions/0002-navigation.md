@@ -21,9 +21,9 @@ Views manipulating `NavigationPath` directly couple UI to navigation mechanics a
 
 ## Alternatives
 
-1. **UIKit Coordinator** — familiar but heavy in SwiftUI
-2. **EnvironmentObject router** — implicit, hard to mock
-3. **NavigationStack + AppRoute + RouterProtocol** — typed, injectable
+1. **UIKit Coordinator:** familiar but heavy in SwiftUI
+2. **EnvironmentObject router:** implicit, hard to mock
+3. **NavigationStack + AppRoute + RouterProtocol:** typed, injectable
 
 ## Decision
 
@@ -33,7 +33,7 @@ Views manipulating `NavigationPath` directly couple UI to navigation mechanics a
 
 **Positive:**
 - Testable navigation (mock router)
-- Type-safe pushes — compiler catches invalid routes
+- Type-safe pushes, compiler catches invalid routes
 - `@Observable` router without Combine
 
 **Negative:**

@@ -12,14 +12,14 @@ import Testing
 struct HomeViewModelTests {
 
     private func makeViewModel(
-        fetchNearbyPOIs: MockFetchNearbyPOIsUseCase = MockFetchNearbyPOIsUseCase(),
-        searchLocation: MockSearchLocationUseCase = MockSearchLocationUseCase(),
-        locationService: MockLocationService = MockLocationService()
+        fetchNearbyPOIs: MockFetchNearbyPOIsUseCase? = nil,
+        searchLocation: MockSearchLocationUseCase? = nil,
+        locationService: MockLocationService? = nil
     ) -> HomeViewModel {
         HomeViewModel(
-            fetchNearbyPOIs: fetchNearbyPOIs,
-            searchLocation: searchLocation,
-            locationService: locationService
+            fetchNearbyPOIs: fetchNearbyPOIs ?? MockFetchNearbyPOIsUseCase(),
+            searchLocation: searchLocation ?? MockSearchLocationUseCase(),
+            locationService: locationService ?? MockLocationService()
         )
     }
 

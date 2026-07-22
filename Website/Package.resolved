@@ -1,5 +1,5 @@
 {
-  "originHash" : "c64e73acc273490c8d6bac210a4aff60f0303f6af7af7d572d0eb25ffcf016d3",
+  "originHash" : "de29d5cea6bc93b759b70f60e58207b16426930e7ad159d9866cc0366f4c8f9e",
   "pins" : [
     {
       "identity" : "jxkit",
@@ -89,6 +89,15 @@
       "state" : {
         "revision" : "95ba0316a9b733e92bb6b071255ff46263bbe7dc",
         "version" : "3.15.1"
+      }
+    },
+    {
+      "identity" : "swifttailwind",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/loopwerk/SwiftTailwind",
+      "state" : {
+        "revision" : "64403a012c4461148751c141b29a34b0af21c087",
+        "version" : "1.0.3"
       }
     },
     {

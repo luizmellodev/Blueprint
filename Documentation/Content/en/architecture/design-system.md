@@ -1,6 +1,6 @@
 ---
 title: Design System
-summary: Public design tokens in a Swift Package — spacing, typography, radius, color.
+summary: Public design tokens in a Swift Package, spacing, typography, radius, color.
 order: 2
 ---
 # Design System

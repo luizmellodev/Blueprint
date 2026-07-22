@@ -1,6 +1,6 @@
 ---
 title: Roadmap
-summary: Chapter-by-chapter evolution of Blueprint — code, docs, and ADRs per version.
+summary: Chapter-by-chapter evolution of Blueprint, code, docs, and ADRs per version.
 order: 6
 ---
 # Roadmap
@@ -8,6 +8,8 @@ order: 6
 Blueprint grows by chapters. Each version adds code, documentation, and often an ADR.
 
 See the full version table in [`Documentation/ROADMAP.md`](https://github.com/luizmellodev/Blueprint/blob/main/Documentation/ROADMAP.md) on GitHub.
+
+For **open alternatives** (Coordinators, Fastlane, other DI libraries, and fork ideas), see [Future Directions](/guides/future-directions/). That page is not a commitment backlog. It is an invitation to experiment and compare trade-offs.
 
 ## Current chapters (v0.1 – v0.12)
 

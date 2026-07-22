@@ -21,15 +21,15 @@ Hardcoded keys leak in git history. Environment variables don't integrate cleanl
 
 ## Alternatives
 
-1. **Hardcode in Secrets.swift** — ❌ committed to git
-2. **Environment variables only** — awkward in Xcode
-3. **xcconfig → Info.plist → Bundle** — standard iOS pattern
+1. **Hardcode in Secrets.swift:** ❌ committed to git
+2. **Environment variables only:** awkward in Xcode
+3. **xcconfig → Info.plist → Bundle:** standard iOS pattern
 
 ## Decision
 
 `Config.xcconfig` (gitignored) defines `GEOAPIFY_API_KEY`. `Supporting/Info.plist` references `$(GEOAPIFY_API_KEY)`. `Secrets.swift` reads from `Bundle.main`.
 
-Note: custom `INFOPLIST_KEY_*` in xcconfig alone does not work — Xcode ignores user-defined keys when generating Info.plist. A partial Info.plist file is required.
+Note: custom `INFOPLIST_KEY_*` in xcconfig alone does not work, Xcode ignores user-defined keys when generating Info.plist. A partial Info.plist file is required.
 
 ## Consequences
 

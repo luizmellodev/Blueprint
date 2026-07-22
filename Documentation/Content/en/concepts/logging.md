@@ -1,38 +1,58 @@
 ---
 title: Logging
-summary: OSLog with subsystem and category — not print().
-order: 6
+summary: OSLog categories via AppLogger. No print() in production paths.
+order: 2
 ---
-# Logging
+# Why Structured Logging?
 
-## The problem
+Debug prints disappear in production and cannot be filtered by subsystem. Blueprint uses **OSLog** with named categories.
 
-`print()` always evaluates strings, cannot be filtered in Console.app, and has no log levels.
+## What problem does this solve?
 
-## Why OSLog
+When cache misses or persistence fails, you need searchable logs in Console.app without spamming every layer.
+
+## Why this solution?
+
+`AppLogger` defines categories used in code today:
+
+| Category | Used in |
+|---|---|
+| `cache` | `POICacheService` hit/miss/save |
+| `persistence` | SwiftData operations |
+| `location` | CoreLocation flow |
+
+Network logging lives inside `URLSessionNetworkClient` in the Networking package.
+
+## Alternatives
+
+| Approach | Verdict |
+|---|---|
+| `print()` | Rejected: no levels, no filtering |
+| Third-party logger | Rejected: unnecessary dependency |
+| **OSLog + categories** | Chosen |
+
+## Trade-offs
+
+- **Pro:** Free, integrated with Instruments
+- **Pro:** Privacy annotations possible per log
+- **Con:** Verbose API compared to `print`
+- **Con:** Not all layers log equally yet
+
+## How Blueprint implements it
 
 ```swift
-extension Logger {
-    private static let subsystem = "dev.luizmello.blueprint"
-    static let cache = Logger(subsystem: subsystem, category: "cache")
-    static let persistence = Logger(subsystem: subsystem, category: "persistence")
-}
+Logger.cache.info("Cache miss")
 ```
 
-Filter Console by category `cache` when debugging cache issues — other subsystems stay silent.
-
-## One logger per concern
-
-| Logger | Used by |
-|---|---|
-| `Logger.cache` | POICacheService |
-| `Logger.persistence` | FavoritesRepository |
-| `Logger.location` | LocationService |
+Filter Console by subsystem/category when debugging cache without noise from location.
 
 ## Related code
 
 - `blueprint/Core/Logging/AppLogger.swift`
+- `blueprint/Data/Cache/POICacheService.swift`
+- `Packages/Networking/Sources/Networking/URLSessionNetworkClient.swift`
 
 ## Further reading
 
+- [Caching](/architecture/caching/)
 - [Performance](/architecture/performance/)

@@ -19,7 +19,7 @@ cd Blueprint
 cp Config.xcconfig.sample Config.xcconfig
 ```
 
-Edit `Config.xcconfig` and replace `your_api_key_here` with your Geoapify key. This file is gitignored — never commit it.
+Edit `Config.xcconfig` and replace `your_api_key_here` with your Geoapify key. This file is gitignored, never commit it.
 
 ## Build and run
 
@@ -33,7 +33,7 @@ Discover loads nearby POIs based on simulator location (defaults to São Paulo i
 
 ```
 Blueprint/
-├── blueprint/              App target — Discover
+├── blueprint/              App target, Discover
 ├── Packages/               Local Swift Packages
 ├── Documentation/          Source of truth (Markdown)
 ├── Website/                Saga static site generator
@@ -43,9 +43,10 @@ Blueprint/
 
 ## What to read first
 
-1. [Modularization](/architecture/modularization/) — why packages from day one
-2. [Navigation](/architecture/navigation/) — type-safe routing
-3. [Dependency Injection](/architecture/dependency-injection/) — wiring without frameworks
+1. [Architecture Overview](/architecture/overview/), layers, data flow, and key features
+2. [Modularization](/architecture/modularization/), why packages from day one
+3. [Navigation](/architecture/navigation/), type-safe routing
+4. [Dependency Injection](/architecture/dependency-injection/), wiring without frameworks
 
 ## Related
 

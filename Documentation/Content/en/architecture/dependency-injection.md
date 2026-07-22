@@ -1,51 +1,90 @@
 ---
 title: Dependency Injection
-summary: DIContainer, dependency bundles, and screen factories — no DI framework.
-order: 4
+summary: DIContainer wires dependency bundles and screen factories. No third-party DI framework.
+order: 5
 ---
-# Dependency Injection
+# Why Dependency Injection?
 
-## The problem
+Discover's object graph spans networking, three repositories, four use cases, location, SwiftData, and feature flags. Without DI, constructors become untraceable and tests cannot swap implementations.
 
-As dependencies grow, `init()` methods and singletons become untraceable. A missing dependency surfaces at runtime, not compile time.
+## What problem does this solve?
 
-## Why explicit DI without a framework
+Hidden singletons and service locators make dependencies implicit. A ViewModel can reach for `URLSession.shared` or a global `ModelContext` without declaring it in `init`.
 
-Blueprint's graph is known at compile time. Explicit wiring in `DIContainer` means jump-to-definition always works and there is no magic `@Inject`.
+Blueprint needs **explicit graphs** that compile and are easy to jump through in Xcode.
 
-## Alternatives considered
+## Why this solution?
+
+`DIContainer` (@MainActor, one instance in `AppRouterView`) builds:
+
+1. **Bundles** group dependencies by concern
+2. **Factories** create screen ViewModels + Views
+3. **Protocols** at every boundary for tests
+
+No Swinject, no property wrappers, no runtime resolution.
+
+## Alternatives
 
 | Approach | Verdict |
 |---|---|
-| Swinject / Factory | Powerful but opaque |
-| Service locator | Hidden dependencies |
-| **DIContainer + Factories** | ✅ Chosen |
+| Swinject / Factory | Rejected: opaque runtime graph |
+| Service locator | Rejected: hidden dependencies |
+| Manual init chains in Views | Rejected: does not scale |
+| **DIContainer + bundles + factories** | Chosen |
 
 ## Trade-offs
 
-- **Pro:** Fully traceable, no runtime resolution
-- **Pro:** Bundles keep container readable as graph grows
-- **Con:** Manual wiring when adding screens
+- **Pro:** Entire graph visible in one place
+- **Pro:** Bundles prevent 200-line container files
+- **Pro:** Factories encapsulate per-screen wiring
+- **Con:** New screen = new factory method
+- **Con:** `@MainActor` container matches UI lifecycle but tests must run on main actor
 
 ## How Blueprint implements it
 
-```
-DI/
-├── DIContainer.swift
-├── Core/           NetworkDependencies, POIDependencies, ...
-└── Factories/      HomeFactory, DetailFactory
-```
+**Bundles**
 
-Factories assemble ViewModels. Bundles group related dependencies per concern.
+| Bundle | Provides |
+|---|---|
+| `NetworkDependencies` | `URLSessionNetworkClient` |
+| `POIDependencies` | POI, place details, geocoding use cases |
+| `LocationDependencies` | `LocationService` |
+| `PersistenceDependencies` | `FavoritesUseCase`, `ModelContainer` |
+| `FeatureFlagDependencies` | `LocalFeatureFlagService` |
+
+**Factories**
+
+| Factory | Creates |
+|---|---|
+| `HomeFactory` | `HomeView` + `HomeViewModel` |
+| `DetailFactory` | `DetailView` + `DetailViewModel` |
+
+```mermaid
+flowchart TB
+  C[DIContainer]
+  C --> N[NetworkDependencies]
+  C --> P[POIDependencies]
+  C --> L[LocationDependencies]
+  C --> PE[PersistenceDependencies]
+  C --> F[FeatureFlagDependencies]
+  C --> HF[HomeFactory]
+  C --> DF[DetailFactory]
+```
 
 ## Related code
 
 - `blueprint/DI/DIContainer.swift`
-- `blueprint/DI/Core/`
-- `blueprint/DI/Factories/`
+- `blueprint/DI/Core/NetworkDependencies.swift`
+- `blueprint/DI/Core/POIDependencies.swift`
+- `blueprint/DI/Core/LocationDependencies.swift`
+- `blueprint/DI/Core/PersistenceDependencies.swift`
+- `blueprint/DI/Core/FeatureFlagDependencies.swift`
+- `blueprint/DI/Factories/HomeFactory.swift`
+- `blueprint/DI/Factories/DetailFactory.swift`
+- `blueprintTests/DIContainerTests.swift`
 
 ## Further reading
 
 - [ADR 0003: Dependency Injection](/decisions/0003-dependency-injection/)
-- [Use Cases](/concepts/use-cases/)
-- [Feature Flags](/concepts/feature-flags/)
+- [MVVM](/architecture/mvvm/)
+- [Testing](/architecture/testing/)

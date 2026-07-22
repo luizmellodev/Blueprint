@@ -5,7 +5,7 @@ order: 5
 ---
 # Documentation Site
 
-The website is **not** the documentation — it is a beautiful way to navigate Markdown files in `Documentation/`.
+The website is **not** the documentation, it is a beautiful way to navigate Markdown files in `Documentation/`.
 
 ## Requirements
 
@@ -25,7 +25,7 @@ cd Website && saga dev --port 3000
 
 Open [http://localhost:3000](http://localhost:3000).
 
-> Run saga from `Website/` or via `./scripts/saga`. Running from the repo root without the script fails — `Package.swift` lives inside `Website/`.
+> Run saga from `Website/` or via `./scripts/saga`. Running from the repo root without the script fails, `Package.swift` lives inside `Website/`.
 
 ## Build
 

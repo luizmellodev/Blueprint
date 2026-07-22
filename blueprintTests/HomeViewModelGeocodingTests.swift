@@ -12,12 +12,12 @@ import Testing
 struct HomeViewModelGeocodingTests {
 
     private func makeViewModel(
-        fetchNearbyPOIs: MockFetchNearbyPOIsUseCase = MockFetchNearbyPOIsUseCase(),
-        searchLocation: MockSearchLocationUseCase = MockSearchLocationUseCase()
+        fetchNearbyPOIs: MockFetchNearbyPOIsUseCase? = nil,
+        searchLocation: MockSearchLocationUseCase? = nil
     ) -> HomeViewModel {
         HomeViewModel(
-            fetchNearbyPOIs: fetchNearbyPOIs,
-            searchLocation: searchLocation,
+            fetchNearbyPOIs: fetchNearbyPOIs ?? MockFetchNearbyPOIsUseCase(),
+            searchLocation: searchLocation ?? MockSearchLocationUseCase(),
             locationService: MockLocationService()
         )
     }

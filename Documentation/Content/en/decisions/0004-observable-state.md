@@ -21,9 +21,9 @@ Minimum deployment is iOS 17. State holders include ViewModels and AppRouter.
 
 ## Alternatives
 
-1. **ObservableObject + Combine** — iOS 13+, verbose
-2. **@Observable** — iOS 17+, automatic tracking
-3. **Value-type state in View** — limited to simple local state
+1. **ObservableObject + Combine:** iOS 13+, verbose
+2. **@Observable:** iOS 17+, automatic tracking
+3. **Value-type state in View:** limited to simple local state
 
 ## Decision
 
@@ -41,6 +41,6 @@ All reference-type state holders use `@Observable`. No `ObservableObject` in the
 
 ## References
 
-- [Observation](/concepts/observation/)
+- [Observation](/architecture/observation/)
 - `blueprint/Presentation/Views/Home/HomeViewModel.swift`
 - `blueprint/Navigation/AppRouter.swift`

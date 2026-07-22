@@ -17,10 +17,10 @@ brew install loopwerk/tap/saga
 Run from the `Website/` folder (or use the helper script from the repo root):
 
 ```bash
-# option 1 — from repo root
+# option 1, from repo root
 ./scripts/saga dev --port 3000
 
-# option 2 — from Website/
+# option 2, from Website/
 cd Website
 saga dev --port 3000
 ```
@@ -65,7 +65,7 @@ Saga reads from `Documentation/Content/en/` and outputs to `Website/deploy/`.
 
 ## Deploy to Vercel
 
-Saga requires macOS to build. Vercel serves static files — the build runs in GitHub Actions, not on Vercel's servers.
+Saga requires macOS to build. Vercel serves static files, the build runs in GitHub Actions, not on Vercel's servers.
 
 ### One-time setup
 
@@ -77,7 +77,7 @@ Saga requires macOS to build. Vercel serves static files — the build runs in G
 
 ### Automatic deploy
 
-Push to `main` or `website` — GitHub Actions builds the site and deploys to Vercel.
+Push to `main` or `website`, GitHub Actions builds the site and deploys to Vercel.
 
 ### Manual deploy
 

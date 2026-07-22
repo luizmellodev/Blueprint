@@ -1,49 +1,81 @@
 ---
 title: Modularization
-summary: Local Swift Packages for compile-time boundaries and reusable modules.
+summary: Local Swift Packages enforce compile-time boundaries between DesignSystem, Networking, and the app.
 order: 1
 ---
-# Modularization
+# Why Modularization?
 
-## The problem
+Blueprint teaches architecture with **real boundaries**, not folder conventions. Local Swift Packages make illegal imports a compile error.
 
-Monolithic app targets grow until every file can import everything. Dependency direction becomes a convention enforced by code review — not by the compiler.
+## What problem does this solve?
 
-## Why Swift Packages
+In a single app target, any file can `import` anything. Domain types start referencing SwiftUI. DTOs appear in ViewModels. Code review becomes the only guardrail.
 
-Local packages provide **compile-time boundaries**. If `DesignSystem` cannot import `blueprint`, it cannot reference a ViewModel. The compiler enforces the rule.
+## Why this solution?
 
-## Alternatives considered
+Swift Package Manager modules in `Packages/`:
 
-| Approach | Pros | Cons |
+| Package | Exports | Cannot import |
 |---|---|---|
-| Single target | Simplest start | No boundaries, slow rebuilds |
-| Xcode frameworks | Familiar | Heavier, less SPM integration |
-| **Swift Packages** | SPM-native, portable, strict imports | Initial setup cost |
+| `DesignSystem` | Tokens, shimmer modifier | App target |
+| `Networking` | `NetworkClient`, `URLSessionNetworkClient` | App target |
+
+The **app target** owns features that cross-cut layers: Navigation (needs `POI`), DI (wires everything), Presentation screens.
+
+## Alternatives
+
+| Approach | Verdict |
+|---|---|
+| Single target | Rejected: no enforcement |
+| Xcode dynamic frameworks | Rejected: heavier than SPM for two modules |
+| **Local Swift Packages** | Chosen |
 
 ## Trade-offs
 
-- **Pro:** Boundaries are real, not documented-only
-- **Pro:** Packages reusable across targets (widgets, extensions)
-- **Con:** More targets to manage in Xcode
-- **Con:** Navigation and DI stay in app target (they reference all features)
+- **Pro:** Compiler enforces dependency direction
+- **Pro:** Packages reusable for widgets/extensions later
+- **Pro:** Faster incremental builds as packages grow
+- **Con:** More Xcode targets to manage
+- **Con:** Navigation and DI stay monolithic in app target by design
 
 ## How Blueprint implements it
 
 ```
 Packages/
-├── DesignSystem/     Tokens, typography, skeleton components
-└── Networking/       NetworkClient protocol + URLSessionNetworkClient
+├── DesignSystem/     DSSpacing, DSTypography, DSColor, DSRadius, SkeletonStyle
+└── Networking/       NetworkClient protocol, URLSessionNetworkClient, NetworkError
+
+App target (blueprint/)
+├── Domain/           No SwiftUI, SwiftData, or Geoapify imports
+├── Data/             Imports Domain + Networking
+├── Presentation/     Imports Domain + DesignSystem
+├── Navigation/       Imports Domain
+└── DI/               Imports all layers to assemble graph
 ```
 
-What stays in the app target: Navigation (references `POI`), DI (wires full graph), feature screens.
+```mermaid
+flowchart TB
+  PRES[Presentation]
+  DS[DesignSystem Package]
+  DATA[Data]
+  DOM[Domain]
+  NET[Networking Package]
+  PRES --> DOM
+  PRES --> DS
+  DATA --> DOM
+  DATA --> NET
+  DOM
+```
 
 ## Related code
 
 - `Packages/DesignSystem/`
 - `Packages/Networking/`
+- `blueprint/Domain/`
+- `blueprint/Data/`
 
 ## Further reading
 
 - [ADR 0001: Modularization](/decisions/0001-modularization/)
 - [Design System](/architecture/design-system/)
+- [Networking](/architecture/networking/)

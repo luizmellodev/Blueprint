@@ -2,6 +2,7 @@ import Foundation
 import Saga
 import SagaParsleyMarkdownReader
 import SagaSwimRenderer
+import SwiftTailwind
 
 struct DocMetadata: Metadata {
   let summary: String?
@@ -15,7 +16,26 @@ struct ADRMetadata: Metadata {
   let order: Int?
 }
 
+let tailwind = SwiftTailwind(version: "4.2.1")
+
+let tailwindInput = "../Documentation/Content/en/static/input.css"
+let tailwindOutput = "../Documentation/Content/en/static/output.css"
+
 try await Saga(input: "../Documentation/Content/en", output: "deploy")
+  .beforeRead { saga in
+    if let path = saga.buildReason.changedFile(),
+       path.extension != "css",
+       !path.components.contains("Sources")
+    {
+      return
+    }
+    try await tailwind.run(
+      input: tailwindInput,
+      output: tailwindOutput,
+      options: .minify
+    )
+  }
+  .ignoreChanges("output.css")
   .register(
     folder: "guides",
     metadata: DocMetadata.self,
@@ -61,4 +81,20 @@ try await Saga(input: "../Documentation/Content/en", output: "deploy")
     readers: [.parsleyMarkdownReader],
     writers: [.itemWriter(swim(renderHome))]
   )
+  .afterWrite { _ in
+    let fileManager = FileManager.default
+    try fileManager.createDirectory(atPath: "deploy/static", withIntermediateDirectories: true)
+    if fileManager.fileExists(atPath: tailwindOutput) {
+      let deployOutput = "deploy/static/output.css"
+      if fileManager.fileExists(atPath: deployOutput) {
+        try fileManager.removeItem(atPath: deployOutput)
+      }
+      try fileManager.copyItem(atPath: tailwindOutput, toPath: deployOutput)
+    }
+    let inputPath = (tailwindInput as NSString).lastPathComponent
+    let deployInput = "deploy/static/\(inputPath)"
+    if fileManager.fileExists(atPath: deployInput) {
+      try fileManager.removeItem(atPath: deployInput)
+    }
+  }
   .run()

@@ -1,37 +1,73 @@
 ---
 title: Use Cases
-summary: Stateless structs bridging ViewModels and Repositories.
-order: 3
+summary: Stateless structs between ViewModels and Repositories. One operation per type.
+order: 1
 ---
-# Use Cases
+# Why Use Cases?
 
-## The problem
+Use Cases are the **Domain entry point** for application operations. ViewModels call them; Use Cases call repository protocols.
 
-ViewModels accumulate business logic — pagination rules, mapping, cache policies — and become untestable god objects.
+## What problem does this solve?
 
-## Why Use Cases as structs
+Without Use Cases, ViewModels orchestrate repositories directly and duplicate rules (pagination, mapping policy) across screens.
 
-Each UseCase does one thing. Stateless struct = value semantics, `Sendable`, no hidden mutable state.
+Use Cases keep **one operation per type**, easy to name and test.
+
+## Why this solution?
+
+Blueprint Use Cases are `struct` types (mostly) with protocol pairs:
+
+| Use Case | Protocol | Calls |
+|---|---|---|
+| `FetchNearbyPOIsUseCase` | `FetchNearbyPOIsUseCaseProtocol` | `POIRepositoryProtocol` |
+| `FetchPlaceDetailsUseCase` | `FetchPlaceDetailsUseCaseProtocol` | `PlaceDetailsRepositoryProtocol` |
+| `SearchLocationUseCase` | `SearchLocationUseCaseProtocol` | `GeocodingRepositoryProtocol` |
+| `FavoritesUseCase` | `FavoritesUseCaseProtocol` | `FavoritesRepositoryProtocol` |
+
+`FetchNearbyPOIsUseCase` wraps results in `PagedResult<POI>` for pagination metadata.
+
+## Alternatives
+
+| Approach | Verdict |
+|---|---|
+| ViewModel → Repository | Rejected: skips Domain layer |
+| Interactor god class | Rejected: mixed operations |
+| **One struct per operation** | Chosen |
+
+## Trade-offs
+
+- **Pro:** Tests target small units (`FetchNearbyPOIsUseCaseTests`)
+- **Pro:** `Sendable` protocols where applicable
+- **Con:** Extra file pair per operation
+- **Con:** Thin pass-through when logic is minimal (acceptable for clarity)
+
+## How Blueprint implements it
 
 ```swift
 struct FetchNearbyPOIsUseCase: FetchNearbyPOIsUseCaseProtocol {
-    let repository: POIRepositoryProtocol
-
-    func execute(lat: Double, lon: Double, limit: Int, offset: Int) async throws -> PagedResult<POI> {
-        let pois = try await repository.fetchNearby(...)
-        return PagedResult(items: pois, hasMore: pois.count == limit)
-    }
+    private let repository: POIRepositoryProtocol
+    func execute(lat:lon:limit:offset:) async throws -> PagedResult<POI> { ... }
 }
 ```
 
-## Why struct, not class
+Wired in `POIDependencies` and `PersistenceDependencies`, injected into factories.
 
-No reference counting overhead. Cannot accidentally hold UI state. Thread-safe by default when Sendable.
+```mermaid
+flowchart LR
+  VM[ViewModel]
+  UC[UseCase struct]
+  RP[Repository protocol]
+  VM --> UC --> RP
+```
 
 ## Related code
 
 - `blueprint/Domain/UseCases/`
+- `blueprint/DI/Core/POIDependencies.swift`
+- `blueprintTests/FetchNearbyPOIsUseCaseTests.swift`
 
 ## Further reading
 
+- [MVVM](/architecture/mvvm/)
+- [Repository Pattern](/architecture/repository/)
 - [Dependency Injection](/architecture/dependency-injection/)

@@ -1,6 +1,6 @@
 ---
 title: CI/CD
-summary: GitHub Actions pipeline — build, test, and Config.xcconfig from secrets.
+summary: GitHub Actions pipeline, build, test, and Config.xcconfig from secrets.
 order: 4
 ---
 # CI/CD
@@ -17,7 +17,7 @@ Every pull request runs on `macos-latest`:
 
 ## Signing
 
-CI uses `CODE_SIGNING_ALLOWED=NO` — simulator builds only, no provisioning profiles required.
+CI uses `CODE_SIGNING_ALLOWED=NO`, simulator builds only, no provisioning profiles required.
 
 ## SwiftLint
 
