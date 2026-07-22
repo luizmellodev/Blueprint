@@ -38,25 +38,29 @@ You will see `POI` in type names (`POIRepository`, `POICardView`, `FetchNearbyPO
 3. **Search for another city** if you want POIs somewhere else
 4. **Tap a place** to open Detail with more info
 5. **Favorite a place** to save it on the device (SwiftData)
-6. **See a map preview** on Detail when the `mapView` feature flag is on
+6. **Open the Favorites tab** to see saved places, remove them, or open Detail again
+7. **See a map preview** on Detail when the `mapView` feature flag is on
 
-Discover is intentionally small. Two main screens (Home and Detail) plus a city search overlay. That keeps the architecture docs readable without product complexity getting in the way.
+Discover is intentionally small. Two tabs (Discover and Favorites), Detail, and a city search overlay. That keeps the architecture docs readable without product complexity getting in the way.
 
 ```mermaid
 flowchart LR
-  Open[Open app] --> Home[Home: nearby places]
+  Open[Open app] --> Home[Discover tab: nearby places]
   Home -->|tap card| Detail[Detail: place info]
   Home -->|search icon| Search[City search overlay]
   Search --> Home
-  Detail -->|heart| Fav[Saved to favorites]
-  Detail -->|back| Home
+  Home -->|heart tab| FavTab[Favorites tab]
+  FavTab -->|tap card| Detail
+  FavTab -->|swipe| Remove[Remove favorite]
+  Detail -->|heart| FavTab
 ```
 
 ## Screens
 
 | Screen | File | Purpose |
 |---|---|---|
-| **Home** | `HomeView` | Scrollable list of nearby POIs, search, pagination, skeleton loading |
+| **Discover (Home)** | `HomeView` | Scrollable list of nearby POIs, search, pagination, skeleton loading |
+| **Favorites** | `FavoritesView` | Saved POIs from SwiftData, swipe to remove, tap to open Detail |
 | **Detail** | `DetailView` | Name, category, address, hours, phone, website, optional map, favorite button |
 | **City search** | `LocationSearchView` | Type a city name, pick a result, reload POIs for that area |
 
@@ -95,7 +99,7 @@ Some UI is gated behind flags (see [Feature Flags](/architecture/feature-flags/)
 
 | Flag | Effect |
 |---|---|
-| `.favorites` | Heart button on Detail |
+| `.favorites` | Favorites tab, heart button on Detail |
 | `.mapView` | Map section on Detail |
 | `.categoryFilter` | Not wired yet (reserved for Home filters) |
 

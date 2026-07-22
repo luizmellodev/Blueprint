@@ -16,6 +16,7 @@ struct DIContainerTests {
         let container = DIContainer()
         _ = container.homeFactory
         _ = container.detailFactory
+        _ = container.favoritesFactory
     }
 
     @Test("Each container instance owns independent factories")
@@ -24,5 +25,6 @@ struct DIContainerTests {
         let second = DIContainer()
         #expect(first.homeFactory !== second.homeFactory)
         #expect(first.detailFactory !== second.detailFactory)
+        #expect(first.favoritesFactory !== second.favoritesFactory)
     }
 }

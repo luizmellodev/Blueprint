@@ -5,7 +5,7 @@ order: 6
 ---
 # Why Navigation?
 
-Discover has two primary destinations: **Home** and **Detail(POI)**. Navigation must be type-safe, testable, and owned outside individual views.
+Discover has three primary destinations: **Home**, **Favorites**, and **Detail(POI)**. Navigation must be type-safe, testable, and owned outside individual views.
 
 ## What problem does this solve?
 
@@ -18,7 +18,7 @@ Views that mutate `NavigationPath` directly are hard to unit test and tightly co
 | `AppRoute` | Hashable enum: `.home`, `.detail(poi:)` |
 | `AppRouter` | `@Observable` holder of `path: [AppRoute]` |
 | `RouterProtocol` | ViewModels call `push` / `pop` / `popToRoot` |
-| `AppRouterView` | Root `NavigationStack`, injects container + router |
+| `AppRouterView` | Root `TabView` + per-tab `NavigationStack`, injects container + routers |
 
 ViewModels depend on `any RouterProtocol`, not `AppRouter`.
 
@@ -29,7 +29,8 @@ ViewModels depend on `any RouterProtocol`, not `AppRouter`.
 | UIKit Coordinator | Rejected: heavy in SwiftUI-first app |
 | EnvironmentObject router | Rejected: implicit, harder to mock |
 | Untyped `[Hashable]` routes | Rejected: loses compile-time POI payload |
-| **NavigationStack + AppRoute + protocol** | Chosen |
+| Single stack with modal favorites | Rejected: no dedicated list to browse saved places |
+| **TabView + NavigationStack per tab + AppRoute** | Chosen |
 
 ## Trade-offs
 
@@ -38,29 +39,27 @@ ViewModels depend on `any RouterProtocol`, not `AppRouter`.
 - **Pro:** `@Observable` router, no Combine
 - **Con:** Lives in app target (references Domain types)
 - **Con:** Zoom transitions require extra `Namespace` wiring in factory
+- **Con:** Each tab owns its own `AppRouter` instance (independent back stacks)
 
 ## How Blueprint implements it
 
-`HomeViewModel` pushes `.detail(poi:)` through injected router.
+`HomeViewModel` and `FavoritesViewModel` push `.detail(poi:)` through injected router.
 
-`AppRouterView` hosts `NavigationStack(path: $router.path)` and uses factories for destination builders.
+`AppRouterView` hosts a `TabView`. Discover and Favorites each get their own `NavigationStack` and `AppRouter`, so back navigation stays scoped per tab. Factories build screen roots and Detail destinations.
 
-iOS 18 zoom transition: `HomeFactory` receives `Namespace.ID` for matched geometry between list and detail.
+iOS 18 zoom transition: `HomeFactory` receives `Namespace.ID` for matched geometry between list and detail on the Discover tab.
 
 ```mermaid
-flowchart LR
-  VM[HomeViewModel]
-  R[RouterProtocol]
-  AR[AppRouter path AppRoute]
-  NS[NavigationStack]
-  HF[HomeFactory]
-  DF[DetailFactory]
-
-  VM -->|push .detail poi| R
-  R --> AR
-  AR --> NS
-  NS -->|root| HF
-  NS -->|destination| DF
+flowchart TB
+  TAB[TabView]
+  TAB --> DISC[Discover tab]
+  TAB --> FAV[Favorites tab]
+  DISC --> NS1[NavigationStack + homeRouter]
+  FAV --> NS2[NavigationStack + favoritesRouter]
+  NS1 --> HF[HomeFactory]
+  NS2 --> FF[FavoritesFactory]
+  NS1 --> DF[DetailFactory]
+  NS2 --> DF
 ```
 
 ## Related code
@@ -69,6 +68,7 @@ flowchart LR
 - `blueprint/Navigation/AppRouter.swift`
 - `blueprint/Navigation/RouterProtocol.swift`
 - `blueprint/Navigation/AppRouterView.swift`
+- `blueprint/Presentation/Views/Favorites/FavoritesView.swift`
 - `blueprint/Presentation/Views/Components/ZoomTransitionModifier.swift`
 
 ## Further reading

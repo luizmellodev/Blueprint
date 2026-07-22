@@ -47,6 +47,7 @@ ViewModels depend on **protocols** (`FetchNearbyPOIsUseCaseProtocol`, `RouterPro
 | Screen | View | ViewModel | UIState |
 |---|---|---|---|
 | Home | `HomeView` | `HomeViewModel` | `HomeUIState` |
+| Favorites | `FavoritesView` | `FavoritesViewModel` | `FavoritesUIState` |
 | Detail | `DetailView` | `DetailViewModel` | `DetailUIState` |
 
 **HomeViewModel responsibilities** (actual code):
@@ -85,10 +86,14 @@ flowchart LR
 - `blueprint/Presentation/Views/Home/HomeView.swift`
 - `blueprint/Presentation/Views/Home/HomeViewModel.swift`
 - `blueprint/Presentation/Views/Home/HomeUIState.swift`
+- `blueprint/Presentation/Views/Favorites/FavoritesView.swift`
+- `blueprint/Presentation/Views/Favorites/FavoritesViewModel.swift`
+- `blueprint/Presentation/Views/Favorites/FavoritesUIState.swift`
 - `blueprint/Presentation/Views/Detail/DetailView.swift`
 - `blueprint/Presentation/Views/Detail/DetailViewModel.swift`
 - `blueprint/Presentation/Views/Detail/DetailUIState.swift`
 - `blueprint/DI/Factories/HomeFactory.swift`
+- `blueprint/DI/Factories/FavoritesFactory.swift`
 - `blueprint/DI/Factories/DetailFactory.swift`
 
 ## Further reading

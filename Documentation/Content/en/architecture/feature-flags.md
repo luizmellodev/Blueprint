@@ -71,19 +71,20 @@ private let flags: [FeatureFlag: Bool] = [
 
 | Flag | Default | Effect when `true` |
 |---|---|---|
-| `.favorites` | `true` | Favorite button on Detail screen |
+| `.favorites` | `true` | Favorites tab + heart button on Detail |
 | `.mapView` | `true` | `POIMapView` section on Detail |
 | `.categoryFilter` | `false` | **Not wired** (enum + DI only) |
 
 **Try the map:** map is on by default. Set `.mapView: false` and rebuild to hide it.
 
-**Hide favorites:** set `.favorites: false`, rebuild. The heart button disappears.
+**Hide favorites:** set `.favorites: false`, rebuild. The Favorites tab and heart button disappear.
 
 ## How flags reach the UI
 
 ```
 FeatureFlagDependencies
   └── LocalFeatureFlagService
+        ├── AppRouterView (shows Favorites tab when .favorites)
         └── DetailFactory
               └── DetailViewModel (reads .favorites, .mapView at init)
                     └── DetailView (showFavoriteButton, showMapView)
@@ -94,11 +95,13 @@ FeatureFlagDependencies
 ```mermaid
 flowchart LR
   SVC[LocalFeatureFlagService]
+  ARV[AppRouterView]
   VM[DetailViewModel]
   V[DetailView]
+  SVC --> ARV
   SVC --> VM
-  VM -->|showMapView| V
-  VM -->|showFavoriteButton| V
+  VM -->|showFavoriteButton showMapView| V
+  ARV -->|Favorites tab| FAV[FavoritesView]
 ```
 
 ## Related code
@@ -107,7 +110,8 @@ flowchart LR
 - `blueprint/Data/FeatureFlags/FeatureFlagService.swift`
 - `blueprint/DI/Core/FeatureFlagDependencies.swift`
 - `blueprint/Presentation/Views/Detail/DetailViewModel.swift`
-- `blueprint/Presentation/Views/Detail/DetailView.swift`
+- `blueprint/Presentation/Views/Favorites/FavoritesView.swift`
+- `blueprint/Navigation/AppRouterView.swift`
 
 ## Further reading
 

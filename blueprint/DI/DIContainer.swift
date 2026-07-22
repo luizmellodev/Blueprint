@@ -13,6 +13,8 @@ import SwiftUI
 final class DIContainer {
     let homeFactory: HomeFactory
     let detailFactory: DetailFactory
+    let favoritesFactory: FavoritesFactory
+    let featureFlags: FeatureFlagDependencies
 
     init() {
         let network = NetworkDependencies()
@@ -20,10 +22,12 @@ final class DIContainer {
         let location = LocationDependencies()
         let persistence = PersistenceDependencies()
         let featureFlags = FeatureFlagDependencies()
+        self.featureFlags = featureFlags
         self.homeFactory = HomeFactory(
             poi: poi, location: location,
             persistence: persistence, featureFlags: featureFlags
         )
         self.detailFactory = DetailFactory(persistence: persistence, featureFlags: featureFlags, poi: poi)
+        self.favoritesFactory = FavoritesFactory(persistence: persistence)
     }
 }

@@ -75,6 +75,7 @@ flowchart LR
 **Views**
 
 - `HomeView`: POI list, search, pagination, skeleton loading
+- `FavoritesView`: saved POIs, swipe to remove, navigation to Detail
 - `DetailView`: place details, favorites, optional map
 - `LocationSearchView`: city search overlay
 
@@ -97,6 +98,7 @@ flowchart LR
 **ViewModels**
 
 - `HomeViewModel`
+- `FavoritesViewModel`
 - `DetailViewModel`
 
 Both are `@MainActor` and `@Observable`. ViewModels call UseCases only, never Repositories directly.
@@ -193,6 +195,8 @@ If permission is denied, the simulator defaults to São Paulo. Users can also se
 
 `FavoritePOI` is a `@Model` in the Data layer. `FavoritesRepository` maps between `FavoritePOI` and Domain `POI`. Domain never imports SwiftData.
 
+The **Favorites tab** lists saved places via `FavoritesUseCase.fetchAll()`. Swipe to remove reuses the same `toggle` operation as Detail. Tapping a row opens Detail through the same `AppRoute.detail(poi:)` used on Home.
+
 ### 5) Feature flags
 
 `FeatureFlag` enum with typed cases (`.favorites`, `.mapView`, `.categoryFilter`). `FeatureFlagServiceProtocol` allows swapping local defaults for Remote Config later without changing Views.
@@ -280,6 +284,7 @@ sequenceDiagram
 | Factory | Creates |
 |---|---|
 | `HomeFactory` | `HomeView` + `HomeViewModel` |
+| `FavoritesFactory` | `FavoritesView` + `FavoritesViewModel` |
 | `DetailFactory` | `DetailView` + `DetailViewModel` |
 
 No third-party DI framework. Wiring is explicit and traceable.

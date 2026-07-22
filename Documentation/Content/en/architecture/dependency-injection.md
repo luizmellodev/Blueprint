@@ -57,6 +57,7 @@ No Swinject, no property wrappers, no runtime resolution.
 | Factory | Creates |
 |---|---|
 | `HomeFactory` | `HomeView` + `HomeViewModel` |
+| `FavoritesFactory` | `FavoritesView` + `FavoritesViewModel` |
 | `DetailFactory` | `DetailView` + `DetailViewModel` |
 
 ```mermaid
@@ -65,6 +66,7 @@ flowchart TB
   C[DIContainer]
   ARV --> C
   C --> HF[HomeFactory]
+  C --> FF[FavoritesFactory]
   C --> DF[DetailFactory]
   C --> N[NetworkDependencies]
   C --> P[POIDependencies]
@@ -72,11 +74,13 @@ flowchart TB
   C --> PE[PersistenceDependencies]
   C --> F[FeatureFlagDependencies]
   HF --> HV[HomeView + HomeViewModel]
+  FF --> FV[FavoritesView + FavoritesViewModel]
   DF --> DV[DetailView + DetailViewModel]
   P --> HF
   P --> DF
   L --> HF
   PE --> DF
+  PE --> FF
   F --> DF
 ```
 
@@ -89,6 +93,7 @@ flowchart TB
 - `blueprint/DI/Core/PersistenceDependencies.swift`
 - `blueprint/DI/Core/FeatureFlagDependencies.swift`
 - `blueprint/DI/Factories/HomeFactory.swift`
+- `blueprint/DI/Factories/FavoritesFactory.swift`
 - `blueprint/DI/Factories/DetailFactory.swift`
 - `blueprintTests/DIContainerTests.swift`
 
