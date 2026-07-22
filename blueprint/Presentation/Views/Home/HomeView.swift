@@ -14,6 +14,7 @@ import DesignSystem
 struct HomeView: View {
     @State var viewModel: HomeViewModel
     let router: any RouterProtocol
+    let namespace: Namespace.ID
 
     var body: some View {
         Group {
@@ -42,6 +43,7 @@ struct HomeView: View {
                                 POICardView(poi: poi)
                             }
                             .buttonStyle(.plain)
+                            .zoomSource(id: poi.id, namespace: namespace)
                             .accessibilityElement(children: .combine)
                             .accessibilityLabel(accessibilityLabel(for: poi))
                             .accessibilityHint("Double tap to see details")

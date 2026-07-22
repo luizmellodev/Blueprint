@@ -5,8 +5,8 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-// TODO: Explicar accessibilityValue no botão de favorito (estado atual lido pelo VoiceOver)
 // TODO: Explicar porque não usamos tamanhos fixos de fonte (Dynamic Type)
+// TODO: Explicar o padrão de placeholder inline para dados async (evita layout shift vs animação de entrada)
 
 import SwiftUI
 import DesignSystem
@@ -27,6 +27,19 @@ struct DetailView: View {
         }
     }
 
+    private var categoryIcon: String {
+        guard case .success(let poi) = viewModel.state,
+              let category = poi.categories.first else { return "mappin" }
+        switch category {
+        case .tourism:       return "photo.on.rectangle"
+        case .catering:      return "fork.knife"
+        case .entertainment: return "music.note"
+        case .leisure:       return "figure.walk"
+        case .accommodation: return "bed.double"
+        default:             return "mappin"
+        }
+    }
+
     var body: some View {
         Group {
             switch viewModel.state {
@@ -36,16 +49,12 @@ struct DetailView: View {
 
             case .success(let poi):
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(spacing: DSSpacing.md) {
                         headerSection(poi)
-                        infoSection(poi)
-                        if let details = viewModel.details {
-                            detailsSection(details)
-                                .transition(.opacity.combined(with: .move(edge: .bottom)))
-                        }
+                        POIMapView(poi: poi)
+                        infoCard(poi)
                     }
                     .padding(.bottom, DSSpacing.xl)
-                    .animation(.easeOut(duration: 0.3), value: viewModel.details != nil)
                 }
                 .task {
                     await viewModel.loadDetails()
@@ -59,7 +68,6 @@ struct DetailView: View {
                     Text("Something went wrong.")
                         .font(DSTypography.headline)
                         .foregroundStyle(.secondary)
-                        .accessibilityLabel("Failed to load place details.")
                 }
             }
         }
@@ -68,113 +76,127 @@ struct DetailView: View {
             return "Detail"
         }())
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if viewModel.showFavoriteButton {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.toggleFavorite()
-                    } label: {
-                        Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
-                            .symbolEffect(.bounce, value: viewModel.isFavorite)
-                    }
-                    .accessibilityLabel(viewModel.isFavorite ? "Remove from favorites" : "Add to favorites")
-                    .accessibilityValue(viewModel.isFavorite ? "Saved" : "Not saved")
-                }
-            }
-        }
     }
 
     @ViewBuilder
     private func headerSection(_ poi: POI) -> some View {
-        VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            HStack {
+        VStack(spacing: DSSpacing.md) {
+            ZStack {
+                Circle()
+                    .fill(categoryColor.opacity(0.15))
+                    .frame(width: 80, height: 80)
+                Image(systemName: categoryIcon)
+                    .font(.system(size: 32))
+                    .foregroundStyle(categoryColor)
+            }
+
+            VStack(spacing: DSSpacing.xs) {
                 Text(poi.name)
                     .font(DSTypography.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(.primary)
-                Spacer()
+                    .multilineTextAlignment(.center)
+
+                if let category = poi.categories.first {
+                    Text(category.rawValue.capitalized)
+                        .font(DSTypography.caption)
+                        .foregroundStyle(categoryColor)
+                        .padding(.horizontal, DSSpacing.sm)
+                        .padding(.vertical, DSSpacing.xxs)
+                        .background(categoryColor.opacity(0.12), in: Capsule())
+                }
+
+                if let city = poi.city {
+                    Text(city)
+                        .font(DSTypography.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
 
-            if let category = poi.categories.first {
-                Text(category.rawValue.capitalized)
-                    .font(DSTypography.caption)
-                    .foregroundStyle(categoryColor)
-                    .padding(.horizontal, DSSpacing.sm)
-                    .padding(.vertical, DSSpacing.xxs)
-                    .background(categoryColor.opacity(0.12), in: Capsule())
+            if viewModel.showFavoriteButton {
+                AnimatedFavoriteButton(isLiked: viewModel.isFavorite) {
+                    viewModel.toggleFavorite()
+                }
             }
         }
-        .padding(DSSpacing.lg)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(categoryColor.opacity(0.07))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, DSSpacing.xl)
+        .padding(.horizontal, DSSpacing.lg)
+        .background(categoryColor.opacity(0.06))
     }
 
     @ViewBuilder
-    private func infoSection(_ poi: POI) -> some View {
+    private func infoCard(_ poi: POI) -> some View {
+        let details = viewModel.details
+        let isLoading = details == nil
+
         VStack(spacing: 0) {
-            if let address = poi.address {
-                DetailRowView(icon: "mappin.circle.fill", iconColor: .red, title: "Location", value: address)
+            let address = poi.address ?? details?.addressLine1
+            if let address {
+                DetailRowView(icon: "mappin.circle.fill", iconColor: .red, title: "Address", value: address)
                 Divider().padding(.leading, 56)
             }
+
             if let hours = poi.openingHours {
                 DetailRowView(icon: "clock.fill", iconColor: .orange, title: "Opening Hours", value: hours)
                 Divider().padding(.leading, 56)
             }
+
             if let phone = poi.phone {
                 DetailRowView(icon: "phone.fill", iconColor: .green, title: "Phone", value: phone)
                     .accessibilityLabel("Phone: \(phone)")
                 Divider().padding(.leading, 56)
             }
+
             if let website = poi.website {
                 Link(destination: website) {
                     DetailRowView(icon: "safari.fill", iconColor: .blue, title: "Website", value: website.host() ?? website.absoluteString, isLink: true)
                 }
                 .foregroundStyle(.primary)
+                Divider().padding(.leading, 56)
             }
-        }
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: DSRadius.lg))
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
-        .padding(.horizontal, DSSpacing.md)
-        .padding(.top, DSSpacing.md)
-    }
 
-    @ViewBuilder
-    private func detailsSection(_ details: PlaceDetails) -> some View {
-        VStack(spacing: 0) {
-            if let wheelchair = details.isWheelchairAccessible {
-                DetailRowView(
-                    icon: wheelchair ? "figure.roll" : "figure.roll.runningpace",
-                    iconColor: wheelchair ? .green : .secondary,
-                    title: "Accessibility",
-                    value: wheelchair ? "Wheelchair accessible" : "Not wheelchair accessible"
-                )
+            if isLoading {
+                DetailRowPlaceholder()
                 Divider().padding(.leading, 56)
-            }
-            if let fee = details.fee {
-                DetailRowView(
-                    icon: fee ? "creditcard.fill" : "gift.fill",
-                    iconColor: fee ? .orange : .green,
-                    title: "Admission",
-                    value: fee ? "Paid admission" : "Free admission"
-                )
-                Divider().padding(.leading, 56)
-            }
-            if let timezone = details.timezone {
-                DetailRowView(icon: "clock.badge.fill", iconColor: .purple, title: "Timezone", value: timezone)
-                Divider().padding(.leading, 56)
-            }
-            if let wikipedia = details.wikipediaURL {
-                Link(destination: wikipedia) {
-                    DetailRowView(icon: "book.fill", iconColor: .indigo, title: "Wikipedia", value: "Open article", isLink: true)
+                DetailRowPlaceholder()
+            } else {
+                if let wheelchair = details?.isWheelchairAccessible {
+                    DetailRowView(
+                        icon: wheelchair ? "figure.roll" : "figure.roll.runningpace",
+                        iconColor: wheelchair ? .green : .secondary,
+                        title: "Accessibility",
+                        value: wheelchair ? "Wheelchair accessible" : "Not wheelchair accessible"
+                    )
+                    Divider().padding(.leading, 56)
                 }
-                .foregroundStyle(.primary)
+
+                if let fee = details?.fee {
+                    DetailRowView(
+                        icon: fee ? "creditcard.fill" : "gift.fill",
+                        iconColor: fee ? .orange : .green,
+                        title: "Admission",
+                        value: fee ? "Paid admission" : "Free admission"
+                    )
+                    Divider().padding(.leading, 56)
+                }
+
+                if let timezone = details?.timezone {
+                    DetailRowView(icon: "clock.badge.fill", iconColor: .purple, title: "Timezone", value: timezone)
+                    Divider().padding(.leading, 56)
+                }
+
+                if let wikipedia = details?.wikipediaURL {
+                    Link(destination: wikipedia) {
+                        DetailRowView(icon: "book.fill", iconColor: .indigo, title: "Wikipedia", value: "Open article", isLink: true)
+                    }
+                    .foregroundStyle(.primary)
+                }
             }
         }
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: DSRadius.lg))
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
         .padding(.horizontal, DSSpacing.md)
-        .padding(.top, DSSpacing.sm)
+        .animation(.easeOut(duration: 0.2), value: isLoading)
     }
 }
