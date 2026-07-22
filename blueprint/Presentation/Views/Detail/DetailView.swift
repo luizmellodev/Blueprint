@@ -9,6 +9,7 @@
 // TODO: Explicar porque não usamos tamanhos fixos de fonte (Dynamic Type)
 
 import SwiftUI
+import DesignSystem
 
 struct DetailView: View {
     @State var viewModel: DetailViewModel
@@ -23,7 +24,7 @@ struct DetailView: View {
                 List {
                     Section {
                         Text(poi.name)
-                            .font(.title2)
+                            .font(DSTypography.title2)
                             .fontWeight(.semibold)
                     }
 

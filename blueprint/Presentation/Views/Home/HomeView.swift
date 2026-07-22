@@ -8,6 +8,7 @@
 // TODO: Explicar as decisões de acessibilidade: accessibilityElement, labels compostos, ProgressView label
 
 import SwiftUI
+import DesignSystem
 
 struct HomeView: View {
     @State var viewModel: HomeViewModel
@@ -26,13 +27,13 @@ struct HomeView: View {
                     Button {
                         router.push(.detail(poi: poi))
                     } label: {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: DSSpacing.xxs) {
                             Text(poi.name)
-                                .font(.headline)
+                                .font(DSTypography.headline)
                                 .foregroundStyle(.primary)
                             if let city = poi.city {
                                 Text(city)
-                                    .font(.subheadline)
+                                    .font(DSTypography.subheadline)
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -45,7 +46,7 @@ struct HomeView: View {
                     await viewModel.refresh()
                 }
             case .failure:
-                VStack(spacing: 16) {
+                VStack(spacing: DSSpacing.md) {
                     Text("Something went wrong.")
                         .foregroundStyle(.secondary)
                         .accessibilityLabel("Failed to load places.")
