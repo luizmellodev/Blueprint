@@ -1,0 +1,38 @@
+included:
+  - blueprint
+  - Packages
+
+excluded:
+  - blueprint.xcodeproj
+  - blueprintTests
+  - blueprintUITests
+
+disabled_rules:
+  - trailing_whitespace
+
+opt_in_rules:
+  - empty_count
+  - explicit_init
+  - first_where
+  - force_unwrapping
+  - private_outlet
+  - sorted_imports
+
+line_length:
+  warning: 120
+  error: 150
+
+type_body_length:
+  warning: 200
+  error: 300
+
+file_length:
+  warning: 200
+  error: 400
+
+function_body_length:
+  warning: 40
+  error: 60
+
+identifier_name:
+  min_length: 2
