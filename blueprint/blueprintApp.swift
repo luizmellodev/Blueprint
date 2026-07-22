@@ -11,7 +11,7 @@ import SwiftUI
 struct blueprintApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRouterView()
         }
     }
 }
