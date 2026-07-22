@@ -21,12 +21,12 @@ final class HomeFactory {
         self.featureFlags = featureFlags
     }
 
-    func makeView(router: any RouterProtocol) -> some View {
+    func makeView(router: any RouterProtocol, namespace: Namespace.ID) -> some View {
         let viewModel = HomeViewModel(
             fetchNearbyPOIs: poi.fetchNearbyPOIs,
             searchLocation: poi.searchLocation,
             locationService: location.locationService
         )
-        return HomeView(viewModel: viewModel, router: router)
+        return HomeView(viewModel: viewModel, router: router, namespace: namespace)
     }
 }
