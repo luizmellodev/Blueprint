@@ -51,17 +51,20 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: website
-          path: Website/deploy
+          path: site
 
       - name: Verify deploy output
-        run: test -f Website/deploy/index.html
+        run: test -f site/index.html
+
+      - name: Copy Vercel config
+        run: cp Website/vercel.json site/vercel.json
 
       - name: Install Vercel CLI
         run: npm install -g vercel@39
 
       - name: Deploy to Vercel
-        working-directory: Website
-        run: vercel deploy deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: site
+        run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
