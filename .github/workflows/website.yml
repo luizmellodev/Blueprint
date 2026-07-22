@@ -1,0 +1,58 @@
+name: Website
+
+on:
+  push:
+    branches: [main, website]
+    paths:
+      - 'Website/**'
+      - 'Documentation/**'
+      - '.github/workflows/website.yml'
+  pull_request:
+    paths:
+      - 'Website/**'
+      - 'Documentation/**'
+      - '.github/workflows/website.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Saga
+        run: brew install loopwerk/tap/saga
+
+      - name: Build site
+        run: cd Website && saga build
+
+      - name: Verify output
+        run: test -f Website/deploy/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: Website/deploy
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/website')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: website
+          path: deploy
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@39
+
+      - name: Deploy to Vercel
+        run: vercel deploy deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

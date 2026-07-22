@@ -120,7 +120,16 @@ xcodebuild test -project blueprint.xcodeproj -scheme blueprint \
 
 ## Documentation
 
-Each chapter of the development process is documented in [`Documentation/`](Documentation/). The TODOs in the source code (`// TODO: Explain why X`) are the source material — they become prose after each chapter closes.
+Each chapter lives in [`Documentation/chapters/`](Documentation/chapters/). The static site is built with [Saga](https://getsaga.dev/) from the [`Website/`](Website/) folder.
+
+```bash
+brew install loopwerk/tap/saga
+./scripts/saga dev --port 3000
+```
+
+The TODOs in the source code (`// TODO: Explain why X`) are the source material — they become prose after each chapter closes.
+
+Deploy instructions: [`Website/README.md`](Website/README.md).
 
 ---
 
