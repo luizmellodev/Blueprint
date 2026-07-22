@@ -16,6 +16,7 @@ final class HomeFactory {
     }
 
     func makeView() -> some View {
-        ContentView()
+        let viewModel = HomeViewModel(fetchNearbyPOIs: poi.fetchNearbyPOIs)
+        return HomeView(viewModel: viewModel)
     }
 }
