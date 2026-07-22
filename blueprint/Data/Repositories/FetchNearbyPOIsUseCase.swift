@@ -13,8 +13,8 @@ import Foundation
 struct FetchNearbyPOIsUseCase: FetchNearbyPOIsUseCaseProtocol {
     let repository: POIRepositoryProtocol
 
-    func execute(lat: Double, lon: Double, limit: Int) async throws -> PagedResult<POI> {
-        let pois = try await repository.fetchNearby(lat: lat, lon: lon, limit: limit)
+    func execute(lat: Double, lon: Double, limit: Int, offset: Int = 0) async throws -> PagedResult<POI> {
+        let pois = try await repository.fetchNearby(lat: lat, lon: lon, limit: limit, offset: offset)
         return PagedResult(items: pois, hasMore: pois.count == limit)
     }
 }

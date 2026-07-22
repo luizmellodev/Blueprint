@@ -41,9 +41,19 @@ struct HomeView: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel(accessibilityLabel(for: poi))
                     .accessibilityHint("Double tap to see details")
+                    .onAppear {
+                        if poi.id == viewModel.visiblePOIs.last?.id {
+                            Task { await viewModel.loadMore() }
+                        }
+                    }
                 }
                 .refreshable {
                     await viewModel.refresh()
+                }
+                if viewModel.isLoadingMore {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding()
                 }
             case .failure:
                 VStack(spacing: DSSpacing.md) {

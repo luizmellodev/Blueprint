@@ -8,5 +8,5 @@
 import Foundation
 
 protocol POIRepositoryProtocol: Sendable {
-    func fetchNearby(lat: Double, lon: Double, limit: Int) async throws -> [POI]
+    func fetchNearby(lat: Double, lon: Double, limit: Int, offset: Int) async throws -> [POI]
 }

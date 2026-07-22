@@ -8,6 +8,7 @@
 // TODO: Explicar porque usamos @Observable ao invés de ObservableObject
 // TODO: Explicar o guard case .idle para evitar reload ao voltar da navegação
 // TODO: Explicar o padrão de debounce com Task.sleep + cancel (sem dependência externa)
+// TODO: Explicar a estratégia de pagination com offset
 
 import Foundation
 import CoreLocation
@@ -16,12 +17,17 @@ import CoreLocation
 @Observable
 final class HomeViewModel {
     private(set) var state: HomeUIState = .idle
+    private(set) var isLoadingMore = false
+    private(set) var hasMore = false
     var searchQuery: String = ""
 
     private let fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol
     private let locationService: any LocationServiceProtocol
     private var allPOIs: [POI] = []
+    private var currentOffset = 0
+    private let pageSize = 20
     private var searchTask: Task<Void, Never>?
+    private var lastCoordinates: (latitude: Double, longitude: Double)?
 
     var visiblePOIs: [POI] {
         guard !searchQuery.isEmpty else { return allPOIs }
@@ -38,11 +44,20 @@ final class HomeViewModel {
 
     func load() async {
         guard case .idle = state else { return }
-        await fetch()
+        await fetch(offset: 0)
     }
 
     func refresh() async {
-        await fetch()
+        currentOffset = 0
+        allPOIs = []
+        await fetch(offset: 0)
+    }
+
+    func loadMore() async {
+        guard hasMore, !isLoadingMore else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        await fetch(offset: currentOffset)
     }
 
     func retry() {
@@ -55,31 +70,33 @@ final class HomeViewModel {
         searchTask = Task {
             try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else { return }
-            if visiblePOIs.isEmpty && !searchQuery.isEmpty {
-                state = .success([])
-            } else {
-                state = .success(visiblePOIs)
-            }
+            state = .success(visiblePOIs)
         }
     }
 
-    private func fetch() async {
-        state = .loading
+    private func fetch(offset: Int) async {
+        if offset == 0 { state = .loading }
+
         do {
             let coordinates = try await resolveCoordinates()
+            lastCoordinates = coordinates
             let result = try await fetchNearbyPOIs.execute(
                 lat: coordinates.latitude,
                 lon: coordinates.longitude,
-                limit: 20
+                limit: pageSize,
+                offset: offset
             )
-            allPOIs = result.items
-            state = .success(result.items)
+            allPOIs = offset == 0 ? result.items : allPOIs + result.items
+            currentOffset = allPOIs.count
+            hasMore = result.hasMore
+            state = .success(allPOIs)
         } catch {
             state = .failure(.networking)
         }
     }
 
     private func resolveCoordinates() async throws -> (latitude: Double, longitude: Double) {
+        if let last = lastCoordinates { return last }
         let status = await locationService.requestAuthorization()
         guard status == .authorized else {
             return (latitude: -23.5505, longitude: -46.6333)

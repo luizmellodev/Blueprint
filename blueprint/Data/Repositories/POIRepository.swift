@@ -17,8 +17,8 @@ final class POIRepository: POIRepositoryProtocol {
         self.apiKey = apiKey
     }
 
-    func fetchNearby(lat: Double, lon: Double, limit: Int) async throws -> [POI] {
-        if let cached = cache.load() {
+    func fetchNearby(lat: Double, lon: Double, limit: Int, offset: Int) async throws -> [POI] {
+        if offset == 0, let cached = cache.load() {
             return cached
         }
 
@@ -30,6 +30,7 @@ final class POIRepository: POIRepositoryProtocol {
             .init(name: "categories", value: "tourism,catering,entertainment,leisure"),
             .init(name: "filter", value: "circle:\(lon),\(lat),5000"),
             .init(name: "limit", value: "\(limit)"),
+            .init(name: "offset", value: "\(offset)"),
             .init(name: "apiKey", value: apiKey)
         ]
 

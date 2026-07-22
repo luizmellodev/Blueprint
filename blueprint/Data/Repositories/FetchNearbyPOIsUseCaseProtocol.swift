@@ -8,5 +8,5 @@
 import Foundation
 
 protocol FetchNearbyPOIsUseCaseProtocol: Sendable {
-    func execute(lat: Double, lon: Double, limit: Int) async throws -> PagedResult<POI>
+    func execute(lat: Double, lon: Double, limit: Int, offset: Int) async throws -> PagedResult<POI>
 }
