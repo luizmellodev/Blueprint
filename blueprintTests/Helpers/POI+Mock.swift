@@ -11,7 +11,7 @@ extension POI {
     static func mock(
         id: String = "mock-id",
         name: String = "Mock POI",
-        categories: [String] = ["tourism"],
+        categories: [PlaceCategory] = [.tourism],
         latitude: Double = -23.5505,
         longitude: Double = -46.6333
     ) -> POI {

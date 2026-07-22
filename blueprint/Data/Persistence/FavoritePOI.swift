@@ -23,7 +23,7 @@ final class FavoritePOI {
     init(from poi: POI) {
         self.id = poi.id
         self.name = poi.name
-        self.categories = poi.categories
+        self.categories = poi.categories.map(\.rawValue)
         self.latitude = poi.latitude
         self.longitude = poi.longitude
         self.address = poi.address
@@ -35,7 +35,7 @@ final class FavoritePOI {
         POI(
             id: id,
             name: name,
-            categories: categories,
+            categories: categories.map(PlaceCategory.init),
             latitude: latitude,
             longitude: longitude,
             address: address,

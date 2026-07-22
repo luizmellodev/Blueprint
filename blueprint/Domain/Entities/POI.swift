@@ -10,7 +10,7 @@ import Foundation
 struct POI: Hashable, Sendable, Codable {
     let id: String
     let name: String
-    let categories: [String]
+    let categories: [PlaceCategory]
     let latitude: Double
     let longitude: Double
     let address: String?
@@ -26,7 +26,7 @@ extension POI {
         POI(
             id: "preview-1",
             name: "Museu do Ipiranga",
-            categories: ["tourism.museum"],
+            categories: [.tourism],
             latitude: -23.5856,
             longitude: -46.6056,
             address: "Parque da Independência",
