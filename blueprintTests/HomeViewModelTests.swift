@@ -12,8 +12,7 @@ import Testing
 struct HomeViewModelTests {
 
     @Test func startsIdle() {
-        let useCase = MockFetchNearbyPOIsUseCase()
-        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase)
+        let viewModel = HomeViewModel(fetchNearbyPOIs: MockFetchNearbyPOIsUseCase(), locationService: MockLocationService())
         #expect(viewModel.state == .idle)
     }
 
@@ -22,7 +21,7 @@ struct HomeViewModelTests {
         let useCase = MockFetchNearbyPOIsUseCase()
         useCase.result = .success(PagedResult(items: [poi], hasMore: false))
 
-        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase)
+        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase, locationService: MockLocationService())
         await viewModel.load()
 
         #expect(viewModel.state == .success([poi]))
@@ -32,7 +31,7 @@ struct HomeViewModelTests {
         let useCase = MockFetchNearbyPOIsUseCase()
         useCase.result = .failure(AppError.networking)
 
-        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase)
+        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase, locationService: MockLocationService())
         await viewModel.load()
 
         #expect(viewModel.state == .failure(.networking))
@@ -42,9 +41,9 @@ struct HomeViewModelTests {
         let useCase = MockFetchNearbyPOIsUseCase()
         useCase.result = .success(PagedResult(items: [.mock()], hasMore: false))
 
-        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase)
+        let viewModel = HomeViewModel(fetchNearbyPOIs: useCase, locationService: MockLocationService())
         await viewModel.load()
-        await viewModel.load() // second call should be ignored
+        await viewModel.load()
 
         #expect(useCase.executeCallCount == 1)
     }

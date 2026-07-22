@@ -10,13 +10,18 @@ import SwiftUI
 @MainActor
 final class HomeFactory {
     private let poi: POIDependencies
+    private let location: LocationDependencies
 
-    init(poi: POIDependencies) {
+    init(poi: POIDependencies, location: LocationDependencies) {
         self.poi = poi
+        self.location = location
     }
 
     func makeView(router: any RouterProtocol) -> some View {
-        let viewModel = HomeViewModel(fetchNearbyPOIs: poi.fetchNearbyPOIs)
+        let viewModel = HomeViewModel(
+            fetchNearbyPOIs: poi.fetchNearbyPOIs,
+            locationService: location.locationService
+        )
         return HomeView(viewModel: viewModel, router: router)
     }
 }
