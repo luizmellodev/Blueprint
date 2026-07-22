@@ -19,6 +19,7 @@ final class HomeViewModel {
     }
 
     func load() async {
+        guard case .idle = state else { return }
         state = .loading
 
         do {
