@@ -39,14 +39,19 @@ jobs:
         id: sim
         run: |
           xcrun simctl list > /dev/null
-          UDID=$(xcrun simctl list devices available | grep -E "iPhone" | grep -v "unavailable" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
-          if [ -z "$UDID" ]; then
-            echo "No iPhone simulator found"
-            xcrun simctl list devices available
+          LINE=$(xcodebuild -project blueprint.xcodeproj -scheme blueprint -showdestinations 2>/dev/null \
+            | grep "platform:iOS Simulator" \
+            | grep "arch:arm64" \
+            | grep -E "name:iPhone 16," \
+            | head -1)
+          if [ -z "$LINE" ]; then
+            echo "No iPhone 16 simulator destination found"
+            xcodebuild -project blueprint.xcodeproj -scheme blueprint -showdestinations
             exit 1
           fi
+          UDID=$(echo "$LINE" | grep -oE 'id:[0-9A-F-]{36}' | head -1 | cut -d: -f2)
           echo "destination=platform=iOS Simulator,id=$UDID" >> "$GITHUB_OUTPUT"
-          echo "Using simulator id=$UDID"
+          echo "Using $LINE"
 
       - name: Create Config.xcconfig
         env:
