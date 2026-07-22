@@ -43,22 +43,21 @@ Design choices grounded in code:
 
 - **Pro:** Transparent to Domain and Presentation
 - **Pro:** Logged via `Logger.cache` (OSLog category)
-- **Con:** Stale data up to 5 minutes
+- **Con:** Stale data up to 5 minutes for the same coordinates
 - **Con:** Only first page; `loadMore()` always hits network
-- **Con:** No cache key per coordinate (cache assumes same session location)
 
 ## How Blueprint implements it
 
 ```swift
 // POIRepository.fetchNearby
-if offset == 0, let cached = cache.load() {
+if offset == 0, let cached = cache.load(lat: lat, lon: lon) {
     return cached
 }
 // ... network ...
-cache.save(pois)
+cache.save(pois, lat: lat, lon: lon)
 ```
 
-`CacheEntry` stores `[POI]` + `savedAt`. Load rejects expired entries.
+`CacheEntry` stores `[POI]`, coordinates, and `savedAt`. Load rejects expired entries and entries whose coordinates do not match the current request.
 
 ```mermaid
 sequenceDiagram
@@ -66,13 +65,13 @@ sequenceDiagram
   participant Cache as POICacheService
   participant API as NetworkClient
 
-  Repo->>Cache: load()
-  alt hit and fresh
+  Repo->>Cache: load(lat, lon)
+  alt hit, fresh, same coordinates
     Cache-->>Repo: [POI]
   else miss or expired
     Repo->>API: GET places
     API-->>Repo: JSON
-    Repo->>Cache: save(pois)
+    Repo->>Cache: save(pois, lat, lon)
   end
 ```
 

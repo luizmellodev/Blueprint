@@ -78,4 +78,23 @@ struct HomeViewModelGeocodingTests {
 
         #expect(viewModel.locationSuggestions.isEmpty)
     }
+
+    @Test func selectLocationWinsOverInFlightLoad() async throws {
+        let fetchUseCase = MockFetchNearbyPOIsUseCase()
+        fetchUseCase.firstCallDelayNanoseconds = 200_000_000
+        fetchUseCase.queuedResults = [
+            .success(PagedResult(items: [POI.mock(id: "sp")], hasMore: false)),
+            .success(PagedResult(items: [POI.mock(id: "poa")], hasMore: false))
+        ]
+
+        let viewModel = makeViewModel(fetchNearbyPOIs: fetchUseCase)
+        async let initialLoad: Void = viewModel.load()
+        try await Task.sleep(for: .milliseconds(50))
+        await viewModel.selectLocation(
+            GeocodingResult.mock(latitude: -30.0346, longitude: -51.2177, city: "Porto Alegre")
+        )
+        await initialLoad
+
+        #expect(viewModel.visiblePOIs.first?.id == "poa")
+    }
 }

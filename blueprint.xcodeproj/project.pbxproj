@@ -81,14 +81,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F1A2B3C52E2F500100A1B2C3 /* Supporting */ = {
-			isa = PBXGroup;
-			children = (
-				F1A2B3C42E2F500100A1B2C3 /* Info.plist */,
-			);
-			path = Supporting;
-			sourceTree = "<group>";
-		};
 		79C37DF430110C6F00B647DD = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +101,14 @@
 				79C37E1630110C7200B647DD /* blueprintUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F1A2B3C52E2F500100A1B2C3 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				F1A2B3C42E2F500100A1B2C3 /* Info.plist */,
+			);
+			path = Supporting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -25,9 +25,9 @@ final class POICacheService {
             .appending(path: fileName)
     }
 
-    func save(_ pois: [POI]) {
+    func save(_ pois: [POI], lat: Double, lon: Double) {
         guard let url = cacheURL else { return }
-        let entry = CacheEntry(pois: pois, savedAt: Date())
+        let entry = CacheEntry(pois: pois, savedAt: Date(), latitude: lat, longitude: lon)
         do {
             try JSONEncoder().encode(entry).write(to: url)
             Logger.cache.info("✓ Saved \(pois.count) POIs to cache")
@@ -36,11 +36,12 @@ final class POICacheService {
         }
     }
 
-    func load() -> [POI]? {
+    func load(lat: Double, lon: Double) -> [POI]? {
         guard let url = cacheURL,
               let data = try? Data(contentsOf: url),
               let entry = try? JSONDecoder().decode(CacheEntry.self, from: data),
-              Date().timeIntervalSince(entry.savedAt) < maxAgeSeconds
+              Date().timeIntervalSince(entry.savedAt) < maxAgeSeconds,
+              entry.matches(lat: lat, lon: lon)
         else {
             Logger.cache.info("Cache miss")
             return nil
@@ -56,4 +57,11 @@ final class POICacheService {
 private struct CacheEntry: Codable, Sendable {
     let pois: [POI]
     let savedAt: Date
+    let latitude: Double
+    let longitude: Double
+
+    func matches(lat: Double, lon: Double) -> Bool {
+        round(latitude * 10_000) == round(lat * 10_000)
+            && round(longitude * 10_000) == round(lon * 10_000)
+    }
 }
