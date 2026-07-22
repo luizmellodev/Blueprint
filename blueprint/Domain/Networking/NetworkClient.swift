@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 
 enum NetworkError: Error {
     case invalidURL
@@ -26,13 +27,29 @@ final class URLSessionNetworkClient: NetworkClient {
     }
 
     func data(for request: URLRequest) async throws -> Data {
-        let (data, response) = try await session.data(for: request)
+        let url = request.url?.absoluteString ?? "unknown"
+        Logger.networking.info("→ \(request.httpMethod ?? "GET") \(url)")
 
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
-            throw NetworkError.invalidResponse
+        do {
+            let (data, response) = try await session.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                Logger.networking.error("✗ Invalid response for \(url)")
+                throw NetworkError.invalidResponse
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                Logger.networking.error("✗ HTTP \(httpResponse.statusCode) for \(url)")
+                throw NetworkError.invalidResponse
+            }
+
+            Logger.networking.info("✓ HTTP \(httpResponse.statusCode) — \(data.count) bytes from \(url)")
+            return data
+        } catch let error as NetworkError {
+            throw error
+        } catch {
+            Logger.networking.error("✗ Request failed: \(error.localizedDescription)")
+            throw NetworkError.unknown(error)
         }
-
-        return data
     }
 }
