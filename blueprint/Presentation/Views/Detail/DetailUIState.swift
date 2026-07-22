@@ -8,6 +8,7 @@
 import Foundation
 
 enum DetailUIState {
+    case idle
     case loading
     case success(POI)
     case failure(AppError)

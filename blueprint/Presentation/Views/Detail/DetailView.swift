@@ -42,6 +42,9 @@ struct DetailView: View {
     var body: some View {
         Group {
             switch viewModel.state {
+            case .idle:
+                Color.clear
+
             case .loading:
                 ProgressView("Loading place details…")
                     .accessibilityLabel("Loading place details")
