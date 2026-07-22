@@ -13,7 +13,6 @@ import OSLog
 extension Logger {
     private static let subsystem = "dev.luizmello.blueprint"
 
-    static let networking = Logger(subsystem: subsystem, category: "networking")
     static let cache = Logger(subsystem: subsystem, category: "cache")
     static let persistence = Logger(subsystem: subsystem, category: "persistence")
     static let location = Logger(subsystem: subsystem, category: "location")

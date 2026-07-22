@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		79C37E7E3011167A00B647DD /* DesignSystem in Frameworks */ = {isa = PBXBuildFile; productRef = 79C37E7D3011167A00B647DD /* DesignSystem */; };
+		79C37F70301127AC00B647DD /* Networking in Frameworks */ = {isa = PBXBuildFile; productRef = 79C37F6F301127AC00B647DD /* Networking */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79C37F70301127AC00B647DD /* Networking in Frameworks */,
 				79C37E7E3011167A00B647DD /* DesignSystem in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,7 @@
 			name = blueprint;
 			packageProductDependencies = (
 				79C37E7D3011167A00B647DD /* DesignSystem */,
+				79C37F6F301127AC00B647DD /* Networking */,
 			);
 			productName = blueprint;
 			productReference = 79C37DFD30110C6F00B647DD /* blueprint.app */;
@@ -203,6 +206,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				79C37E46301113F400B647DD /* XCLocalSwiftPackageReference "Packages/DesignSystem" */,
+				79C37F6E301127AC00B647DD /* XCLocalSwiftPackageReference "Packages/Networking" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 79C37DFE30110C6F00B647DD /* Products */;
@@ -605,6 +609,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/DesignSystem;
 		};
+		79C37F6E301127AC00B647DD /* XCLocalSwiftPackageReference "Packages/Networking" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/Networking;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -612,6 +620,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 79C37E46301113F400B647DD /* XCLocalSwiftPackageReference "Packages/DesignSystem" */;
 			productName = DesignSystem;
+		};
+		79C37F6F301127AC00B647DD /* Networking */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Networking;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

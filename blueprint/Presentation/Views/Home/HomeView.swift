@@ -22,7 +22,7 @@ struct HomeView: View {
             case .loading:
                 ProgressView("Loading nearby places…")
                     .accessibilityLabel("Loading nearby places")
-            case .success(let pois):
+            case .success(_):
                 List(viewModel.visiblePOIs, id: \.id) { poi in
                     Button {
                         router.push(.detail(poi: poi))
