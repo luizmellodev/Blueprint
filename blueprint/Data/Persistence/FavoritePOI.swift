@@ -31,7 +31,7 @@ final class FavoritePOI {
         self.country = poi.country
     }
 
-    var poi: POI {
+    @MainActor var poi: POI {
         POI(
             id: id,
             name: name,
@@ -47,3 +47,4 @@ final class FavoritePOI {
         )
     }
 }
+

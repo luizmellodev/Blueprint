@@ -20,7 +20,7 @@ enum GeoapifyMapper {
         return POI(
             id: props.place_id,
             name: name,
-            categories: (props.categories ?? []).map(PlaceCategory.init),
+            categories: (props.categories ?? []).compactMap { PlaceCategory(rawValue: $0) },
             latitude: coords[1],
             longitude: coords[0],
             address: props.formatted,
@@ -32,3 +32,4 @@ enum GeoapifyMapper {
         )
     }
 }
+
