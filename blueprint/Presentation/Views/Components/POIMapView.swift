@@ -45,7 +45,8 @@ struct POIMapView: View {
     }
 
     private func openInMaps() {
-        let item = MKMapItem(placemark: MKPlacemark(coordinate: coordinate))
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let item = MKMapItem(location: location, address: nil)
         item.name = poi.name
         item.openInMaps()
     }
