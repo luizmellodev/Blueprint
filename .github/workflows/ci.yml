@@ -35,6 +35,24 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Resolve iOS Simulator
+        id: sim
+        run: |
+          xcrun simctl list > /dev/null
+          LINE=$(xcodebuild -project blueprint.xcodeproj -scheme blueprint -showdestinations 2>/dev/null \
+            | grep "platform:iOS Simulator" \
+            | grep "arch:arm64" \
+            | grep -E "name:iPhone 16(\}|,)" \
+            | head -1)
+          if [ -z "$LINE" ]; then
+            echo "No iPhone 16 simulator destination found"
+            xcodebuild -project blueprint.xcodeproj -scheme blueprint -showdestinations
+            exit 1
+          fi
+          UDID=$(echo "$LINE" | grep -oE 'id:[0-9A-F-]{36}' | head -1 | cut -d: -f2)
+          echo "destination=platform=iOS Simulator,id=$UDID" >> "$GITHUB_OUTPUT"
+          echo "Using $LINE"
+
       - name: Create Config.xcconfig
         env:
           GEOAPIFY_API_KEY: ${{ secrets.GEOAPIFY_API_KEY }}
@@ -47,7 +65,7 @@ jobs:
           xcodebuild test \
             -project blueprint.xcodeproj \
             -scheme blueprint \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination "${{ steps.sim.outputs.destination }}" \
             -enableCodeCoverage YES \
             -resultBundlePath build/coverage.xcresult \
             CODE_SIGNING_ALLOWED=NO \

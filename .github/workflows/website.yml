@@ -63,17 +63,17 @@ jobs:
 
       - name: Link Vercel project for CLI
         run: |
-          mkdir -p Website/.vercel
+          mkdir -p Website/deploy/.vercel
           printf '{"orgId":"%s","projectId":"%s"}\n' \
             "${{ secrets.VERCEL_ORG_ID }}" \
-            "${{ secrets.VERCEL_PROJECT_ID }}" > Website/.vercel/project.json
+            "${{ secrets.VERCEL_PROJECT_ID }}" > Website/deploy/.vercel/project.json
 
       - name: Install Vercel CLI
         run: npm install -g vercel@39
 
       - name: Deploy to Vercel
-        working-directory: Website
-        run: vercel deploy deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: Website/deploy
+        run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

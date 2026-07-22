@@ -86,17 +86,17 @@ Go to [Project Settings → General](https://vercel.com/luizmellodev/blueprint/s
 
 | Setting | Value |
 |---|---|
-| **Root Directory** | `Website` |
+| **Root Directory** | **empty** (delete `Website` if present, then Save) |
 | **Build Command** | off / empty |
 | **Output Directory** | off / empty |
 | **Install Command** | off / empty |
 | **Ignored Build Step** | `exit 1` |
 
-The workflow downloads the build artifact into `Website/deploy/` and runs `vercel deploy deploy --prod` from `Website/`. If Root Directory is wrong, or the job deploys from a different folder (for example `site/`), the CLI fails with a path like `site/Website does not exist`.
+The workflow downloads the build artifact into `Website/deploy/` and runs `vercel deploy --prod` from that folder. If Root Directory is set to `Website`, the CLI appends it again and fails with a path like `Website/deploy/Website does not exist`.
 
 ### Automatic deploy
 
-Push to `main` triggers GitHub Actions: `saga build` on macOS, then `vercel deploy deploy --prod`.
+Push to `main` triggers GitHub Actions: `saga build` on macOS, then `vercel deploy --prod` from `Website/deploy/`.
 
 **Important:** `Website/deploy/` is gitignored. A deploy triggered only by the Vercel Git integration (without the GitHub Actions build) will be empty and return **404**.
 
@@ -108,8 +108,8 @@ Required GitHub secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 
 ```bash
 ./scripts/saga build
-cd Website
-vercel deploy deploy --prod
+cd Website/deploy
+vercel deploy --prod
 ```
 
 ### 404 after Vercel import
