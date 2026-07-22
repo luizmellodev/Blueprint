@@ -9,14 +9,15 @@ import SwiftUI
 
 struct AppRouterView: View {
     @State private var router = AppRouter()
+    private let container = DIContainer()
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            ContentView()
+            container.homeFactory.makeView()
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case .home:
-                        ContentView()
+                        container.homeFactory.makeView()
                     }
                 }
         }
