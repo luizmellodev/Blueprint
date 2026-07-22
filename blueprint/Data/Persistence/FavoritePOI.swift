@@ -11,9 +11,9 @@ import SwiftData
 
 @Model
 final class FavoritePOI {
-    @Attribute(.unique) var id: String
+    var id: String
     var name: String
-    var categories: [String]
+    var categoriesRaw: String
     var latitude: Double
     var longitude: Double
     var address: String?
@@ -23,7 +23,7 @@ final class FavoritePOI {
     init(from poi: POI) {
         self.id = poi.id
         self.name = poi.name
-        self.categories = poi.categories.map(\.rawValue)
+        self.categoriesRaw = poi.categories.map(\.rawValue).joined(separator: ",")
         self.latitude = poi.latitude
         self.longitude = poi.longitude
         self.address = poi.address
@@ -31,11 +31,14 @@ final class FavoritePOI {
         self.country = poi.country
     }
 
-    @MainActor var poi: POI {
-        POI(
+    var poi: POI {
+        let categories = categoriesRaw
+            .split(separator: ",")
+            .map { PlaceCategory(rawValue: String($0)) }
+        return POI(
             id: id,
             name: name,
-            categories: categories.map(PlaceCategory.init),
+            categories: categories,
             latitude: latitude,
             longitude: longitude,
             address: address,

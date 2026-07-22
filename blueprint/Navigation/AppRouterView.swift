@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AppRouterView: View {
     @State private var router = AppRouter()
-    private let container = DIContainer()
+    @State private var container = DIContainer()
 
     var body: some View {
         NavigationStack(path: $router.path) {

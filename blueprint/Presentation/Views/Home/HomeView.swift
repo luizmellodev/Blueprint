@@ -6,6 +6,7 @@
 //
 
 // TODO: Explicar as decisões de acessibilidade: accessibilityElement, labels compostos, ProgressView label
+// TODO: Explicar o skeleton como substituto de ProgressView — feedback imediato sem layout shift
 
 import SwiftUI
 import DesignSystem
@@ -19,50 +20,66 @@ struct HomeView: View {
             switch viewModel.state {
             case .idle:
                 Color.clear
+
             case .loading:
-                ProgressView("Loading nearby places…")
-                    .accessibilityLabel("Loading nearby places")
+                ScrollView {
+                    LazyVStack(spacing: DSSpacing.sm) {
+                        ForEach(0..<6, id: \.self) { _ in
+                            SkeletonCardView()
+                        }
+                    }
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.top, DSSpacing.sm)
+                }
+
             case .success(_):
-                List(viewModel.visiblePOIs, id: \.id) { poi in
-                    Button {
-                        router.push(.detail(poi: poi))
-                    } label: {
-                        VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                            Text(poi.name)
-                                .font(DSTypography.headline)
-                                .foregroundStyle(.primary)
-                            if let city = poi.city {
-                                Text(city)
-                                    .font(DSTypography.subheadline)
-                                    .foregroundStyle(.secondary)
+                ScrollView {
+                    LazyVStack(spacing: DSSpacing.sm) {
+                        ForEach(viewModel.visiblePOIs, id: \.id) { poi in
+                            Button {
+                                router.push(.detail(poi: poi))
+                            } label: {
+                                POICardView(poi: poi)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel(accessibilityLabel(for: poi))
+                            .accessibilityHint("Double tap to see details")
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .onAppear {
+                                if poi.id == viewModel.visiblePOIs.last?.id {
+                                    Task { await viewModel.loadMore() }
+                                }
                             }
                         }
-                    }
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel(accessibilityLabel(for: poi))
-                    .accessibilityHint("Double tap to see details")
-                    .onAppear {
-                        if poi.id == viewModel.visiblePOIs.last?.id {
-                            Task { await viewModel.loadMore() }
+
+                        if viewModel.isLoadingMore {
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding(DSSpacing.md)
                         }
                     }
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.top, DSSpacing.sm)
+                    .animation(.easeOut(duration: 0.3), value: viewModel.visiblePOIs.count)
                 }
                 .refreshable {
                     await viewModel.refresh()
                 }
-                if viewModel.isLoadingMore {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
+
             case .failure:
                 VStack(spacing: DSSpacing.md) {
+                    Image(systemName: "wifi.exclamationmark")
+                        .font(.system(size: 48))
+                        .foregroundStyle(.secondary)
                     Text("Something went wrong.")
+                        .font(DSTypography.headline)
                         .foregroundStyle(.secondary)
                         .accessibilityLabel("Failed to load places.")
                     Button("Try again") {
                         viewModel.retry()
                     }
+                    .buttonStyle(.borderedProminent)
                 }
             }
         }

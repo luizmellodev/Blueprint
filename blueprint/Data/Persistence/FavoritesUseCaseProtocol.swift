@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 protocol FavoritesUseCaseProtocol: Sendable {
     func isFavorite(id: String) -> Bool
     func toggle(_ poi: POI) throws

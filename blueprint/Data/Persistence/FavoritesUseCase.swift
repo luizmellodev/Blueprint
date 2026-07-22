@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 struct FavoritesUseCase: FavoritesUseCaseProtocol {
     let repository: any FavoritesRepositoryProtocol
 

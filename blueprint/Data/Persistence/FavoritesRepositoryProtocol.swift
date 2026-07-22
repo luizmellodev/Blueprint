@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 protocol FavoritesRepositoryProtocol: Sendable {
     func isFavorite(id: String) -> Bool
     func add(_ poi: POI) throws

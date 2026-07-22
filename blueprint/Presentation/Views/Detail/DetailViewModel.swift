@@ -22,12 +22,12 @@ final class DetailViewModel {
         self.state = .success(poi)
         self.fetchPlaceDetails = fetchPlaceDetails
         self.favorites = favorites
-        self.isFavorite = favorites.isFavorite(id: poi.id)
         self.showFavoriteButton = featureFlags.isEnabled(.favorites)
     }
 
     func loadDetails() async {
         guard case .success(let poi) = state else { return }
+        isFavorite = favorites.isFavorite(id: poi.id)
         do {
             details = try await fetchPlaceDetails.execute(poiID: poi.id)
         } catch {

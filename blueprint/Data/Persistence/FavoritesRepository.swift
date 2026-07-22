@@ -37,6 +37,6 @@ final class FavoritesRepository: FavoritesRepositoryProtocol {
 
     func fetchAll() -> [POI] {
         let descriptor = FetchDescriptor<FavoritePOI>()
-        return (try? context.fetch(descriptor))?.map(\.poi) ?? []
+        return (try? context.fetch(descriptor))?.map { $0.poi } ?? []
     }
 }
