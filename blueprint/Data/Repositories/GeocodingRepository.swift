@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Networking
 
 final class GeocodingRepository: GeocodingRepositoryProtocol {
     private let client: NetworkClient

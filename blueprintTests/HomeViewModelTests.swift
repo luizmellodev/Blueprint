@@ -36,7 +36,8 @@ struct HomeViewModelTests {
         let viewModel = makeViewModel(fetchNearbyPOIs: useCase)
         await viewModel.load()
 
-        #expect(viewModel.state == .success([poi]))
+        #expect(viewModel.state == .success)
+        #expect(viewModel.visiblePOIs == [poi])
     }
 
     @Test func loadTransitionsToFailureOnError() async throws {

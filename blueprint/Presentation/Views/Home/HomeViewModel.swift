@@ -20,6 +20,7 @@ final class HomeViewModel {
     private(set) var hasMore = false
     private(set) var locationSuggestions: [GeocodingResult] = []
     private(set) var isSearchingLocation = false
+    private(set) var visiblePOIs: [POI] = []
     var searchQuery: String = ""
     var locationQuery: String = ""
 
@@ -32,14 +33,6 @@ final class HomeViewModel {
     private var searchTask: Task<Void, Never>?
     private var locationSearchTask: Task<Void, Never>?
     private var lastCoordinates: (latitude: Double, longitude: Double)?
-
-    var visiblePOIs: [POI] {
-        guard !searchQuery.isEmpty else { return allPOIs }
-        return allPOIs.filter {
-            $0.name.localizedCaseInsensitiveContains(searchQuery) ||
-            ($0.city ?? "").localizedCaseInsensitiveContains(searchQuery)
-        }
-    }
 
     init(
         fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol,
@@ -59,6 +52,7 @@ final class HomeViewModel {
     func refresh() async {
         currentOffset = 0
         allPOIs = []
+        visiblePOIs = []
         await fetch(offset: 0)
     }
 
@@ -79,7 +73,8 @@ final class HomeViewModel {
         searchTask = Task {
             try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else { return }
-            state = .success(visiblePOIs)
+            guard case .success = state else { return }
+            visiblePOIs = filtered(allPOIs)
         }
     }
 
@@ -130,9 +125,18 @@ final class HomeViewModel {
             allPOIs = offset == 0 ? result.items : allPOIs + result.items
             currentOffset = allPOIs.count
             hasMore = result.hasMore
-            state = .success(allPOIs)
+            visiblePOIs = filtered(allPOIs)
+            state = .success
         } catch {
             state = .failure(.networking)
+        }
+    }
+
+    private func filtered(_ pois: [POI]) -> [POI] {
+        guard !searchQuery.isEmpty else { return pois }
+        return pois.filter {
+            $0.name.localizedCaseInsensitiveContains(searchQuery) ||
+            ($0.city ?? "").localizedCaseInsensitiveContains(searchQuery)
         }
     }
 

@@ -52,7 +52,8 @@ struct HomeViewModelPaginationTests {
         useCase.result = .success(PagedResult(items: secondPage, hasMore: false))
         await viewModel.loadMore()
 
-        #expect(viewModel.state == .success(firstPage + secondPage))
+        #expect(viewModel.state == .success)
+        #expect(viewModel.visiblePOIs == firstPage + secondPage)
     }
 
     @Test func loadMoreDoesNothingWhenHasMoreIsFalse() async {
@@ -75,10 +76,7 @@ struct HomeViewModelPaginationTests {
         await viewModel.refresh()
 
         #expect(useCase.executeCallCount == 2)
-        if case .success(let pois) = viewModel.state {
-            #expect(pois.count == 1)
-        } else {
-            Issue.record("Expected success state after refresh")
-        }
+        #expect(viewModel.state == .success)
+        #expect(viewModel.visiblePOIs.count == 1)
     }
 }

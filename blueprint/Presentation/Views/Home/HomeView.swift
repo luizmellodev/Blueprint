@@ -111,3 +111,36 @@ struct HomeView: View {
         return poi.name
     }
 }
+
+#Preview {
+    struct PreviewFetchUseCase: FetchNearbyPOIsUseCaseProtocol {
+        func execute(lat: Double, lon: Double, limit: Int, offset: Int) async throws -> PagedResult<POI> {
+            PagedResult(items: (1...6).map { _ in .preview() }, hasMore: false)
+        }
+    }
+
+    struct PreviewSearchUseCase: SearchLocationUseCaseProtocol {
+        func execute(query: String) async throws -> [GeocodingResult] { [] }
+    }
+
+    final class PreviewLocationService: LocationServiceProtocol, @unchecked Sendable {
+        func requestAuthorization() async -> LocationAuthorizationStatus { .authorized }
+        func authorizationStatus() -> LocationAuthorizationStatus { .authorized }
+        func getCurrentCoordinates() async throws -> CLLocationCoordinate2D {
+            CLLocationCoordinate2D(latitude: -23.5505, longitude: -46.6333)
+        }
+    }
+
+    @Previewable @Namespace var namespace
+    NavigationStack {
+        HomeView(
+            viewModel: HomeViewModel(
+                fetchNearbyPOIs: PreviewFetchUseCase(),
+                searchLocation: PreviewSearchUseCase(),
+                locationService: PreviewLocationService()
+            ),
+            router: AppRouter(),
+            namespace: namespace
+        )
+    }
+}

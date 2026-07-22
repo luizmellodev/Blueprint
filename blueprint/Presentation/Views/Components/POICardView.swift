@@ -80,3 +80,16 @@ struct POICardView: View {
         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
     }
 }
+
+#Preview {
+    VStack(spacing: 12) {
+        POICardView(poi: .preview())
+        POICardView(poi: POI(
+            id: "2", name: "Bar do João", categories: [.catering],
+            latitude: -23.55, longitude: -46.63,
+            address: "Rua das Flores, 42", city: "São Paulo",
+            country: "Brazil", openingHours: nil, website: nil, phone: nil
+        ))
+    }
+    .padding()
+}

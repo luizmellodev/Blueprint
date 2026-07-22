@@ -52,3 +52,20 @@ struct DetailRowView: View {
         .accessibilityAddTraits(isLink ? [.isLink] : [])
     }
 }
+
+#Preview {
+    VStack(spacing: 0) {
+        DetailRowView(
+            icon: "mappin.circle.fill", iconColor: .red,
+            title: "Address", value: "Parque da Independência, São Paulo"
+        )
+        Divider().padding(.leading, 56)
+        DetailRowView(icon: "clock.fill", iconColor: .orange, title: "Opening Hours", value: "Tu-Su 09:00-17:00")
+        Divider().padding(.leading, 56)
+        DetailRowView(
+            icon: "safari.fill", iconColor: .blue,
+            title: "Website", value: "museuipiranga.org.br", isLink: true
+        )
+    }
+    .padding(.horizontal)
+}

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Networking
 
 final class POIRepository: POIRepositoryProtocol {
     private let client: NetworkClient

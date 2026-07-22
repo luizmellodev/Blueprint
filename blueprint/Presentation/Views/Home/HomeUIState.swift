@@ -10,6 +10,6 @@ import Foundation
 enum HomeUIState: Equatable {
     case idle
     case loading
-    case success([POI])
+    case success
     case failure(AppError)
 }

@@ -215,3 +215,35 @@ struct DetailView: View {
         }
     }
 }
+
+#Preview {
+    struct PreviewFetchDetailsUseCase: FetchPlaceDetailsUseCaseProtocol {
+        func execute(poiID: String) async throws -> PlaceDetails {
+            PlaceDetails(
+                poiID: poiID, addressLine1: "Parque da Independência", addressLine2: nil,
+                timezone: "America/Sao_Paulo", isWheelchairAccessible: true,
+                fee: false, wikipediaURL: nil
+            )
+        }
+    }
+
+    @MainActor
+    struct PreviewFavoritesUseCase: FavoritesUseCaseProtocol {
+        func isFavorite(id: String) -> Bool { false }
+        func toggle(_ poi: POI) throws {}
+        func fetchAll() -> [POI] { [] }
+    }
+
+    struct PreviewFeatureFlags: FeatureFlagServiceProtocol {
+        func isEnabled(_ flag: FeatureFlag) -> Bool { true }
+    }
+
+    NavigationStack {
+        DetailView(viewModel: DetailViewModel(
+            poi: .preview(),
+            fetchPlaceDetails: PreviewFetchDetailsUseCase(),
+            favorites: PreviewFavoritesUseCase(),
+            featureFlags: PreviewFeatureFlags()
+        ))
+    }
+}

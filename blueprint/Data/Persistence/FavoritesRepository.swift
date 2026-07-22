@@ -18,7 +18,10 @@ final class FavoritesRepository: FavoritesRepositoryProtocol {
     }
 
     func isFavorite(id: String) -> Bool {
-        fetchAll().contains { $0.id == id }
+        let predicate = #Predicate<FavoritePOI> { $0.id == id }
+        var descriptor = FetchDescriptor(predicate: predicate)
+        descriptor.fetchLimit = 1
+        return (try? context.fetch(descriptor))?.isEmpty == false
     }
 
     func add(_ poi: POI) throws {
