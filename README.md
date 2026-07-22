@@ -93,14 +93,7 @@ Packages/
 ### Setup
 
 1. Clone the repository
-2. Create `blueprint/Secrets.swift` (this file is in `.gitignore` — never commit it):
-
-```swift
-enum Secrets {
-    static let geoapifyAPIKey = "your_api_key_here"
-}
-```
-
+2. Copy `Config.xcconfig.sample` to `Config.xcconfig` and replace `your_api_key_here` with your Geoapify key (`Config.xcconfig` is gitignored — never commit it)
 3. Open `blueprint.xcodeproj` in Xcode
 4. Build and run on a simulator (⌘R)
 

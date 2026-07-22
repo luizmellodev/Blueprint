@@ -33,6 +33,7 @@
 		79C37E0C30110C7200B647DD /* blueprintTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79C37E1630110C7200B647DD /* blueprintUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1829AC37E2F42758C748A74 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		F1A2B3C42E2F500100A1B2C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,10 +81,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F1A2B3C52E2F500100A1B2C3 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				F1A2B3C42E2F500100A1B2C3 /* Info.plist */,
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
 		79C37DF430110C6F00B647DD = {
 			isa = PBXGroup;
 			children = (
 				F1829AC37E2F42758C748A74 /* Config.xcconfig */,
+				F1A2B3C52E2F500100A1B2C3 /* Supporting */,
 				79C37DFF30110C6F00B647DD /* blueprint */,
 				79C37E0F30110C7200B647DD /* blueprintTests */,
 				79C37E1930110C7200B647DD /* blueprintUITests */,
@@ -416,7 +426,7 @@
 				DEVELOPMENT_TEAM = YM283LC5H4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_GeoapifyAPIKey = "$(GEOAPIFY_API_KEY)";
+				INFOPLIST_FILE = Supporting/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -456,7 +466,7 @@
 				DEVELOPMENT_TEAM = YM283LC5H4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_GeoapifyAPIKey = "$(GEOAPIFY_API_KEY)";
+				INFOPLIST_FILE = Supporting/Info.plist;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
