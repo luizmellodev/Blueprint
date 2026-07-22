@@ -5,13 +5,16 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-// TODO: Explicar porque usamos actor (isolamento sem bloquear main thread) e não @MainActor
+// TODO: Explicar porque @MainActor ao invés de actor — com SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor
+// todos os tipos do módulo são implicitamente @MainActor; usar actor isolado exigiria marcar
+// CacheEntry, Logger e outros helpers como nonisolated explicitamente, adicionando ruído sem ganho real
 // TODO: Explicar a estratégia de TTL e porque 5 minutos
 
 import Foundation
 import OSLog
 
-actor POICacheService {
+@MainActor
+final class POICacheService {
     private let fileName = "poi_cache.json"
     private let maxAgeSeconds: TimeInterval = 300
 
