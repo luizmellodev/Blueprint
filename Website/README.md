@@ -86,13 +86,14 @@ Go to [Project Settings → General](https://vercel.com/luizmellodev/blueprint/s
 
 | Setting | Value |
 |---|---|
-| **Root Directory** | **empty** (delete `Website` if present, then Save) |
+| **Root Directory** | empty (`./`) |
+| **Output Directory** | empty |
 | **Build Command** | off / empty |
-| **Output Directory** | off / empty |
 | **Install Command** | off / empty |
 | **Ignored Build Step** | `exit 1` |
+| **Include files outside the root directory** | disabled (not needed) |
 
-The workflow downloads the build artifact into `Website/deploy/` and runs `vercel deploy --prod` from that folder. If Root Directory is set to `Website`, the CLI appends it again and fails with a path like `Website/deploy/Website does not exist`.
+The banner **"Production Overrides: output directory deploy"** compares the last live deployment with current settings. It is leftover from when Root Directory was `Website` and output was `deploy` (meaning `Website/deploy`). You cannot always clear it in the UI before the next successful deploy. The workflow clears `rootDirectory` and `outputDirectory` via the Vercel API before each deploy, then uploads pre-built HTML from `Website/deploy/`.
 
 ### Automatic deploy
 
