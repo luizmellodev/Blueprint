@@ -5,9 +5,9 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-import SwiftUI
-import MapKit
 import DesignSystem
+import MapKit
+import SwiftUI
 
 struct POIMapView: View {
     let poi: POI

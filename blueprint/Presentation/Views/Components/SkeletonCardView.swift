@@ -5,8 +5,8 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-import SwiftUI
 import DesignSystem
+import SwiftUI
 
 struct SkeletonCardView: View {
     var body: some View {

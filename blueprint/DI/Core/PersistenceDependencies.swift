@@ -13,8 +13,9 @@ final class PersistenceDependencies {
     private let container: ModelContainer
 
     init() {
-        // swiftlint:disable:next force_try
-        let container = try! ModelContainer(for: FavoritePOI.self)
+        guard let container = try? ModelContainer(for: FavoritePOI.self) else {
+            fatalError("ModelContainer failed to initialize — schema migration conflict or storage unavailable")
+        }
         self.container = container
         let repository = FavoritesRepository(context: container.mainContext)
         self.favoritesUseCase = FavoritesUseCase(repository: repository)

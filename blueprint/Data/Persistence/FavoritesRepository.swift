@@ -5,10 +5,9 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-// TODO: Explicar porque o Repository abstrai o SwiftData do resto da app
-
-import SwiftData
 import Foundation
+import SwiftData
+// TODO: Explicar porque o Repository abstrai o SwiftData do resto da app
 
 @MainActor
 final class FavoritesRepository: FavoritesRepositoryProtocol {
