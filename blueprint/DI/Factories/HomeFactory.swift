@@ -12,11 +12,13 @@ final class HomeFactory {
     private let poi: POIDependencies
     private let location: LocationDependencies
     private let persistence: PersistenceDependencies
+    private let featureFlags: FeatureFlagDependencies
 
-    init(poi: POIDependencies, location: LocationDependencies, persistence: PersistenceDependencies) {
+    init(poi: POIDependencies, location: LocationDependencies, persistence: PersistenceDependencies, featureFlags: FeatureFlagDependencies) {
         self.poi = poi
         self.location = location
         self.persistence = persistence
+        self.featureFlags = featureFlags
     }
 
     func makeView(router: any RouterProtocol) -> some View {
