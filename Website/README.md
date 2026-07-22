@@ -80,19 +80,19 @@ Saga requires macOS to build. Vercel serves static files, the build runs in GitH
 
 ### Vercel project settings (required for GitHub Actions)
 
-The deploy job uploads pre-built files from CI. **Root Directory must be empty.**
+The deploy job uploads pre-built files from CI. Saga runs in GitHub Actions, not on Vercel.
 
 Go to [Project Settings → General](https://vercel.com/luizmellodev/blueprint/settings):
 
 | Setting | Value |
 |---|---|
-| **Root Directory** | **empty** (delete `Website` if present, then Save) |
+| **Root Directory** | `Website` |
 | **Build Command** | off / empty |
 | **Output Directory** | off / empty |
 | **Install Command** | off / empty |
 | **Ignored Build Step** | `exit 1` |
 
-If Root Directory is `Website`, the CLI looks for paths like `site/Website` and deploy fails.
+The workflow downloads the build artifact into `Website/deploy/` and runs `vercel deploy deploy --prod` from `Website/`. If Root Directory is wrong, or the job deploys from a different folder (for example `site/`), the CLI fails with a path like `site/Website does not exist`.
 
 ### Automatic deploy
 
