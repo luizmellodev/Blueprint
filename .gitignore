@@ -28,3 +28,6 @@ fastlane/test_output
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Secrets
+blueprint/Secrets.swift

@@ -12,6 +12,8 @@ final class DIContainer {
     let homeFactory: HomeFactory
 
     init() {
-        self.homeFactory = HomeFactory()
+        let network = NetworkDependencies()
+        let poi = POIDependencies(network: network)
+        self.homeFactory = HomeFactory(poi: poi)
     }
 }

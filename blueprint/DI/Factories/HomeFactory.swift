@@ -9,6 +9,12 @@ import SwiftUI
 
 @MainActor
 final class HomeFactory {
+    private let poi: POIDependencies
+
+    init(poi: POIDependencies) {
+        self.poi = poi
+    }
+
     func makeView() -> some View {
         ContentView()
     }
