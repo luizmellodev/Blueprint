@@ -19,7 +19,7 @@ final class POIRepository: POIRepositoryProtocol {
     }
 
     func fetchNearby(lat: Double, lon: Double, limit: Int, offset: Int) async throws -> [POI] {
-        if offset == 0, let cached = cache.load() {
+        if offset == 0, let cached = await cache.load() {
             return cached
         }
 
@@ -53,7 +53,7 @@ final class POIRepository: POIRepositoryProtocol {
         }
 
         let pois = decoded.features.compactMap(GeoapifyMapper.map)
-        cache.save(pois)
+        await cache.save(pois)
         return pois
     }
 }

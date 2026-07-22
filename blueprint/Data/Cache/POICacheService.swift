@@ -5,14 +5,13 @@
 //  Created by Luiz Mello on 22/07/26.
 //
 
-// TODO: Explicar porque usamos @MainActor ao invés de actor isolado (SwiftData exige main actor)
+// TODO: Explicar porque usamos actor (isolamento sem bloquear main thread) e não @MainActor
 // TODO: Explicar a estratégia de TTL e porque 5 minutos
 
 import Foundation
 import OSLog
 
-@MainActor
-final class POICacheService {
+actor POICacheService {
     private let fileName = "poi_cache.json"
     private let maxAgeSeconds: TimeInterval = 300
 

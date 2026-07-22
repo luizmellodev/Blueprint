@@ -216,28 +216,29 @@ struct DetailView: View {
     }
 }
 
+private struct PreviewFetchDetailsUseCase: FetchPlaceDetailsUseCaseProtocol {
+    func execute(poiID: String) async throws -> PlaceDetails {
+        PlaceDetails(
+            poiID: poiID, wikipediaURL: nil, wikidataID: nil,
+            isWheelchairAccessible: true, fee: false,
+            timezone: "America/Sao_Paulo",
+            addressLine1: "Parque da Independência", addressLine2: nil
+        )
+    }
+}
+
+@MainActor
+private struct PreviewFavoritesUseCase: FavoritesUseCaseProtocol {
+    func isFavorite(id: String) -> Bool { false }
+    func toggle(_ poi: POI) throws {}
+    func fetchAll() -> [POI] { [] }
+}
+
+private struct PreviewFeatureFlags: FeatureFlagServiceProtocol {
+    func isEnabled(_ flag: FeatureFlag) -> Bool { true }
+}
+
 #Preview {
-    struct PreviewFetchDetailsUseCase: FetchPlaceDetailsUseCaseProtocol {
-        func execute(poiID: String) async throws -> PlaceDetails {
-            PlaceDetails(
-                poiID: poiID, addressLine1: "Parque da Independência", addressLine2: nil,
-                timezone: "America/Sao_Paulo", isWheelchairAccessible: true,
-                fee: false, wikipediaURL: nil
-            )
-        }
-    }
-
-    @MainActor
-    struct PreviewFavoritesUseCase: FavoritesUseCaseProtocol {
-        func isFavorite(id: String) -> Bool { false }
-        func toggle(_ poi: POI) throws {}
-        func fetchAll() -> [POI] { [] }
-    }
-
-    struct PreviewFeatureFlags: FeatureFlagServiceProtocol {
-        func isEnabled(_ flag: FeatureFlag) -> Bool { true }
-    }
-
     NavigationStack {
         DetailView(viewModel: DetailViewModel(
             poi: .preview(),

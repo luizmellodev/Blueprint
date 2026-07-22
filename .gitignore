@@ -29,5 +29,5 @@ fastlane/test_output
 .AppleDouble
 .LSOverride
 
-# Secrets
-blueprint/Secrets.swift
+# API keys — copy Config.xcconfig.sample to Config.xcconfig and fill in your key
+Config.xcconfig

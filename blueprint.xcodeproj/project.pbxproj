@@ -32,6 +32,7 @@
 		79C37DFD30110C6F00B647DD /* blueprint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = blueprint.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79C37E0C30110C7200B647DD /* blueprintTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79C37E1630110C7200B647DD /* blueprintUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blueprintUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1829AC37E2F42758C748A74 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -82,6 +83,7 @@
 		79C37DF430110C6F00B647DD = {
 			isa = PBXGroup;
 			children = (
+				F1829AC37E2F42758C748A74 /* Config.xcconfig */,
 				79C37DFF30110C6F00B647DD /* blueprint */,
 				79C37E0F30110C7200B647DD /* blueprintTests */,
 				79C37E1930110C7200B647DD /* blueprintUITests */,
@@ -405,6 +407,7 @@
 		};
 		79C37E2130110C7200B647DD /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1829AC37E2F42758C748A74 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -413,6 +416,7 @@
 				DEVELOPMENT_TEAM = YM283LC5H4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_GeoapifyAPIKey = "$(GEOAPIFY_API_KEY)";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -443,6 +447,7 @@
 		};
 		79C37E2230110C7200B647DD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F1829AC37E2F42758C748A74 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -451,6 +456,7 @@
 				DEVELOPMENT_TEAM = YM283LC5H4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_GeoapifyAPIKey = "$(GEOAPIFY_API_KEY)";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Discover uses your location to find nearby places";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

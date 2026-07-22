@@ -33,21 +33,10 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.3.app
 
-      - name: Create Secrets.swift
+      - name: Create Config.xcconfig
         env:
           GEOAPIFY_API_KEY: ${{ secrets.GEOAPIFY_API_KEY }}
-        run: |
-          cat > blueprint/Secrets.swift << EOF
-          //
-          //  Secrets.swift
-          //  blueprint
-          //
-          //  Created by Luiz Mello on 22/07/26.
-          //
-          enum Secrets {
-              static let geoapifyAPIKey = "${GEOAPIFY_API_KEY}"
-          }
-          EOF
+        run: echo "GEOAPIFY_API_KEY = $GEOAPIFY_API_KEY" > Config.xcconfig
 
       - name: Build
         run: |

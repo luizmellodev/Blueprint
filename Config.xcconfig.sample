@@ -1,0 +1,8 @@
+// Config.xcconfig.sample
+//
+// Copy this file to Config.xcconfig and fill in your API key.
+// Config.xcconfig is gitignored — never commit it.
+//
+// Get a free key at https://www.geoapify.com/ (3,000 requests/day)
+
+GEOAPIFY_API_KEY = your_api_key_here
