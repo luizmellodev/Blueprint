@@ -7,18 +7,6 @@
 
 import CoreLocation
 
-enum LocationAuthorizationStatus: Sendable {
-    case notDetermined
-    case authorized
-    case denied
-    case restricted
-}
-
-enum LocationServiceError: Error, Sendable {
-    case notAuthorized
-    case failedToGetLocation
-}
-
 protocol LocationServiceProtocol: AnyObject, Sendable {
     func requestAuthorization() async -> LocationAuthorizationStatus
     func authorizationStatus() -> LocationAuthorizationStatus
