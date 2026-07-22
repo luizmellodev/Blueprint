@@ -31,3 +31,12 @@ fastlane/test_output
 
 # API keys — copy Config.xcconfig.sample to Config.xcconfig and fill in your key
 Config.xcconfig
+
+# Saga website
+Website/deploy/
+Website/.build/
+Website/.swiftpm/
+Documentation/Content/en/static/output.css
+
+# CI coverage
+build/

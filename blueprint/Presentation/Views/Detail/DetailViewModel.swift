@@ -14,6 +14,7 @@ final class DetailViewModel {
     private(set) var details: PlaceDetails?
     private(set) var isFavorite: Bool = false
     private(set) var showFavoriteButton: Bool = false
+    private(set) var showMapView: Bool = false
     private(set) var favoriteError: String?
 
     private let fetchPlaceDetails: FetchPlaceDetailsUseCaseProtocol
@@ -29,6 +30,7 @@ final class DetailViewModel {
         self.fetchPlaceDetails = fetchPlaceDetails
         self.favorites = favorites
         self.showFavoriteButton = featureFlags.isEnabled(.favorites)
+        self.showMapView = featureFlags.isEnabled(.mapView)
     }
 
     func loadDetails() async {

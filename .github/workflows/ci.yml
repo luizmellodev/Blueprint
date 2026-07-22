@@ -38,22 +38,18 @@ jobs:
           GEOAPIFY_API_KEY: ${{ secrets.GEOAPIFY_API_KEY }}
         run: echo "GEOAPIFY_API_KEY = $GEOAPIFY_API_KEY" > Config.xcconfig
 
-      - name: Build
+      - name: Test with coverage
         run: |
           set -o pipefail
-          xcodebuild build \
-            -project blueprint.xcodeproj \
-            -scheme blueprint \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcpretty
-
-      - name: Test
-        run: |
-          set -o pipefail
+          rm -rf build/coverage.xcresult
           xcodebuild test \
             -project blueprint.xcodeproj \
             -scheme blueprint \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -enableCodeCoverage YES \
+            -resultBundlePath build/coverage.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty
+
+      - name: Check coverage threshold
+        run: chmod +x scripts/check-coverage.sh && ./scripts/check-coverage.sh build/coverage.xcresult 70

@@ -53,7 +53,9 @@ struct DetailView: View {
                 ScrollView {
                     VStack(spacing: DSSpacing.md) {
                         headerSection(poi)
-                        POIMapView(poi: poi)
+                        if viewModel.showMapView {
+                            POIMapView(poi: poi)
+                        }
                         infoCard(poi)
                     }
                     .padding(.bottom, DSSpacing.xl)

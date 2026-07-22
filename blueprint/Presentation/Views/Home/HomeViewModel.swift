@@ -33,6 +33,7 @@ final class HomeViewModel {
     private var searchTask: Task<Void, Never>?
     private var locationSearchTask: Task<Void, Never>?
     private var lastCoordinates: (latitude: Double, longitude: Double)?
+    private var fetchGeneration = 0
 
     init(
         fetchNearbyPOIs: FetchNearbyPOIsUseCaseProtocol,
@@ -94,11 +95,14 @@ final class HomeViewModel {
     }
 
     func selectLocation(_ result: GeocodingResult) async {
+        locationSearchTask?.cancel()
+        locationSearchTask = nil
         locationQuery = result.displayName
         locationSuggestions = []
         lastCoordinates = (latitude: result.latitude, longitude: result.longitude)
         currentOffset = 0
         allPOIs = []
+        visiblePOIs = []
         await fetch(offset: 0)
     }
 
@@ -111,10 +115,18 @@ final class HomeViewModel {
     }
 
     private func fetch(offset: Int) async {
-        if offset == 0 { state = .loading }
+        fetchGeneration += 1
+        let generation = fetchGeneration
+
+        if offset == 0 {
+            state = .loading
+            visiblePOIs = []
+        }
 
         do {
             let coordinates = try await resolveCoordinates()
+            guard generation == fetchGeneration else { return }
+
             lastCoordinates = coordinates
             let result = try await fetchNearbyPOIs.execute(
                 lat: coordinates.latitude,
@@ -122,12 +134,15 @@ final class HomeViewModel {
                 limit: pageSize,
                 offset: offset
             )
+            guard generation == fetchGeneration else { return }
+
             allPOIs = offset == 0 ? result.items : allPOIs + result.items
             currentOffset = allPOIs.count
             hasMore = result.hasMore
             visiblePOIs = filtered(allPOIs)
             state = .success
         } catch {
+            guard generation == fetchGeneration else { return }
             state = .failure(.networking)
         }
     }
