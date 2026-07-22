@@ -39,13 +39,21 @@ jobs:
         id: sim
         run: |
           xcrun simctl list > /dev/null
-          LINE=$(xcodebuild -project blueprint.xcodeproj -scheme blueprint -showdestinations 2>/dev/null \
+          DESTINATIONS=$(xcodebuild -project blueprint.xcodeproj -scheme blueprint -showdestinations 2>/dev/null \
             | grep "platform:iOS Simulator" \
-            | grep "arch:arm64" \
-            | grep -E "name:iPhone 16(\}|,)" \
-            | head -1)
+            | grep "arch:arm64")
+          pick() {
+            echo "$DESTINATIONS" | grep "name:$1 }" | head -1
+          }
+          LINE=$(pick "iPhone 16")
           if [ -z "$LINE" ]; then
-            echo "No iPhone 16 simulator destination found"
+            LINE=$(pick "iPhone 17")
+          fi
+          if [ -z "$LINE" ]; then
+            LINE=$(echo "$DESTINATIONS" | grep -E "name:iPhone [0-9]+ }" | head -1)
+          fi
+          if [ -z "$LINE" ]; then
+            echo "No iPhone simulator destination found"
             xcodebuild -project blueprint.xcodeproj -scheme blueprint -showdestinations
             exit 1
           fi
