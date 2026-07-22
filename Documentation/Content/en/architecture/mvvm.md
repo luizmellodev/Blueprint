@@ -70,11 +70,14 @@ ViewModels depend on **protocols** (`FetchNearbyPOIsUseCaseProtocol`, `RouterPro
 
 ```mermaid
 flowchart LR
-  V[HomeView] -->|actions| VM[HomeViewModel]
-  VM -->|state| V
-  VM --> UC[FetchNearbyPOIsUseCase]
-  VM --> LOC[LocationService]
-  UC --> REPO[POIRepository]
+  V[HomeView / DetailView]
+  VM[ViewModel]
+  ST[HomeUIState / DetailUIState]
+  UC[UseCase protocols]
+  V -->|user action| VM
+  VM -->|@Observable state| V
+  VM --> ST
+  VM --> UC
 ```
 
 ## Related code

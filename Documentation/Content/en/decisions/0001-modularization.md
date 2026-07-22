@@ -13,32 +13,38 @@ Accepted
 
 ## Context
 
-Blueprint aims to teach iOS architecture. A monolithic target makes it easy to violate layer boundaries, Domain importing SwiftUI, DTOs leaking into ViewModels.
+Blueprint started as a teaching codebase. The reference project ([Native Birds](https://github.com/spanesso/native-birds)) already separated concerns; we wanted boundaries enforced by the compiler from day one, not after a painful refactor.
 
 ## Problem
 
-Without compile-time boundaries, dependency direction relies on convention and code review. Learners cannot see architecture enforced by the tools.
+In a single app target, anything can import anything. Domain types drift toward SwiftUI. Learners cannot *see* architecture, only read about it.
 
 ## Alternatives
 
 1. **Single app target:** simplest, no boundaries
-2. **Xcode frameworks:** heavier, less SPM-native
-3. **Local Swift Packages:** SPM boundaries, portable modules
+2. **Xcode frameworks:** familiar, heavier than SPM
+3. **Local Swift Packages:** SPM-native, strict imports
 
 ## Decision
 
-Use local Swift Packages (`DesignSystem`, `Networking`) from project creation. Keep Navigation and DI in the app target.
+Extract **DesignSystem** and **Networking** as local packages. Keep Navigation, DI, and feature screens in the app target because they reference cross-layer types (`POI`, full object graph).
 
-## Consequences
+## What worked
 
-**Positive:**
-- Compiler enforces import boundaries
-- Packages reusable across targets
-- Teaches modularization as default, not refactor
+- Import errors immediately teach dependency direction ("Domain cannot import DesignSystem tokens in wrong layer" becomes obvious in reviews).
+- Packages rebuild incrementally; adding tokens to DesignSystem does not recompile every ViewModel file in isolation tests.
+- Two packages were enough to demonstrate the pattern without drowning new readers in target management.
 
-**Negative:**
-- More Xcode targets to manage
-- Navigation cannot move to a package without losing type-safe routes across features
+## What hurt
+
+- More Xcode targets to maintain (scheme, test targets, package resolution).
+- Navigation and DI **cannot** move to packages without awkward type erasure or duplicated models.
+- Only two packages exist so far; the app target is still large. Feature modules (Home, Detail as packages) remain future work.
+
+## What we changed later
+
+- Nothing structural yet. [Future Directions](/guides/future-directions/) lists feature modules as a study path.
+- Documentation grew faster than package count: most architecture articles still describe the app target.
 
 ## References
 

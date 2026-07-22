@@ -13,36 +13,42 @@ Accepted
 
 ## Context
 
-Geoapify requires an API key on every request. Keys must not be committed. CI needs keys from GitHub Secrets.
+Geoapify requires a key on every request. Contributors clone a public repo; keys must never land in git. CI needs the same key from GitHub Secrets.
 
 ## Problem
 
-Hardcoded keys leak in git history. Environment variables don't integrate cleanly with iOS bundle Info.plist without build-step glue.
+Hardcoded keys leak in history. Raw environment variables do not populate `Bundle.main` without build glue. Native Birds uses Firebase Remote Config; Blueprint chose a simpler local-dev path first.
 
 ## Alternatives
 
-1. **Hardcode in Secrets.swift:** ❌ committed to git
-2. **Environment variables only:** awkward in Xcode
+1. **Hardcode in Secrets.swift:** rejected
+2. **Environment variables only:** awkward in Xcode UI
 3. **xcconfig → Info.plist → Bundle:** standard iOS pattern
+4. **Remote Config at runtime:** planned v0.15
 
 ## Decision
 
-`Config.xcconfig` (gitignored) defines `GEOAPIFY_API_KEY`. `Supporting/Info.plist` references `$(GEOAPIFY_API_KEY)`. `Secrets.swift` reads from `Bundle.main`.
+Gitignored `Config.xcconfig` defines `GEOAPIFY_API_KEY`. `Supporting/Info.plist` injects into bundle. `Secrets.swift` reads at runtime.
 
-Note: custom `INFOPLIST_KEY_*` in xcconfig alone does not work, Xcode ignores user-defined keys when generating Info.plist. A partial Info.plist file is required.
+## What worked
 
-## Consequences
+- Clone → copy sample → build is easy to document.
+- CI writes xcconfig from `GEOAPIFY_API_KEY` secret in one step.
+- Same pattern scales to staging/production xcconfig files.
 
-**Positive:**
-- Keys out of source control
-- CI generates xcconfig from secrets
-- Same pattern works for staging/production keys
+## What hurt
 
-**Negative:**
-- Key still visible in app bundle at runtime (all client-side keys are)
-- Requires manual Config.xcconfig setup after clone
+- **First implementation failed:** custom `INFOPLIST_KEY_*` in xcconfig alone did not appear in generated Info.plist when `GENERATE_INFOPLIST_FILE = YES`. Xcode silently ignored the custom key.
+- Keys in client apps are always extractable from the bundle (not a Blueprint-specific flaw).
+- Onboarding friction: new contributors hit empty `apiKey=` until xcconfig is configured.
+
+## What we changed later
+
+- Added partial `Supporting/Info.plist` with `GeoapifyAPIKey = $(GEOAPIFY_API_KEY)` and set `INFOPLIST_FILE` in project settings (required fix, not optional polish).
+- Documented the failure in [API Key Setup](/guides/api-key-setup/) so others skip the trap.
 
 ## References
 
 - [API Key Setup](/guides/api-key-setup/)
+- [Networking](/architecture/networking/)
 - `Supporting/Info.plist`, `blueprint/Secrets.swift`

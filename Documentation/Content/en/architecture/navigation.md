@@ -51,9 +51,16 @@ iOS 18 zoom transition: `HomeFactory` receives `Namespace.ID` for matched geomet
 flowchart LR
   VM[HomeViewModel]
   R[RouterProtocol]
-  AR[AppRouter path]
+  AR[AppRouter path AppRoute]
   NS[NavigationStack]
-  VM -->|push detail| R --> AR --> NS
+  HF[HomeFactory]
+  DF[DetailFactory]
+
+  VM -->|push .detail poi| R
+  R --> AR
+  AR --> NS
+  NS -->|root| HF
+  NS -->|destination| DF
 ```
 
 ## Related code

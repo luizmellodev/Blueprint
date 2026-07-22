@@ -15,7 +15,7 @@ protocol FeatureFlagServiceProtocol: Sendable {
 final class LocalFeatureFlagService: FeatureFlagServiceProtocol {
     private let flags: [FeatureFlag: Bool] = [
         .favorites: true,
-        .mapView: false,
+        .mapView: true,
         .categoryFilter: false
     ]
 

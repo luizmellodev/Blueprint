@@ -13,32 +13,39 @@ Accepted
 
 ## Context
 
-Discover's object graph grows with each chapter, networking, location, persistence, feature flags, multiple screens.
+Each chapter added dependencies: networking, location, SwiftData, feature flags, second screen. Singletons were unacceptable for a project that teaches testability.
 
 ## Problem
 
-Singletons and service locators hide dependencies. DI frameworks add magic that obscures the learning goal.
+Service locators hide dependencies. DI frameworks (Swinject, Factory) solve scale but obscure the graph for learners jumping into the repo.
 
 ## Alternatives
 
-1. **Swinject / Factory:** powerful, runtime resolution
-2. **Service locator:** global access, hidden deps
-3. **DIContainer + bundles + factories:** explicit, compile-time
+1. **Swinject / Factory:** less boilerplate, runtime resolution
+2. **Service locator:** global access
+3. **DIContainer + bundles + factories:** explicit compile-time wiring
 
 ## Decision
 
-Single `DIContainer` at app launch. Dependencies grouped in bundles (`POIDependencies`, etc.). One factory per screen.
+One `@MainActor DIContainer` at launch. Bundles group dependencies by concern. `HomeFactory` and `DetailFactory` assemble screens.
 
-## Consequences
+## What worked
 
-**Positive:**
-- Entire graph readable in one place
-- Jump-to-definition works everywhere
-- No runtime resolution failures
+- Entire object graph traceable from `DIContainer.swift` in minutes.
+- Bundles prevented a flat 200-line container when POI, persistence, and flags arrived.
+- Factories encapsulate "what does Home need?" without Views knowing repository types.
+- `DIContainerTests` smoke-test that wiring does not crash.
 
-**Negative:**
-- Manual wiring when adding screens
-- Container grows, mitigated by bundles
+## What hurt
+
+- Manual wiring every time a screen or dependency appears.
+- `HomeFactory` already receives `FeatureFlagDependencies` but does not use it yet (placeholder for `.categoryFilter`).
+- `@MainActor` container means tests must run on main actor (acceptable, but worth documenting).
+
+## What we changed later
+
+- Split flat container into bundles after chapter 5 (refactor, not rewrite).
+- Considered Factory library; kept manual wiring for teaching clarity ([Future Directions](/guides/future-directions/)).
 
 ## References
 

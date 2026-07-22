@@ -62,6 +62,7 @@ See [Getting Started](/guides/getting-started/) to configure the API key locally
 | [ADRs](/decisions/) | Formal decision records with context and consequences |
 | [Roadmap](/guides/roadmap/) | Chapter-by-chapter project evolution |
 | [Future Directions](/guides/future-directions/) | Study ideas, alternatives, and fork prompts (open) |
+| [Contributing](/guides/contributing/) | PR format, ADR journal template, local checks |
 
 ## Architecture
 

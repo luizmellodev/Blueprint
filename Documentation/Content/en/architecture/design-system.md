@@ -38,7 +38,23 @@ Tokens in a dedicated package expose a small public API, prevent the app target 
 
 `SkeletonCardView` and `ShimmerModifier` live here as reusable loading primitives.
 
-## Related code
+```mermaid
+flowchart LR
+  subgraph Package["DesignSystem package"]
+    T[DSSpacing · DSTypography · DSRadius · DSColor]
+    M[ShimmerModifier · SkeletonStyle]
+  end
+
+  subgraph App["Presentation views"]
+    H[HomeView · POICardView]
+    D[DetailView · DetailRowView]
+    S[SkeletonCardView]
+  end
+
+  T --> H
+  T --> D
+  M --> S
+```
 
 - `Packages/DesignSystem/Sources/DesignSystem/Tokens/`
 - `Packages/DesignSystem/Sources/DesignSystem/Modifiers/ShimmerModifier.swift`

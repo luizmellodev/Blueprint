@@ -13,32 +13,39 @@ Accepted
 
 ## Context
 
-Discover has multiple screens (Home, Detail, Search). Navigation must be programmatic, testable, and type-safe.
+Discover needs Home → Detail navigation with a typed `POI` payload. ViewModels should trigger navigation without owning `NavigationStack` state.
 
 ## Problem
 
-Views manipulating `NavigationPath` directly couple UI to navigation mechanics and resist unit testing.
+Views that push routes directly are hard to test and tightly coupled to SwiftUI. UIKit Coordinators felt heavy for a two-screen SwiftUI app.
 
 ## Alternatives
 
-1. **UIKit Coordinator:** familiar but heavy in SwiftUI
+1. **UIKit Coordinator:** familiar, verbose in SwiftUI
 2. **EnvironmentObject router:** implicit, hard to mock
 3. **NavigationStack + AppRoute + RouterProtocol:** typed, injectable
 
 ## Decision
 
-`AppRoute` enum defines destinations. `AppRouter` holds `path: [AppRoute]`. Views depend on `RouterProtocol`.
+`AppRoute` enum (`.home`, `.detail(poi:)`). `AppRouter` holds `path: [AppRoute]`. ViewModels depend on `RouterProtocol`, not `AppRouter`.
 
-## Consequences
+## What worked
 
-**Positive:**
-- Testable navigation (mock router)
-- Type-safe pushes, compiler catches invalid routes
-- `@Observable` router without Combine
+- Mock router in tests without spinning up `NavigationStack`.
+- Compiler rejects invalid routes (Detail requires a `POI`).
+- `@Observable` router avoids Combine for navigation state.
+- iOS 18 zoom transition wired through factory + namespace without polluting ViewModel.
 
-**Negative:**
-- Router stays in app target (references `POI` and feature destinations)
-- Each new screen adds a case to `AppRoute`
+## What hurt
+
+- Router lives in app target forever (references Domain `POI`).
+- Every new destination adds an `AppRoute` case and factory wiring.
+- Deep links (planned v0.13) will stress this enum unless we plan URL mapping early.
+
+## What we changed later
+
+- Added `RouterProtocol` abstraction after starting with concrete `AppRouter` in Views (refactor made ViewModels testable).
+- `AppRoute.home` exists for stack consistency even when root is fixed in `AppRouterView`.
 
 ## References
 

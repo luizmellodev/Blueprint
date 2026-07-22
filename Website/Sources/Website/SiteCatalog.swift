@@ -36,6 +36,7 @@ let siteCatalog: [SiteEntry] = [
   SiteEntry(section: .guides, slug: "documentation-site", title: "Documentation Site", order: 5),
   SiteEntry(section: .guides, slug: "roadmap", title: "Roadmap", order: 6),
   SiteEntry(section: .guides, slug: "future-directions", title: "Future Directions", order: 7),
+  SiteEntry(section: .guides, slug: "contributing", title: "Contributing", order: 8),
   // Architecture
   SiteEntry(section: .architecture, slug: "overview", title: "Architecture Overview", order: 0),
   SiteEntry(section: .architecture, slug: "modularization", title: "Modularization", order: 1),

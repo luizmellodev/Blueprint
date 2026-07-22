@@ -23,6 +23,22 @@ Blueprint avoids micro-optimizations. Focus: reduce unnecessary network calls, k
 | Idle guard | `guard case .idle` prevents reload on navigation back |
 | Logging | OSLog with subsystem/category |
 
+```mermaid
+sequenceDiagram
+  participant U as User typing
+  participant VM as HomeViewModel
+  participant UC as SearchLocationUseCase
+
+  U->>VM: searchQuery changes
+  VM->>VM: cancel prior Task
+  VM->>VM: sleep 300ms debounce
+  VM->>UC: geocode city
+  UC-->>VM: GeocodingResult
+  VM->>VM: update coordinates + reload POIs
+```
+
+Pagination loads 20 items per page. `loadMore()` appends when the user reaches the list footer.
+
 ## Trade-offs
 
 - **5 min TTL:** balances freshness vs API quota (3,000/day free tier)

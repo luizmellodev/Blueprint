@@ -13,32 +13,38 @@ Accepted
 
 ## Context
 
-Discover persists favorite POIs. SwiftData requires `@Model` classes. Domain layer must stay framework-free.
+Favorites must persist across launches. SwiftData is the persistence framework chosen for iOS 17 teaching value. Domain layer must remain import-clean.
 
 ## Problem
 
-Making `POI` a `@Model` couples Domain to SwiftData. Swapping persistence backends requires rewriting business entities.
+Applying `@Model` to `POI` would couple business entities to Apple persistence APIs and make Domain untestable without SwiftData.
 
 ## Alternatives
 
-1. **@Model on POI:** simple but violates clean architecture
-2. **UserDefaults:** doesn't scale for rich favorites
-3. **Separate FavoritePOI + Repository mapping:** clean boundary
+1. **@Model on POI:** fewer types, wrong layer boundary
+2. **UserDefaults:** too weak for queries and growth
+3. **FavoritePOI + FavoritesRepository mapping:** explicit boundary
 
 ## Decision
 
-`POI` stays a Domain struct. `FavoritePOI` is a Data-layer `@Model`. `FavoritesRepository` maps between them.
+Domain `POI` stays a struct. `FavoritePOI` is a Data-layer `@Model`. `FavoritesRepository` maps both ways. `FavoritesUseCase` is the Presentation entry point.
 
-## Consequences
+## What worked
 
-**Positive:**
-- Domain has zero SwiftData imports
-- Persistence backend swappable
-- Teaches correct layer separation
+- Domain files have zero SwiftData imports (easy to verify in reviews).
+- Favorite snapshot model survives API changes to live `POI` fields.
+- Toggle favorite from Detail is a clear UseCase → Repository story.
 
-**Negative:**
-- Mapping boilerplate
-- Favorite is a snapshot, not live API data
+## What hurt
+
+- Duplicate fields between `POI` and `FavoritePOI` (mapping boilerplate).
+- `FavoritesRepository` is `@MainActor` because `ModelContext` is used on main thread.
+- **No integration tests yet** for SwiftData (noted gap in [Testing](/architecture/testing/)).
+
+## What we changed later
+
+- Nothing in the persistence model. Planned: in-memory `ModelContainer` tests ([Future Directions](/guides/future-directions/)).
+- Initial prototype stored favorite IDs in UserDefaults; migrated to SwiftData in chapter 7 (intentional refactor for teaching persistence properly).
 
 ## References
 

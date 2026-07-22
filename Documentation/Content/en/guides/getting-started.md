@@ -29,6 +29,21 @@ Edit `Config.xcconfig` and replace `your_api_key_here` with your Geoapify key. T
 
 Discover loads nearby POIs based on simulator location (defaults to São Paulo if location permission is denied).
 
+```mermaid
+flowchart TB
+  APP[DiscoverApp @main]
+  ARV[AppRouterView]
+  DI[DIContainer]
+  HF[HomeFactory]
+  HV[HomeView + HomeViewModel]
+
+  APP --> ARV
+  ARV --> DI
+  DI --> HF
+  HF --> HV
+  HV -->|load| POIs[Nearby POIs via Geoapify]
+```
+
 ## Repository layout
 
 ```

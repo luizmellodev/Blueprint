@@ -67,14 +67,21 @@ HomeViewModel → FetchNearbyPOIsUseCase → POIRepository → NetworkClient
 API key comes from `Secrets.geoapifyAPIKey` (injected at repository init via `POIDependencies`), not hardcoded in source.
 
 ```mermaid
-flowchart TB
-  UC[UseCase]
-  REPO[Repository]
-  DTO[GeoapifyResponseDTO]
-  MAP[GeoapifyMapper]
-  POI[POI entity]
-  NET[NetworkClient]
-  UC --> REPO --> NET
+flowchart LR
+  subgraph Package["Networking package"]
+    NC[NetworkClient protocol]
+    URL[URLSessionNetworkClient]
+    URL --> NC
+  end
+
+  subgraph Data["Data layer"]
+    REPO[POIRepository]
+    DTO[GeoapifyResponseDTO]
+    MAP[GeoapifyMapper]
+    POI[POI entity]
+  end
+
+  REPO --> NC
   REPO --> DTO --> MAP --> POI
 ```
 

@@ -118,9 +118,8 @@ xcodebuild test -project blueprint.xcodeproj -scheme blueprint \
 - **Architecture:** Clean Architecture with protocol-driven boundaries (testable UseCases, Repositories, and services).
 - **Framework:** Swift Testing (`@Test`, `#expect`).
 - **Coverage target:** 70% on the `blueprint` app target (maintain and improve).
-- **How to measure:** Xcode → Report navigator → Coverage after running tests with **Gather coverage** enabled, or see [Running Tests](Documentation/Content/en/guides/running-tests.md).
-
-CI runs build and test on every PR. Coverage is not enforced in GitHub Actions yet.
+- **CI enforcement:** GitHub Actions fails PRs below 70% via `scripts/check-coverage.sh`.
+- **How to measure:** Xcode → Report navigator → Coverage, or see [Running Tests](Documentation/Content/en/guides/running-tests.md).
 
 ---
 
@@ -159,6 +158,8 @@ brew install loopwerk/tap/saga
 ```
 
 Deploy instructions: [`Website/README.md`](Website/README.md).
+
+Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ---
 

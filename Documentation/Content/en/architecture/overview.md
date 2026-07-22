@@ -5,14 +5,61 @@ order: 0
 ---
 # Architecture Overview (Clean Architecture)
 
-Discover is structured in layers. Dependencies point inward: Presentation and Data both depend on Domain, but Domain depends on nothing.
+Discover is structured in layers. Dependencies point inward: outer layers depend on inner layers, never the reverse.
 
 ```mermaid
 flowchart TB
-  DI["DI Container / View Factory<br/>DIContainer · HomeFactory · DetailFactory"]
-  UI["UI · Views · Navigation · DesignSystem"] --> PRES["Presentation · ViewModels · UIState"] --> DOM["Domain · Use Cases · Entities"] --> DATA["Data · Repositories · Cache"] --> EXT["External · Geoapify · CoreLocation"]
-  DI -.-> UI
+  subgraph L4["Layer 4 · Frameworks & Drivers"]
+    direction LR
+    SW[SwiftUI]
+    GA[Geoapify API]
+    CL[CoreLocation]
+    SD[SwiftData]
+  end
+
+  subgraph L3["Layer 3 · Interface Adapters"]
+    direction LR
+    UI[Views · ViewModels · Navigation]
+    AD[Repositories · Cache · DTOs · Mappers]
+  end
+
+  subgraph L2["Layer 2 · Use Cases"]
+    direction LR
+    UC[FetchNearbyPOIs · Favorites · Geocoding · PlaceDetails]
+  end
+
+  subgraph L1["Layer 1 · Entities"]
+    direction LR
+    EN[POI · PlaceDetails · AppError · PagedResult]
+  end
+
+  L4 --> L3
+  L3 --> L2
+  L2 --> L1
+```
+
+**Dependency rule:** Presentation and Data both talk to Domain. Domain imports nothing from SwiftUI, Geoapify, or SwiftData.
+
+```mermaid
+flowchart LR
+  subgraph App["App target"]
+    PRES[Presentation]
+    DOM[Domain]
+    DATA[Data]
+    DI[DIContainer · Factories]
+  end
+
+  subgraph Packages["Swift Packages"]
+    DS[DesignSystem]
+    NET[Networking]
+  end
+
+  PRES --> DOM
+  DATA --> DOM
+  DATA --> NET
+  PRES --> DS
   DI -.-> PRES
+  DI -.-> DATA
 ```
 
 ## UI Layer (SwiftUI)
@@ -159,15 +206,28 @@ Centralized tokens keep spacing, typography, and colors consistent. Presentation
 ## Data Flow (High Level)
 
 ```mermaid
-flowchart LR
-  Home[HomeViewModel] --> UC[FetchNearbyPOIsUseCase]
-  UC --> Repo[POIRepository]
-  Repo --> Cache[POICacheService]
-  Repo --> API[Geoapify]
-  Cache --> Repo
-  API --> Repo
-  Repo --> UC
-  UC --> Home
+sequenceDiagram
+  participant H as HomeViewModel
+  participant L as LocationService
+  participant UC as FetchNearbyPOIsUseCase
+  participant R as POIRepository
+  participant C as POICacheService
+  participant N as NetworkClient
+
+  H->>L: request coordinates
+  L-->>H: lat / lon
+  H->>UC: execute
+  UC->>R: fetchNearby
+  R->>C: load (first page)
+  alt cache hit
+    C-->>R: cached POIs
+  else cache miss
+    R->>N: GET /v2/places
+    N-->>R: JSON
+    R->>C: save
+  end
+  R-->>UC: PagedResult POI
+  UC-->>H: update HomeUIState
 ```
 
 **Home**
@@ -178,6 +238,19 @@ flowchart LR
 4. Mapper produces `[POI]`; ViewModel updates `HomeUIState`
 
 **Detail**
+
+```mermaid
+sequenceDiagram
+  participant D as DetailViewModel
+  participant PD as FetchPlaceDetailsUseCase
+  participant F as FavoritesUseCase
+  participant FF as FeatureFlagService
+
+  D->>FF: isEnabled mapView favorites
+  D->>PD: execute (async)
+  PD-->>D: PlaceDetails or silent fail
+  D->>F: toggleFavorite
+```
 
 1. `DetailViewModel` receives `POI` from navigation
 2. `FetchPlaceDetailsUseCase` loads extended data
@@ -222,8 +295,9 @@ No third-party DI framework. Wiring is explicit and traceable.
 
 - **Architecture:** [Clean Architecture with protocol-driven boundaries](/architecture/testing/). Domain, UseCases, Repositories, and services communicate through protocols. Tests replace infrastructure with mocks.
 - **Framework:** Swift Testing (`@Test`, `#expect`).
-- **Coverage target:** 70% line coverage on the `blueprint` app target. See [Running Tests](/guides/running-tests/) for how to measure in Xcode or via `xcrun xccov`.
-- **CI:** GitHub Actions runs build and test on every PR. Coverage is not enforced in CI yet.
+- **Coverage target:** 70% line coverage on the `blueprint` app target. See [Running Tests](/guides/running-tests/).
+- **CI:** GitHub Actions runs tests on every PR.
+- **Coverage gate:** PRs fail below **70%** via `scripts/check-coverage.sh`.
 
 ## Project Setup
 

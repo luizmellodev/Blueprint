@@ -64,11 +64,17 @@ final class HomeViewModel {
 Views observe changes without `objectWillChange.send()`.
 
 ```mermaid
-flowchart TB
-  VM["@Observable HomeViewModel"]
-  V[HomeView with @State viewModel]
-  VM -->|property access tracking| V
-  V -->|calls load refresh| VM
+sequenceDiagram
+  participant V as HomeView
+  participant VM as @Observable HomeViewModel
+  participant UC as UseCase
+
+  V->>VM: load()
+  VM->>VM: state = .loading
+  VM->>UC: execute
+  UC-->>VM: POIs
+  VM->>VM: state = .success
+  Note over V,VM: SwiftUI re-renders on tracked property change
 ```
 
 ## Related code

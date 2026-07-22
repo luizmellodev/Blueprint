@@ -37,3 +37,6 @@ Website/deploy/
 Website/.build/
 Website/.swiftpm/
 Documentation/Content/en/static/output.css
+
+# CI coverage
+build/

@@ -1,11 +1,11 @@
 ---
 title: Feature Flags
-summary: FeatureFlag enum and FeatureFlagServiceProtocol with a local in-memory backend today.
+summary: FeatureFlag enum and FeatureFlagServiceProtocol. Toggle flags in LocalFeatureFlagService and rebuild.
 order: 10
 ---
 # Why Feature Flags?
 
-Some Discover capabilities should ship in code but stay **off or gradual** until validated: map on Detail, category filters, favorites UI.
+Some Discover capabilities should ship in code but stay **off until validated**: map on Detail, category filters, favorites UI.
 
 ## What problem does this solve?
 
@@ -13,7 +13,7 @@ Hardcoded `#if DEBUG` or string flag names (`"show_map"`) cause:
 
 - Typos discovered at runtime
 - No single place to toggle behavior
-- App Store release required to disable a broken feature
+- App Store release required to disable a broken feature (without Remote Config)
 
 ## Why this solution?
 
@@ -31,9 +31,9 @@ protocol FeatureFlagServiceProtocol: Sendable {
 }
 ```
 
-`LocalFeatureFlagService` holds defaults in a dictionary. `DetailViewModel` reads `.favorites` at init. `DetailView` reads `.mapView` for `POIMapView`.
+`LocalFeatureFlagService` holds defaults in code. Views and ViewModels read flags at init through injected `FeatureFlagServiceProtocol`.
 
-No Remote Config in the repo today, but the protocol slot is ready.
+Remote Config is not implemented yet. The protocol exists so the backend can be swapped later.
 
 ## Alternatives
 
@@ -47,30 +47,58 @@ No Remote Config in the repo today, but the protocol slot is ready.
 
 - **Pro:** Compiler-checked flag names
 - **Pro:** Swap `LocalFeatureFlagService` for Remote Config without View changes
-- **Pro:** `Sendable` protocol fits async call sites
-- **Con:** Local backend requires rebuild to change defaults
+- **Con:** Local backend requires **rebuild** to change flags (no runtime debug menu)
 - **Con:** `.categoryFilter` reserved but not wired in UI yet
 
-## How Blueprint implements it
+## How to toggle a flag
 
-**Current defaults** (`LocalFeatureFlagService`):
+There is no in-app settings screen. Flags live in source:
 
-| Flag | Default | Used in |
+1. Open `blueprint/Data/FeatureFlags/FeatureFlagService.swift`
+2. Edit `LocalFeatureFlagService.flags`:
+
+```swift
+private let flags: [FeatureFlag: Bool] = [
+    .favorites: true,
+    .mapView: true,        // set false to hide map on Detail
+    .categoryFilter: false
+]
+```
+
+3. Rebuild and run (⌘R)
+
+## What is wired today
+
+| Flag | Default | Effect when `true` |
 |---|---|---|
-| `.favorites` | `true` | `DetailViewModel.showFavoriteButton` |
-| `.mapView` | `false` | `DetailView` map section |
-| `.categoryFilter` | `false` | Not wired yet |
+| `.favorites` | `true` | Favorite button on Detail screen |
+| `.mapView` | `true` | `POIMapView` section on Detail |
+| `.categoryFilter` | `false` | **Not wired** (enum + DI only) |
 
-Wired through `FeatureFlagDependencies` → `DetailFactory` / `HomeFactory` as needed.
+**Try the map:** map is on by default. Set `.mapView: false` and rebuild to hide it.
+
+**Hide favorites:** set `.favorites: false`, rebuild. The heart button disappears.
+
+## How flags reach the UI
+
+```
+FeatureFlagDependencies
+  └── LocalFeatureFlagService
+        └── DetailFactory
+              └── DetailViewModel (reads .favorites, .mapView at init)
+                    └── DetailView (showFavoriteButton, showMapView)
+```
+
+`HomeFactory` receives `FeatureFlagDependencies` for future Home flags (e.g. `.categoryFilter`). Not used yet.
 
 ```mermaid
 flowchart LR
-  FF[FeatureFlag enum]
   SVC[LocalFeatureFlagService]
   VM[DetailViewModel]
   V[DetailView]
-  FF --> SVC --> VM
-  SVC --> V
+  SVC --> VM
+  VM -->|showMapView| V
+  VM -->|showFavoriteButton| V
 ```
 
 ## Related code
@@ -83,5 +111,5 @@ flowchart LR
 
 ## Further reading
 
+- [Future Directions: Remote Config](/guides/future-directions/)
 - [Dependency Injection](/architecture/dependency-injection/)
-- [MVVM](/architecture/mvvm/)

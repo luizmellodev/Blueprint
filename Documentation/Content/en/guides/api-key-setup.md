@@ -11,15 +11,16 @@ Discover calls Geoapify on every POI fetch. The API key must be available at run
 
 ## The solution
 
-```
-Config.xcconfig (gitignored)
-  └─ GEOAPIFY_API_KEY = your_key
-       ↓
-Supporting/Info.plist
-  └─ GeoapifyAPIKey = $(GEOAPIFY_API_KEY)
-       ↓
-Secrets.swift
-  └─ Bundle.main.infoDictionary["GeoapifyAPIKey"]
+```mermaid
+flowchart LR
+  XC[Config.xcconfig gitignored]
+  PL[Supporting/Info.plist]
+  SEC[Secrets.swift]
+  REPO[POIRepository]
+
+  XC -->|GEOAPIFY_API_KEY| PL
+  PL -->|GeoapifyAPIKey| SEC
+  SEC -->|Bundle.main| REPO
 ```
 
 ## Local setup

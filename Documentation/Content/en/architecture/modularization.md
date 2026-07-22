@@ -55,16 +55,26 @@ App target (blueprint/)
 
 ```mermaid
 flowchart TB
-  PRES[Presentation]
-  DS[DesignSystem Package]
-  DATA[Data]
-  DOM[Domain]
-  NET[Networking Package]
+  subgraph Packages["Packages/"]
+    DS[DesignSystem]
+    NET[Networking]
+  end
+
+  subgraph App["blueprint/ app target"]
+    PRES[Presentation]
+    DATA[Data]
+    DOM[Domain]
+    NAV[Navigation]
+    DI[DI]
+  end
+
   PRES --> DOM
   PRES --> DS
   DATA --> DOM
   DATA --> NET
-  DOM
+  DI --> PRES
+  DI --> DATA
+  NAV --> DOM
 ```
 
 ## Related code

@@ -61,14 +61,24 @@ View → ViewModel → UseCase → Repository → (NetworkClient | Cache | Swift
 
 ```mermaid
 flowchart TB
-  VM[HomeViewModel]
-  UC[FetchNearbyPOIsUseCase]
-  REPO[POIRepository]
-  CACHE[POICacheService]
-  NET[NetworkClient]
-  VM --> UC --> REPO
-  REPO --> CACHE
-  REPO --> NET
+  subgraph Domain["Domain boundary"]
+    UC[FetchNearbyPOIsUseCase]
+    PROTO[POIRepositoryProtocol]
+    UC --> PROTO
+  end
+
+  subgraph Data["Data implementation"]
+    REPO[POIRepository]
+    CACHE[POICacheService]
+    NET[NetworkClient]
+    DTO[Geoapify DTOs]
+    MAP[GeoapifyMapper]
+    REPO --> CACHE
+    REPO --> NET
+    REPO --> DTO --> MAP
+  end
+
+  PROTO -.->|conforms| REPO
 ```
 
 ## Related code

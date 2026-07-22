@@ -61,14 +61,23 @@ No Swinject, no property wrappers, no runtime resolution.
 
 ```mermaid
 flowchart TB
+  ARV[AppRouterView]
   C[DIContainer]
+  ARV --> C
+  C --> HF[HomeFactory]
+  C --> DF[DetailFactory]
   C --> N[NetworkDependencies]
   C --> P[POIDependencies]
   C --> L[LocationDependencies]
   C --> PE[PersistenceDependencies]
   C --> F[FeatureFlagDependencies]
-  C --> HF[HomeFactory]
-  C --> DF[DetailFactory]
+  HF --> HV[HomeView + HomeViewModel]
+  DF --> DV[DetailView + DetailViewModel]
+  P --> HF
+  P --> DF
+  L --> HF
+  PE --> DF
+  F --> DF
 ```
 
 ## Related code
