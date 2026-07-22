@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// TODO: Explicar o padrão DIContainer + Factories e porque não usamos um framework de DI
+// TODO: Explicar porque as dependências são agrupadas (NetworkDependencies, POIDependencies) e não injetadas flat
 @MainActor
 final class DIContainer {
     let homeFactory: HomeFactory

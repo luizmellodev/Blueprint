@@ -11,6 +11,8 @@ protocol FetchNearbyPOIsUseCaseProtocol: Sendable {
     func execute(lat: Double, lon: Double, limit: Int) async throws -> PagedResult<POI>
 }
 
+// TODO: Explicar porque UseCase é uma struct e não uma class
+// TODO: Explicar o papel do UseCase como ponte entre Repository e ViewModel
 struct FetchNearbyPOIsUseCase: FetchNearbyPOIsUseCaseProtocol {
     let repository: POIRepositoryProtocol
 

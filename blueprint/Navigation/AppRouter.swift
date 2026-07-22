@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// TODO: Explicar porque usamos @Observable ao invés de ObservableObject para o Router
+// TODO: Explicar porque o Router fica no app target e não em um Package
 @MainActor
 @Observable
 final class AppRouter: RouterProtocol {

@@ -7,6 +7,8 @@
 
 import Foundation
 
+// TODO: Explicar porque usamos actor ao invés de final class para o cache (proteção contra data races)
+// TODO: Explicar a estratégia de TTL e porque 5 minutos
 actor POICacheService {
     private let fileName = "poi_cache.json"
     private let maxAgeSeconds: TimeInterval = 300 // 5 minutes
