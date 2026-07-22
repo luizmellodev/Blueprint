@@ -9,7 +9,7 @@ import SwiftUI
 
 @MainActor
 @Observable
-final class AppRouter {
+final class AppRouter: RouterProtocol {
     var path: [AppRoute] = []
 
     func push(_ route: AppRoute) {

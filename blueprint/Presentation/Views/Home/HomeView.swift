@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State var viewModel: HomeViewModel
-    let router: AppRouter
+    let router: any RouterProtocol
 
     var body: some View {
         Group {
