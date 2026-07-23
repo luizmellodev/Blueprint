@@ -2,7 +2,7 @@ name: Website
 
 on:
   push:
-    branches: [main, website]
+    branches: [main]
     paths:
       - 'Website/**'
       - 'Documentation/**'
@@ -43,7 +43,7 @@ jobs:
     needs: build
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/website'))
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
