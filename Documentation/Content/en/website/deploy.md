@@ -59,7 +59,7 @@ Pull requests and pushes to `main` run `.github/workflows/website.yml`:
 
 On `main`, a follow-up job also publishes the built site when `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` are set in GitHub secrets.
 
-**404 on Vercel?** The `deploy/` folder is gitignored. Vercel Git integration alone cannot build Saga (macOS only). Disable Vercel Git auto-deploy or set Ignored Build Step to `exit 1`, then deploy via GitHub Actions or `./scripts/saga build && cd Website && vercel deploy deploy --prod`.
+**404 on Vercel?** The `deploy/` folder is gitignored. Vercel Git integration alone cannot build Saga (macOS only). In **Settings → Build and Deployment → Ignored Build Step**, choose **Don't build anything**, then deploy via GitHub Actions or `./scripts/saga build && cd Website/deploy && vercel deploy --prod`.
 
 PRs **build only** (no publish) so doc changes are validated before merge.
 
