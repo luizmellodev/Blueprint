@@ -93,7 +93,9 @@ Go to [Project Settings → General](https://vercel.com/luizmellodev/blueprint/s
 | **Ignored Build Step** | `exit 1` |
 | **Include files outside the root directory** | disabled (not needed) |
 
-The banner **"Production Overrides: output directory deploy"** compares the last live deployment with current settings. It is leftover from when Root Directory was `Website` and output was `deploy` (meaning `Website/deploy`). You cannot always clear it in the UI before the next successful deploy. The workflow clears `rootDirectory` and `outputDirectory` via the Vercel API before each deploy, then uploads pre-built HTML from `Website/deploy/`.
+The banner **"Production Overrides: output directory deploy"** compares the last live deployment with current settings. It clears after the next successful production deploy.
+
+The workflow uploads pre-built HTML from `Website/deploy/` with `vercel deploy --prod`. Keep Root Directory and Output Directory empty in project settings.
 
 ### Automatic deploy
 

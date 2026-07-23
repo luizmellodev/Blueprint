@@ -62,14 +62,6 @@ jobs:
         run: |
           printf '{\n  "cleanUrls": true,\n  "trailingSlash": true\n}\n' > Website/deploy/vercel.json
 
-      - name: Sync Vercel project settings
-        run: |
-          curl -fsS -X PATCH \
-            "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_PROJECT_ID }}?teamId=${{ secrets.VERCEL_ORG_ID }}" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"rootDirectory":null,"outputDirectory":null,"buildCommand":null,"installCommand":null}'
-
       - name: Link Vercel project for CLI
         run: |
           mkdir -p Website/deploy/.vercel
