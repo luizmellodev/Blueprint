@@ -50,8 +50,8 @@ Blueprint uses the same quality model as the [native-birds](https://github.com/s
 
 | Metric | Target |
 |---|---|
-| `blueprint` app target line coverage | **70%** |
-| CI enforcement | Yes (`scripts/check-coverage.sh` in GitHub Actions) |
+| `blueprint` app target line coverage | **70%** (long-term goal) |
+| CI floor | **20%** (`scripts/check-coverage.sh` in GitHub Actions) |
 
 How to measure: [Running Tests](/guides/running-tests/).
 

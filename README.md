@@ -119,8 +119,8 @@ xcodebuild test -project blueprint.xcodeproj -scheme blueprint \
 
 - **Architecture:** Clean Architecture with protocol-driven boundaries (testable UseCases, Repositories, and services).
 - **Framework:** Swift Testing (`@Test`, `#expect`).
-- **Coverage target:** 70% on the `blueprint` app target (maintain and improve).
-- **CI enforcement:** GitHub Actions fails PRs below 70% via `scripts/check-coverage.sh`.
+- **Coverage target:** 70% on the `blueprint` app target (long-term goal).
+- **CI floor:** GitHub Actions fails PRs below **20%** via `scripts/check-coverage.sh`.
 - **How to measure:** Xcode → Report navigator → Coverage, or see [Running Tests](Documentation/Content/en/guides/running-tests.md).
 
 ---

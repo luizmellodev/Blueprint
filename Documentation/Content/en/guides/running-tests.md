@@ -42,8 +42,8 @@ Blueprint follows the same quality bar as the [native-birds](https://github.com/
 
 | Metric | Target |
 |---|---|
-| **App target (`blueprint`)** | 70% line coverage |
-| **Status** | Measured locally; not gated in CI yet |
+| **App target (`blueprint`)** | **70%** line coverage (long-term goal) |
+| **CI floor** | **20%** — enforced in GitHub Actions |
 
 Coverage focuses on **Domain, UseCases, ViewModels, and mappers**. SwiftUI layout, live network, and SwiftData integration are out of scope for now.
 

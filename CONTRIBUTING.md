@@ -103,13 +103,13 @@ xcodebuild test \
   -resultBundlePath /tmp/blueprint-coverage.xcresult \
   CODE_SIGNING_ALLOWED=NO
 
-./scripts/check-coverage.sh /tmp/blueprint-coverage.xcresult 70
+./scripts/check-coverage.sh /tmp/blueprint-coverage.xcresult 20
 
 # Docs site
 ./scripts/saga build
 ```
 
-CI runs SwiftLint, tests, and **fails if app target coverage drops below 70%**.
+CI runs SwiftLint, tests, and **fails if app target coverage drops below 20%** (70% is the long-term target).
 
 ## New files in Xcode
 

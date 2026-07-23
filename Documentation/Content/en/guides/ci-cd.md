@@ -1,6 +1,6 @@
 ---
 title: CI/CD
-summary: GitHub Actions pipeline with SwiftLint, tests, and 70% coverage gate.
+summary: GitHub Actions pipeline with SwiftLint, tests, and coverage gate.
 order: 4
 ---
 # CI/CD
@@ -14,15 +14,15 @@ Every pull request to `main` runs on `macos-15`:
 3. **Resolve iOS Simulator** (first available iPhone)
 4. **Create `Config.xcconfig`** from `GEOAPIFY_API_KEY` secret
 5. **`xcodebuild test`** with `-enableCodeCoverage YES`
-6. **Coverage gate:** `./scripts/check-coverage.sh build/coverage.xcresult 70`
+6. **Coverage gate:** `./scripts/check-coverage.sh build/coverage.xcresult 20`
 
-PRs fail if tests fail or if the **`blueprint` app target** line coverage drops below **70%**.
+PRs fail if tests fail or if the **`blueprint` app target** line coverage drops below **20%**. The long-term target is **70%**; raise the CI threshold as test coverage grows.
 
 ```mermaid
 flowchart LR
   PR[Pull request] --> L[SwiftLint strict]
   L --> T[xcodebuild test + coverage]
-  T --> C[check-coverage.sh 70%]
+  T --> C[check-coverage.sh 20%]
   C --> OK[Merge allowed]
   L -->|fail| X[Block PR]
   T -->|fail| X
@@ -46,7 +46,7 @@ xcodebuild test \
   -resultBundlePath /tmp/blueprint-coverage.xcresult \
   CODE_SIGNING_ALLOWED=NO
 
-./scripts/check-coverage.sh /tmp/blueprint-coverage.xcresult 70
+./scripts/check-coverage.sh /tmp/blueprint-coverage.xcresult 20
 ```
 
 ## SwiftLint

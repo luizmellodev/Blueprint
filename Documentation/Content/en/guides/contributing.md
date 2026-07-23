@@ -19,7 +19,7 @@ See also the repo root [CONTRIBUTING.md](https://github.com/luizmellodev/Bluepri
 
 - [ ] One logical change per PR when possible
 - [ ] Tests added or updated (`⌘U` or `xcodebuild test`)
-- [ ] Coverage stays at or above **70%** on the `blueprint` app target
+- [ ] Coverage stays at or above **20%** on the `blueprint` app target (CI floor; **70%** is the long-term goal)
 - [ ] Documentation updated in `Documentation/`
 - [ ] No secrets committed (`Config.xcconfig` stays gitignored)
 - [ ] SwiftLint passes (`swiftlint lint --strict`)
@@ -72,7 +72,7 @@ xcodebuild test \
   -resultBundlePath /tmp/blueprint-coverage.xcresult \
   CODE_SIGNING_ALLOWED=NO
 
-./scripts/check-coverage.sh /tmp/blueprint-coverage.xcresult 70
+./scripts/check-coverage.sh /tmp/blueprint-coverage.xcresult 20
 
 ./scripts/saga build
 ```

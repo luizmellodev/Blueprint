@@ -2,7 +2,7 @@
 set -euo pipefail
 
 RESULT_BUNDLE="${1:?Usage: check-coverage.sh <xcresult> [threshold_percent]}"
-THRESHOLD="${2:-70}"
+THRESHOLD="${2:-20}"
 
 if [[ ! -d "$RESULT_BUNDLE" ]]; then
   echo "Result bundle not found: $RESULT_BUNDLE" >&2

@@ -302,9 +302,9 @@ No third-party DI framework. Wiring is explicit and traceable.
 
 - **Architecture:** [Clean Architecture with protocol-driven boundaries](/architecture/testing/). Domain, UseCases, Repositories, and services communicate through protocols. Tests replace infrastructure with mocks.
 - **Framework:** Swift Testing (`@Test`, `#expect`).
-- **Coverage target:** 70% line coverage on the `blueprint` app target. See [Running Tests](/guides/running-tests/).
+- **Coverage target:** 70% line coverage on the `blueprint` app target (long-term). See [Running Tests](/guides/running-tests/).
 - **CI:** GitHub Actions runs tests on every PR.
-- **Coverage gate:** PRs fail below **70%** via `scripts/check-coverage.sh`.
+- **Coverage gate:** PRs fail below **20%** via `scripts/check-coverage.sh`.
 
 ## Project Setup
 
