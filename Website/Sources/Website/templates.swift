@@ -81,7 +81,7 @@ func docsShell(
         div(class: Theme.siteFooterInner) {
           p {
             "Blueprint by "
-            a(class: "text-blue-600 hover:underline dark:text-blue-400", href: "https://github.com/luizmellodevo", rel: "noopener") {
+            a(class: "text-blue-600 hover:underline dark:text-blue-400", href: "https://github.com/luizmellodev", rel: "noopener") {
               "Luiz Mello"
             }
             " · Built with "

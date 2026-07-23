@@ -168,7 +168,7 @@ Contributing: **[CONTRIBUTING.md](CONTRIBUTING.md)**
 
 ## Author
 
-**Luiz Mello** — [@luizmellodevo](https://github.com/luizmellodevo)
+**Luiz Mello** — [@luizmellodev](https://github.com/luizmellodev)
 
 Architecture patterns adapted from [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
 
