@@ -45,12 +45,9 @@ Documentation/
 ├── ROADMAP.md
 └── Content/
     ├── en/
-    │   ├── index.md
-    │   ├── guides/
-    │   ├── architecture/
-    │   ├── concepts/
-    │   ├── decisions/      ADRs
-    │   ├── website/        Meta-docs about this site
+    │   ├── index.md        Overview, setup, roadmap
+    │   ├── architecture/   MVVM, Domain, Repositories, DI, …
+    │   ├── website/        Saga meta-docs (3 pages)
     │   └── static/
     └── pt-BR/              Coming soon
 ```
@@ -59,15 +56,11 @@ Saga reads from `Documentation/Content/en/` and outputs to `Website/deploy/`.
 
 ## Site sections
 
-| Section | URL | Purpose |
+| Page | URL | Purpose |
 |---|---|---|
-| Guides | `/guides/` | Practical setup |
-| Architecture | `/architecture/` | Engineering decisions |
-| Concepts | `/concepts/` | Cross-cutting patterns |
-| ADRs | `/decisions/` | Formal decision records |
-| Website | `/website/` | How this site is built (Saga, Tailwind, build) |
-
-Meta-docs source: `Documentation/Content/en/website/`
+| Overview | `/` | Setup, Discover, roadmap |
+| Architecture | `/architecture/` | Layers, MVVM, Domain, Repositories, DI |
+| Website | `/website/` | How this site is built |
 
 ## Deploy to Vercel
 
@@ -120,7 +113,7 @@ In Vercel → **Settings → Build and Deployment → Ignored Build Step**, choo
 
 Required GitHub secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 
-To confirm production matches the latest docs change, check the **Ready** deployment in Vercel whose commit matches your merge and was created by the Website workflow deploy job—not a Git-only deployment named after a unrelated commit.
+To confirm production matches the latest docs change, check the **Ready** deployment in Vercel whose commit matches your merge and was created by the Website workflow deploy job, not a Git-only deployment named after a unrelated commit.
 
 ### Manual deploy
 

@@ -9,13 +9,6 @@ struct DocMetadata: Metadata {
   let order: Int?
 }
 
-struct ADRMetadata: Metadata {
-  let summary: String?
-  let status: String
-  let date: String?
-  let order: Int?
-}
-
 let tailwind = SwiftTailwind(version: "4.2.1")
 
 let tailwindInput = "../Documentation/Content/en/static/input.css"
@@ -37,16 +30,6 @@ try await Saga(input: "../Documentation/Content/en", output: "deploy")
   }
   .ignoreChanges("output.css")
   .register(
-    folder: "guides",
-    metadata: DocMetadata.self,
-    readers: [.parsleyMarkdownReader],
-    sorting: { ($0.metadata.order ?? 0) < ($1.metadata.order ?? 0) },
-    writers: [
-      .itemWriter(swim(renderGuide)),
-      .listWriter(swim(renderGuideIndex), output: "index.html"),
-    ]
-  )
-  .register(
     folder: "architecture",
     metadata: DocMetadata.self,
     readers: [.parsleyMarkdownReader],
@@ -54,26 +37,6 @@ try await Saga(input: "../Documentation/Content/en", output: "deploy")
     writers: [
       .itemWriter(swim(renderArchitecture)),
       .listWriter(swim(renderArchitectureIndex), output: "index.html"),
-    ]
-  )
-  .register(
-    folder: "concepts",
-    metadata: DocMetadata.self,
-    readers: [.parsleyMarkdownReader],
-    sorting: { ($0.metadata.order ?? 0) < ($1.metadata.order ?? 0) },
-    writers: [
-      .itemWriter(swim(renderConcept)),
-      .listWriter(swim(renderConceptIndex), output: "index.html"),
-    ]
-  )
-  .register(
-    folder: "decisions",
-    metadata: ADRMetadata.self,
-    readers: [.parsleyMarkdownReader],
-    sorting: { ($0.metadata.order ?? 0) < ($1.metadata.order ?? 0) },
-    writers: [
-      .itemWriter(swim(renderADR)),
-      .listWriter(swim(renderADRIndex), output: "index.html"),
     ]
   )
   .register(

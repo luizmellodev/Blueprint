@@ -106,19 +106,6 @@ func mermaidScripts() -> Node {
 
 // MARK: - Shared components
 
-func adrStatusBadge(_ status: String) -> Node {
-  switch status.lowercased() {
-  case "accepted":
-    span(class: Theme.badgeAccepted) { "Accepted" }
-  case "proposed":
-    span(class: Theme.badgeProposed) { "Proposed" }
-  case "deprecated":
-    span(class: Theme.badgeDeprecated) { "Deprecated" }
-  default:
-    span(class: Theme.badgeAccepted) { status }
-  }
-}
-
 func docHeader(eyebrow: String, title: String, summary: String?, badges: [Node] = []) -> Node {
   div(class: "not-prose mb-8") {
     p(class: Theme.eyebrow) { eyebrow }
@@ -174,18 +161,28 @@ func sectionIndexTiles(section: DocSection, items: [Item<DocMetadata>]) -> Node 
   }
 }
 
-func adrIndexTiles(items: [Item<ADRMetadata>]) -> Node {
-  div(class: Theme.tileGrid) {
-    items.map { item in
-      a(class: Theme.tile, href: item.url) {
-        h2(class: Theme.tileTitle) { item.title }
-        if let summary = item.metadata.summary {
-          p(class: Theme.tileSummary) { summary }
-        }
-        div(class: "mt-3") {
-          adrStatusBadge(item.metadata.status)
-        }
-      }
+// MARK: - Architecture
+
+func renderArchitecture(context: ItemRenderingContext<DocMetadata>) -> Node {
+  let slug = slugFromURL(context.item.url)
+  return docsShell(title: "\(context.item.title) | Blueprint", activeSection: .architecture, activeSlug: slug) {
+    article(class: Theme.prose) {
+      docHeader(eyebrow: "Architecture", title: context.item.title, summary: context.item.metadata.summary)
+      proseBody(context.item.body)
+      footerNav(section: .architecture, slug: slug)
+    }
+  }
+}
+
+func renderArchitectureIndex(context: ItemsRenderingContext<DocMetadata>) -> Node {
+  docsShell(title: "Architecture | Blueprint", activeSection: .architecture) {
+    article(class: Theme.prose) {
+      docHeader(
+        eyebrow: "Architecture",
+        title: "Architecture",
+        summary: "How Discover is structured: layers, patterns, and where code lives."
+      )
+      sectionIndexTiles(section: .architecture, items: context.items)
     }
   }
 }
@@ -224,7 +221,7 @@ func renderHome(context: ItemRenderingContext<EmptyMetadata>) -> Node {
       docHeader(
         eyebrow: "Overview",
         title: "Blueprint",
-        summary: "A public iOS architecture study project. Best practices in the open, not a universal reference."
+        summary: "A public iOS architecture study project. Notes in the open, not a universal reference."
       )
       proseBody(context.item.body)
     }
@@ -235,115 +232,4 @@ func slugFromURL(_ url: String) -> String {
   url.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     .components(separatedBy: "/")
     .last ?? url
-}
-
-func renderGuide(context: ItemRenderingContext<DocMetadata>) -> Node {
-  let slug = slugFromURL(context.item.url)
-  return docsShell(title: "\(context.item.title) | Blueprint", activeSection: .guides, activeSlug: slug) {
-    article(class: Theme.prose) {
-      docHeader(eyebrow: "Guide", title: context.item.title, summary: context.item.metadata.summary)
-      proseBody(context.item.body)
-      footerNav(section: .guides, slug: slug)
-    }
-  }
-}
-
-func renderGuideIndex(context: ItemsRenderingContext<DocMetadata>) -> Node {
-  docsShell(title: "Guides | Blueprint", activeSection: .guides) {
-    article(class: Theme.prose) {
-      docHeader(
-        eyebrow: "Guides",
-        title: "Guides",
-        summary: "Practical setup: clone, configure, build, test, and deploy."
-      )
-      sectionIndexTiles(section: .guides, items: context.items)
-    }
-  }
-}
-
-// MARK: - Architecture
-
-func renderArchitecture(context: ItemRenderingContext<DocMetadata>) -> Node {
-  let slug = slugFromURL(context.item.url)
-  return docsShell(title: "\(context.item.title) | Blueprint", activeSection: .architecture, activeSlug: slug) {
-    article(class: Theme.prose) {
-      docHeader(eyebrow: "Architecture", title: context.item.title, summary: context.item.metadata.summary)
-      proseBody(context.item.body)
-      footerNav(section: .architecture, slug: slug)
-    }
-  }
-}
-
-func renderArchitectureIndex(context: ItemsRenderingContext<DocMetadata>) -> Node {
-  docsShell(title: "Architecture | Blueprint", activeSection: .architecture) {
-    article(class: Theme.prose) {
-      docHeader(
-        eyebrow: "Architecture",
-        title: "Architecture",
-        summary: "Engineering decisions by layer: why we chose each pattern and how Discover implements it."
-      )
-      sectionIndexTiles(section: .architecture, items: context.items)
-    }
-  }
-}
-
-// MARK: - Concepts
-
-func renderConcept(context: ItemRenderingContext<DocMetadata>) -> Node {
-  let slug = slugFromURL(context.item.url)
-  return docsShell(title: "\(context.item.title) | Blueprint", activeSection: .concepts, activeSlug: slug) {
-    article(class: Theme.prose) {
-      docHeader(eyebrow: "Concept", title: context.item.title, summary: context.item.metadata.summary)
-      proseBody(context.item.body)
-      footerNav(section: .concepts, slug: slug)
-    }
-  }
-}
-
-func renderConceptIndex(context: ItemsRenderingContext<DocMetadata>) -> Node {
-  docsShell(title: "Concepts | Blueprint", activeSection: .concepts) {
-    article(class: Theme.prose) {
-      docHeader(
-        eyebrow: "Concepts",
-        title: "Concepts",
-        summary: "Cross-cutting patterns that span layers: Use Cases and Logging."
-      )
-      sectionIndexTiles(section: .concepts, items: context.items)
-    }
-  }
-}
-
-// MARK: - ADRs
-
-func renderADR(context: ItemRenderingContext<ADRMetadata>) -> Node {
-  let slug = slugFromURL(context.item.url)
-  var badges: [Node] = [adrStatusBadge(context.item.metadata.status)]
-  if let date = context.item.metadata.date {
-    badges.append(span(class: Theme.badgeDate) { date })
-  }
-  return docsShell(title: "\(context.item.title) | Blueprint", activeSection: .decisions, activeSlug: slug) {
-    article(class: Theme.prose) {
-      docHeader(
-        eyebrow: "Architecture Decision Record",
-        title: context.item.title,
-        summary: context.item.metadata.summary,
-        badges: badges
-      )
-      proseBody(context.item.body)
-      footerNav(section: .decisions, slug: slug)
-    }
-  }
-}
-
-func renderADRIndex(context: ItemsRenderingContext<ADRMetadata>) -> Node {
-  docsShell(title: "ADRs | Blueprint", activeSection: .decisions) {
-    article(class: Theme.prose) {
-      docHeader(
-        eyebrow: "ADRs",
-        title: "Architecture Decision Records",
-        summary: "Formal records of why each major decision was made: context, alternatives, consequences."
-      )
-      adrIndexTiles(items: context.items)
-    }
-  }
 }
