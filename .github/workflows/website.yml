@@ -31,13 +31,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-website-
 
-      - name: Install Saga
-        uses: gerlero/brew-install@v1
-        with:
-          packages: loopwerk/tap/saga
-
       - name: Build site
-        run: cd Website && saga build
+        run: |
+          cd Website
+          swift build -c release --product Website
+          .build/arm64-apple-macosx/release/Website
 
       - name: Verify output
         run: test -f Website/deploy/index.html
