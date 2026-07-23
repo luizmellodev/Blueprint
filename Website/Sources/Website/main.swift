@@ -111,7 +111,12 @@ try await Saga(input: "../Documentation/Content/en", output: "deploy")
       if fileManager.fileExists(atPath: deployConfig) {
         try fileManager.removeItem(atPath: deployConfig)
       }
-      try fileManager.copyItem(atPath: "vercel.json", toPath: deployConfig)
+      try """
+      {
+        "cleanUrls": true,
+        "trailingSlash": true
+      }
+      """.write(toFile: deployConfig, atomically: true, encoding: .utf8)
     }
   }
   .run()
