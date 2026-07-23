@@ -57,6 +57,8 @@ Pull requests and pushes to `main` run `.github/workflows/website.yml`:
 3. Verify `Website/deploy/index.html` exists
 4. Upload `deploy/` as a CI artifact (retained 7 days)
 
+The workflow caches `Website/.build` and the SwiftPM download cache between runs. Only changes to `Package.swift` or `Package.resolved` invalidate the compile cache; Markdown edits reuse the compiled pipeline and rebuild pages only.
+
 On `main`, a follow-up job also publishes the built site when `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` are set in GitHub secrets.
 
 **404 on Vercel?** The `deploy/` folder is gitignored. Vercel Git integration alone cannot build Saga (macOS only). In **Settings → Build and Deployment → Ignored Build Step**, choose **Don't build anything**, then deploy via GitHub Actions or `./scripts/saga build && cd Website/deploy && vercel deploy --prod`.

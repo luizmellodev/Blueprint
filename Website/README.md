@@ -112,6 +112,8 @@ Pushes that only change the root `README.md`, Swift sources, or other paths **do
 
 When it runs: `saga build` on macOS, then `vercel deploy --prod` from `Website/deploy/` (CLI `vercel@latest` in CI).
 
+GitHub Actions caches `Website/.build` (SPM compile output and Saga's `.build/saga-cache`) plus the SwiftPM download cache. The cache key follows `Package.resolved` and `Package.swift`, so dependency changes invalidate it while doc-only edits reuse the compiled `Website` executable. Local incremental rebuilds during `saga dev` stay the fastest path; CI avoids recompiling Saga from scratch on every run.
+
 **Important:** `Website/deploy/` is gitignored. A deploy triggered only by the Vercel Git integration (without the GitHub Actions build) will be empty and return **404**.
 
 In Vercel → **Settings → Build and Deployment → Ignored Build Step**, choose **Don't build anything**. That stops Git pushes from publishing production; only GitHub Actions (`vercel deploy --prod`) should deploy this site.
