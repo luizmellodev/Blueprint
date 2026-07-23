@@ -1,104 +1,131 @@
 ---
 title: Dependency Injection
-summary: DIContainer wires dependency bundles and screen factories. No third-party DI framework.
-order: 5
+summary: How I wired Discover manually with DIContainer, bundles, and factories.
+order: 6
 ---
-# Why Dependency Injection?
+# Dependency Injection
 
-Discover's object graph spans networking, three repositories, four use cases, location, SwiftData, and feature flags. Without DI, constructors become untraceable and tests cannot swap implementations.
+*How I connected clients, repositories, use cases, and screens without Swinject.*
 
-## What problem does this solve?
+Discover has a lot to wire: HTTP client, three repositories, several use cases, location, SwiftData, feature flags, three screens.
 
-Hidden singletons and service locators make dependencies implicit. A ViewModel can reach for `URLSession.shared` or a global `ModelContext` without declaring it in `init`.
+I inject dependencies through `init` instead of globals inside types.
 
-Blueprint needs **explicit graphs** that compile and are easy to jump through in Xcode.
+## DIContainer
 
-## Why this solution?
+Created once in `AppRouterView`:
 
-`DIContainer` (@MainActor, one instance in `AppRouterView`) builds:
-
-1. **Bundles** group dependencies by concern
-2. **Factories** create screen ViewModels + Views
-3. **Protocols** at every boundary for tests
-
-No Swinject, no property wrappers, no runtime resolution.
-
-## Alternatives
-
-| Approach | Verdict |
-|---|---|
-| Swinject / Factory | Rejected: opaque runtime graph |
-| Service locator | Rejected: hidden dependencies |
-| Manual init chains in Views | Rejected: does not scale |
-| **DIContainer + bundles + factories** | Chosen |
-
-## Trade-offs
-
-- **Pro:** Entire graph visible in one place
-- **Pro:** Bundles prevent 200-line container files
-- **Pro:** Factories encapsulate per-screen wiring
-- **Con:** New screen = new factory method
-- **Con:** `@MainActor` container matches UI lifecycle but tests must run on main actor
-
-## How Blueprint implements it
-
-**Bundles**
-
-| Bundle | Provides |
-|---|---|
-| `NetworkDependencies` | `URLSessionNetworkClient` |
-| `POIDependencies` | POI, place details, geocoding use cases |
-| `LocationDependencies` | `LocationService` |
-| `PersistenceDependencies` | `FavoritesUseCase`, `ModelContainer` |
-| `FeatureFlagDependencies` | `LocalFeatureFlagService` |
-
-**Factories**
-
-| Factory | Creates |
-|---|---|
-| `HomeFactory` | `HomeView` + `HomeViewModel` |
-| `FavoritesFactory` | `FavoritesView` + `FavoritesViewModel` |
-| `DetailFactory` | `DetailView` + `DetailViewModel` |
-
-```mermaid
-flowchart TB
-  ARV[AppRouterView]
-  C[DIContainer]
-  ARV --> C
-  C --> HF[HomeFactory]
-  C --> FF[FavoritesFactory]
-  C --> DF[DetailFactory]
-  C --> N[NetworkDependencies]
-  C --> P[POIDependencies]
-  C --> L[LocationDependencies]
-  C --> PE[PersistenceDependencies]
-  C --> F[FeatureFlagDependencies]
-  HF --> HV[HomeView + HomeViewModel]
-  FF --> FV[FavoritesView + FavoritesViewModel]
-  DF --> DV[DetailView + DetailViewModel]
-  P --> HF
-  P --> DF
-  L --> HF
-  PE --> DF
-  PE --> FF
-  F --> DF
+```swift
+@State private var container = DIContainer()
 ```
 
-## Related code
+`DIContainer` builds bundles, then factories:
 
-- `blueprint/DI/DIContainer.swift`
-- `blueprint/DI/Core/NetworkDependencies.swift`
-- `blueprint/DI/Core/POIDependencies.swift`
-- `blueprint/DI/Core/LocationDependencies.swift`
-- `blueprint/DI/Core/PersistenceDependencies.swift`
-- `blueprint/DI/Core/FeatureFlagDependencies.swift`
-- `blueprint/DI/Factories/HomeFactory.swift`
-- `blueprint/DI/Factories/FavoritesFactory.swift`
-- `blueprint/DI/Factories/DetailFactory.swift`
-- `blueprintTests/DIContainerTests.swift`
+```swift
+@MainActor
+final class DIContainer {
+  let homeFactory: HomeFactory
+  let detailFactory: DetailFactory
+  let favoritesFactory: FavoritesFactory
 
-## Further reading
+  init() {
+    let network = NetworkDependencies()
+    let poi = POIDependencies(network: network)
+    let location = LocationDependencies()
+    let persistence = PersistenceDependencies()
+    let featureFlags = FeatureFlagDependencies()
 
-- [ADR 0003: Dependency Injection](/decisions/0003-dependency-injection/)
-- [MVVM](/architecture/mvvm/)
-- [Testing](/architecture/testing/)
+    homeFactory = HomeFactory(
+      poi: poi, location: location,
+      persistence: persistence, featureFlags: featureFlags
+    )
+    detailFactory = DetailFactory(persistence: persistence, featureFlags: featureFlags, poi: poi)
+    favoritesFactory = FavoritesFactory(persistence: persistence)
+  }
+}
+```
+
+The whole graph fits in one file I can scroll through.
+
+### What I did
+
+Manual DI: `DIContainer` + dependency **bundles** + screen **factories**. No third-party container.
+
+### Why (then)
+
+On a study project I learn more when I see every wire. Native Birds (my reference) used the same pattern. I can grep "who creates `HomeViewModel`" and land in `HomeFactory`.
+
+### What I'd reconsider
+
+If the graph doubled in size I might extract a composition root per feature or try a lightweight container. For three screens, manual wiring still beats magic.
+
+## Bundles
+
+A bundle groups construction for one concern:
+
+| Bundle | Creates |
+|---|---|
+| `NetworkDependencies` | `NetworkClient` |
+| `POIDependencies` | Repositories + POI-related UseCases |
+| `LocationDependencies` | `LocationService` |
+| `PersistenceDependencies` | `ModelContainer`, `FavoritesUseCase` |
+| `FeatureFlagDependencies` | `FeatureFlagService` |
+
+Example from `POIDependencies`:
+
+```swift
+init(network: NetworkDependencies) {
+  let repository = POIRepository(client: network.client, apiKey: Secrets.geoapifyAPIKey)
+  fetchNearbyPOIs = FetchNearbyPOIsUseCase(repository: repository)
+  // ...
+}
+```
+
+Bundles keep `DIContainer` from becoming hundreds of lines.
+
+## Factories
+
+A factory builds one screen: View + ViewModel with the right dependencies.
+
+```swift
+final class HomeFactory {
+  func makeView(router: any RouterProtocol, namespace: Namespace.ID) -> some View {
+    let viewModel = HomeViewModel(
+      fetchNearbyPOIs: poi.fetchNearbyPOIs,
+      searchLocation: poi.searchLocation,
+      locationService: location.locationService
+    )
+    return HomeView(viewModel: viewModel, router: router, namespace: namespace)
+  }
+}
+```
+
+Views do not construct UseCases. Adding a dependency to Home means editing `HomeFactory`, not every preview.
+
+## App entry
+
+```swift
+@main
+struct blueprintApp: App {
+  var body: some Scene {
+    WindowGroup {
+      AppRouterView()
+    }
+  }
+}
+```
+
+`AppRouterView` owns the container and calls `container.homeFactory.makeView(router:)` inside each tab's `NavigationStack`.
+
+## Could I use `@Environment` instead?
+
+Yes for app-wide services (theme, analytics). I still wanted explicit constructor injection for UseCases and repositories so tests and factories stay obvious. I might mix both on a larger app: Environment for truly global stuff, factories for screen graphs.
+
+## Could I use Swinject or Factory?
+
+Yes. Less boilerplate when the graph grows. I skipped them here so the repo stays readable without learning a DI framework's rules. Trade-off: more manual code, zero code generation.
+
+## Read next
+
+- [Navigation](/architecture/navigation/)
+- [Architecture Overview](/architecture/overview/)

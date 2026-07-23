@@ -76,7 +76,7 @@ sequenceDiagram
 
 **Dependency injection:** `DIContainer` wires bundles (`NetworkDependencies`, `POIDependencies`, …) and factories (`HomeFactory`, `DetailFactory`). Navigation uses `NavigationStack` + `AppRoute` behind `RouterProtocol`.
 
-For layer diagrams, feature breakdown, and ADRs, see **[Architecture Overview](Documentation/Content/en/architecture/overview.md)** on the site.
+For architecture, setup, and roadmap, see the **[live docs](https://ios-blueprint.vercel.app/)** or [`Documentation/Content/en/index.md`](Documentation/Content/en/index.md).
 
 ---
 
@@ -113,11 +113,11 @@ Site stack and deploy details: **[Website/README.md](Website/README.md)** and **
 
 ```
 Blueprint/
-├── blueprint/              App target — Presentation, Data, Domain, DI, Navigation
+├── blueprint/              App target (Presentation, Data, Domain, DI, Navigation)
 ├── Packages/
 │   ├── DesignSystem/       Spacing, typography, color, skeleton tokens
 │   └── Networking/         NetworkClient protocol + URLSession implementation
-├── blueprintTests/         Swift Testing — ViewModels, UseCases, mappers
+├── blueprintTests/         Swift Testing (ViewModels, UseCases, mappers)
 ├── Documentation/Content/  Docs source (en + pt-BR placeholder)
 ├── Website/                Saga pipeline → Website/deploy/
 └── scripts/                saga wrapper, coverage check
@@ -138,7 +138,7 @@ open blueprint.xcodeproj
 
 Run with **⌘R**. Tests with **⌘U**.
 
-Step-by-step setup, API key injection, and simulator notes: **[Getting Started](Documentation/Content/en/guides/getting-started.md)**.
+Step-by-step setup and architecture: **[live docs](https://ios-blueprint.vercel.app/)**.
 
 ---
 
@@ -146,21 +146,17 @@ Step-by-step setup, API key injection, and simulator notes: **[Getting Started](
 
 | Section | Topics |
 |---|---|
-| [Guides](Documentation/Content/en/guides/) | Setup, tests, CI/CD, contributing |
-| [Architecture](Documentation/Content/en/architecture/) | Layers, MVVM, DI, networking, persistence |
-| [Concepts](Documentation/Content/en/concepts/) | Observation, Repository, UseCase patterns |
-| [Decisions](Documentation/Content/en/decisions/) | ADRs — why each choice was made |
-| [Website](Documentation/Content/en/website/) | Saga, Tailwind, Mermaid, deploy |
+| [Overview](Documentation/Content/en/index.md) | Setup, Discover, roadmap |
+| [Architecture](Documentation/Content/en/architecture/) | Layers, MVVM, Domain, DI, Navigation, Networking, SwiftData |
+| [Website](Documentation/Content/en/website/) | Saga, templates, deploy |
 
 **Read online:** [ios-blueprint.vercel.app](https://ios-blueprint.vercel.app)
-
-Code shows *how*. Docs explain *why*.
 
 ---
 
 ## Quality
 
-GitHub Actions runs SwiftLint and `xcodebuild test` when Swift sources change. Coverage floor is **20%** on the app target today; **70%** is the long-term goal. See [Running Tests](Documentation/Content/en/guides/running-tests.md) and [CI/CD](Documentation/Content/en/guides/ci-cd.md).
+GitHub Actions runs SwiftLint and `xcodebuild test` when Swift sources change. Coverage floor is **20%** on the app target today; **70%** is the long-term goal.
 
 Contributing: **[CONTRIBUTING.md](CONTRIBUTING.md)**
 
@@ -168,7 +164,7 @@ Contributing: **[CONTRIBUTING.md](CONTRIBUTING.md)**
 
 ## Author
 
-**Luiz Mello** — [@luizmellodev](https://github.com/luizmellodev)
+**Luiz Mello**, [@luizmellodev](https://github.com/luizmellodev)
 
 Architecture patterns adapted from [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
 

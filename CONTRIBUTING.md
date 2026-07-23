@@ -4,15 +4,15 @@ Blueprint is a **study project**, not a drop-in template. Contributions that exp
 
 ## Before you start
 
-1. Read [Future Directions](Documentation/Content/en/guides/future-directions.md) for open ideas and alternatives.
-2. Read the relevant [Architecture](Documentation/Content/en/architecture/overview.md) article and ADR if one exists.
+1. Read the [site overview](https://ios-blueprint.vercel.app/) for how Discover is structured today.
+2. Check [`Documentation/ROADMAP.md`](Documentation/ROADMAP.md) for planned chapters.
 3. Remember: there is no single correct architecture. Explain **why** your change fits a given context.
 
 ## Ways to contribute
 
 | Type | Example |
 |---|---|
-| **Chapter** | New feature with code + architecture doc + ADR |
+| **Chapter** | New feature with code + updates to `Documentation/Content/en/index.md` |
 | **Documentation** | Fix inaccuracies, add diagrams, translate to pt-BR |
 | **Experiment** | Coordinator, Fastlane, Remote Config in a focused PR |
 | **Tests** | Coverage for ViewModels, SwiftData integration tests |
@@ -25,7 +25,7 @@ Use a clear imperative sentence:
 
 - `Add coverage gate to CI`
 - `Wire mapView feature flag on Detail`
-- `Document concurrency trade-offs in ADR 0004`
+- `Document cache TTL in overview`
 
 ### Description
 
@@ -44,46 +44,12 @@ Include:
 - Match existing code style (see `CLAUDE.md`)
 - Never commit `Config.xcconfig` or API keys
 
-## ADR format (Decision Journal)
-
-When your change records an architectural decision, add or update an ADR in `Documentation/Content/en/decisions/`.
-
-Use this structure:
-
-```markdown
-## Status
-Accepted | Proposed | Deprecated
-
-## Context
-What was happening when we decided?
-
-## Problem
-What pain were we solving?
-
-## Alternatives
-What else did we consider?
-
-## Decision
-What we chose.
-
-## What worked
-Honest positives after shipping.
-
-## What hurt
-Pain points, surprises, limitations.
-
-## What we changed later
-Refactors, fixes, or lessons (or "Nothing yet").
-
-## References
-Links to architecture articles and code paths.
-```
-
-ADRs are **journals**, not duplicates of Architecture articles. Teach from experience, not only from theory.
-
 ## Documentation rules
 
 - **Markdown in `Documentation/`** is the source of truth
+- App architecture lives under `Documentation/Content/en/architecture/`
+- Home page: `Documentation/Content/en/index.md`
+- Website meta-docs live under `Documentation/Content/en/website/`
 - Run `./scripts/saga build` if you change content consumed by the site
 - Avoid em dashes in prose; prefer commas or colons
 - Only document what exists in code (or mark as planned)
@@ -121,4 +87,4 @@ Open a GitHub Issue with context, alternatives you considered, and the scope you
 
 ---
 
-Related: [Future Directions](Documentation/Content/en/guides/future-directions.md) · [Roadmap](Documentation/ROADMAP.md) · [Running Tests](Documentation/Content/en/guides/running-tests.md)
+Related: [Roadmap](Documentation/ROADMAP.md) · [Website README](Website/README.md)

@@ -1,28 +1,31 @@
 ---
 title: Build & Preview
-summary: Local dev server, production build, and how CI verifies the static site.
-order: 7
+summary: Local dev, production build, GitHub Actions, and Vercel.
+order: 2
 ---
 # Build & Preview
 
-Saga runs on **macOS** (Swift executable). Output is plain static files in `Website/deploy/`: HTML, CSS, and copied assets. Any static file host can serve that folder.
+Saga runs on **macOS**. Output is plain static files in `Website/deploy/`. Vercel (or any CDN) only serves those files; it does not run Saga.
+
+Tooling intro: [Site Overview](/website/overview/).
 
 ## Local preview
+
+**Requirements:** Swift 6+, macOS 14+, Saga CLI.
 
 ```bash
 brew install loopwerk/tap/saga
 ./scripts/saga dev --port 3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Saga watches `Documentation/` and `Website/Sources/` and rebuilds on change.
+Open [http://localhost:3000](http://localhost:3000).
 
-Use the repo-root wrapper:
+Saga watches:
 
-```bash
-./scripts/saga dev --port 3000
-```
+- `Documentation/Content/en/` (Markdown)
+- `Website/Sources/Website/` (Swift templates, pipeline)
 
-Running `saga` from the repository root without the script fails because `Package.swift` lives in `Website/`.
+Tailwind recompiles when Swift or `input.css` change. Markdown-only edits rebuild pages without re-running Tailwind (see `beforeRead` guard in `main.swift`).
 
 ## Production build
 
@@ -30,44 +33,81 @@ Running `saga` from the repository root without the script fails because `Packag
 ./scripts/saga build
 ```
 
-Output: `Website/deploy/`
+Equivalent to `cd Website && saga build`. Output: `Website/deploy/`.
 
-Open `Website/deploy/index.html` in a browser or serve the folder with any static server to sanity-check before pushing.
+Sanity check:
 
-## What the build produces
-
-```mermaid
-flowchart LR
-  IN[Documentation/Content/en/]
-  BUILD[saga build on macOS]
-  OUT[Website/deploy/]
-  IN --> BUILD --> OUT
-  OUT --> HTML[index.html + section pages]
-  OUT --> CSS[static/output.css]
+```bash
+open Website/deploy/index.html
 ```
 
-Each Markdown file becomes an HTML page. Section folders get an `index.html` listing. Tailwind CSS is compiled and copied to `deploy/static/`.
+Or serve the folder with any static file server.
 
-## CI
+## Generated vs committed
 
-Pull requests and pushes to `main` run `.github/workflows/website.yml`:
+| Output | Location | In git? |
+|---|---|---|
+| HTML pages | `Website/deploy/` | No |
+| Compiled CSS | `deploy/static/output.css` | No |
+| Source Markdown | `Documentation/Content/en/` | Yes |
+| Tailwind input | `static/input.css` | Yes |
 
-1. Restore `Website/.build` cache (Swift compile + Saga read cache)
-2. `swift build` (debug) and run the `Website` executable (no Homebrew `saga` in CI)
-3. Verify `Website/deploy/index.html` exists
-4. Upload `deploy/` as a CI artifact (retained 7 days)
+Never commit `Website/deploy/`. Never rely on Vercel Git builds alone (folder is empty in the repo).
 
-The workflow caches `Website/.build` and the SwiftPM download cache between runs. Only changes to `Package.swift` or `Package.resolved` invalidate the compile cache; Markdown edits reuse the compiled pipeline and rebuild pages only.
+## CI (GitHub Actions)
 
-On `main`, a follow-up job also publishes the built site when `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` are set in GitHub secrets.
+Workflow: `.github/workflows/website.yml`
 
-**404 on Vercel?** The `deploy/` folder is gitignored. Vercel Git integration alone cannot build Saga (macOS only). In **Settings → Build and Deployment → Ignored Build Step**, choose **Don't build anything**, then deploy via GitHub Actions or `./scripts/saga build && cd Website/deploy && vercel deploy --prod`.
+**Triggers:** changes to `Website/**`, `Documentation/**`, or the workflow file.
 
-PRs **build only** (no publish) so doc changes are validated before merge.
+**Build job** (`macos-latest`):
+
+1. Checkout
+2. Restore cache (`Website/.build`, SwiftPM)
+3. `swift build --product Website`
+4. Run `.build/.../debug/Website`
+5. Verify `Website/deploy/index.html`
+6. Upload artifact (7 days)
+
+**Deploy job** (push to `main` only):
+
+1. Download artifact to `Website/deploy/`
+2. Write `vercel.json`
+3. `vercel deploy --prod` from `Website/deploy/`
+
+CI skips Homebrew Saga. The compiled Swift executable is the build product.
+
+iOS CI is separate and does not run for doc-only changes.
+
+## Vercel setup
+
+One-time:
+
+1. Create a Vercel project
+2. Add secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
+3. **Settings → Build and Deployment → Ignored Build Step → Don't build anything**
+
+| Setting | Value |
+|---|---|
+| Root Directory | empty |
+| Output Directory | empty |
+| Build Command | off |
+
+Production deploys come **only** from GitHub Actions, not from Vercel Git on push.
+
+**404 after merge?** A Vercel Git deploy without the Actions artifact uploads an empty site. Check the deployment was created by the Website workflow, not Git integration alone.
+
+Manual deploy:
+
+```bash
+./scripts/saga build
+cd Website/deploy
+vercel deploy --prod
+```
 
 ## URL shape
 
-`Website/vercel.json` documents the expected URL style for the generated site:
+`vercel.json` in deploy output:
 
 ```json
 {
@@ -76,7 +116,7 @@ PRs **build only** (no publish) so doc changes are validated before merge.
 }
 ```
 
-Example: `guides/getting-started.md` → `/guides/getting-started/`
+Example: `architecture/mvvm.md` → `/architecture/mvvm/`
 
 ## Troubleshooting
 
@@ -84,12 +124,13 @@ Example: `guides/getting-started.md` → `/guides/getting-started/`
 |---|---|
 | `saga: command not found` | `brew install loopwerk/tap/saga` |
 | Build fails from repo root | `./scripts/saga build` |
-| Sidebar missing new page | Add entry to `SiteCatalog.swift` |
-| Mermaid shows as code | Rebuild; see [Mermaid](/website/mermaid/) |
+| Sidebar missing new page | Add row to `SiteCatalog.swift` |
+| Mermaid shows as code block | Rebuild; see [Implementation](/website/implementation/) |
 | Tailwind classes missing | Edit `Theme.swift` or `input.css`, rebuild |
+| Production 404 | Disable Vercel Git builds; deploy via Actions |
 
 ## Related
 
 - [Site Overview](/website/overview/)
-- [Saga Pipeline](/website/pipeline/)
-- [ADR 0007: Saga for Documentation Site](/decisions/0007-saga-documentation-site/)
+- [Implementation](/website/implementation/)
+- `Website/README.md`

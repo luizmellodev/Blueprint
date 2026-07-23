@@ -1,84 +1,81 @@
 ---
 title: SwiftData
-summary: FavoritePOI @Model in Data layer, FavoritesRepository maps to Domain POI.
-order: 12
+summary: How I persisted favorites without making POI a SwiftData model.
+order: 5
 ---
-# Why SwiftData?
+# SwiftData
 
-Discover persists **favorite POIs** on device. SwiftData is Apple's persistence framework for SwiftUI-era apps. Blueprint uses it **only in the Data layer**.
+*How I saved favorites on device while keeping Domain as plain structs.*
 
-## What problem does this solve?
+**Favorites** persist with **SwiftData**. Places from Geoapify do not; they are fetched on demand and cached briefly on disk inside `POIRepository`.
 
-Favorites must survive app restarts. Storing `[POI]` in UserDefaults does not scale for queries, deduplication, or future migrations.
+## Why SwiftData here?
 
-Putting `@Model` on Domain `POI` would force Domain to import SwiftData and accept framework-generated class semantics.
+Favorites need:
 
-## Why this solution?
+- Storage across app launches
+- Simple queries (is this id saved? list all)
+- No backend to sync with (study app scope)
 
-Separate persistence model + repository mapping:
+I picked SwiftData over Core Data for less boilerplate at this size. Apple-native, `@Model`, `ModelContext`.
 
-| Layer | Type |
-|---|---|
-| Domain | `POI` struct (`Hashable`, `Sendable`, `Codable`) |
-| Data | `FavoritePOI` `@Model` class |
-| Boundary | `FavoritesRepository` maps both ways |
+### What I did
 
-`FavoritesUseCase` exposes toggle/query to ViewModels. `DetailViewModel` never sees `ModelContext`.
+`FavoritePOI` (`@Model`) in Data. Domain `POI` stays a struct. `FavoritesRepository` maps both ways.
 
-## Alternatives
+### Why (then)
 
-| Approach | Verdict |
-|---|---|
-| `@Model` on Domain `POI` | Rejected: violates clean architecture |
-| UserDefaults array of IDs | Rejected: no rich queries |
-| Core Data | Valid; SwiftData chosen for iOS 17+ teaching value |
-| **FavoritePOI + Repository** | Chosen |
+I wanted to practice "persistence model ≠ domain model" the same way DTOs differ from entities for Geoapify.
 
-## Trade-offs
+### What I'd reconsider
 
-- **Pro:** Domain entity stays a plain struct
-- **Pro:** SwiftData schema isolated to `FavoritePOI`
-- **Pro:** Repository protocol mockable (future tests)
-- **Con:** Duplicate fields between `POI` and `FavoritePOI`
-- **Con:** `FavoritesRepository` is `@MainActor` (main-thread context)
+If favorites were the only representation of a place and never came from an API, I might use `@Model` as the single source of truth and skip the mapper. Here both tabs show `POI`, so the struct stayed central.
 
-## How Blueprint implements it
+## Domain vs persistence model
 
-**Schema**
+Domain: `POI` (struct, value type, no framework).
 
-`PersistenceDependencies` creates `ModelContainer(for: FavoritePOI.self)` once. Failure calls `fatalError` (schema conflict or storage unavailable).
+Data: `FavoritePOI` (`@Model` class).
 
-**Repository API**
-
-- `isFavorite(id:)`
-- `add(_ poi:)` / `remove(id:)`
-- `fetchAll()` → `[POI]`
-
-**UseCase**
-
-`FavoritesUseCase` forwards to `FavoritesRepositoryProtocol`. `DetailViewModel.toggleFavorite()` catches errors and surfaces `favoriteError` string.
-
-```mermaid
-flowchart LR
-  VM[DetailViewModel]
-  UC[FavoritesUseCase]
-  REPO[FavoritesRepository]
-  SD[(SwiftData FavoritePOI)]
-  VM --> UC --> REPO --> SD
-  REPO -->|maps to| POI[Domain POI struct]
+```swift
+@Model
+final class FavoritePOI {
+  var id: String
+  var name: String
+  // ...
+}
 ```
 
-## Related code
+`FavoritesRepository`:
 
-- `blueprint/Data/Persistence/FavoritePOI.swift`
-- `blueprint/Data/Persistence/FavoritesRepository.swift`
-- `blueprint/Data/Persistence/FavoritesRepositoryProtocol.swift`
-- `blueprint/Domain/UseCases/FavoritesUseCase.swift`
-- `blueprint/DI/Core/PersistenceDependencies.swift`
-- `blueprint/Presentation/Views/Detail/DetailViewModel.swift`
+- `add(_ poi: POI)` → insert `FavoritePOI(from: poi)`
+- `fetchAll()` → map models back to `[POI]`
 
-## Further reading
+ViewModels call `FavoritesUseCase`, which calls `FavoritesRepositoryProtocol`. SwiftData never appears in Presentation.
 
-- [ADR 0005: SwiftData Domain Separation](/decisions/0005-swiftdata-domain-separation/)
-- [Repository Pattern](/architecture/repository/)
-- [MVVM](/architecture/mvvm/)
+## ModelContext wiring
+
+`PersistenceDependencies` creates a `ModelContainer` for `FavoritePOI.self` and passes `ModelContext` into `FavoritesRepository` and `FavoritesUseCase`. Once, in DI, not in Views.
+
+## Favorites tab flow
+
+1. `FavoritesViewModel` → `FavoritesUseCase.fetchAll()`
+2. UseCase → repository
+3. Repository fetches `FavoritePOI` rows, returns `[POI]`
+4. ViewModel updates UI state
+5. Swipe to delete → same chain
+
+Detail uses the same UseCase for `isFavorite` and the heart button.
+
+## Could `POI` be `@Model` directly?
+
+Yes. Simpler file count, one type for list and favorites. Downside: Domain would depend on SwiftData, and API-sourced fields (live Geoapify data) mix with persisted rows. I kept them separate to learn the mapper; I might merge on a production app if the domain model matched persistence 1:1.
+
+## Could I use UserDefaults or a JSON file?
+
+Yes for a handful of favorites. SwiftData felt worth learning for queries and relationships if the app grew (folders, notes, sync later).
+
+## Read next
+
+- [Repositories & Services](/architecture/repositories-and-services/)
+- [Domain](/architecture/domain/)

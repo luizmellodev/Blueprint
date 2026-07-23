@@ -1,91 +1,116 @@
 ---
 title: Modularization
-summary: Local Swift Packages enforce compile-time boundaries between DesignSystem, Networking, and the app.
-order: 1
+summary: What I extracted into Swift Packages and what stayed in the app target.
+order: 8
 ---
-# Why Modularization?
+# Modularization
 
-Blueprint teaches architecture with **real boundaries**, not folder conventions. Local Swift Packages make illegal imports a compile error.
+*What I pulled into Packages, and what I left in one target on purpose.*
 
-## What problem does this solve?
+Part of Blueprint lives in local Swift Packages under `Packages/`. The rest stays in the **blueprint** app target.
 
-In a single app target, any file can `import` anything. Domain types start referencing SwiftUI. DTOs appear in ViewModels. Code review becomes the only guardrail.
-
-## Why this solution?
-
-Swift Package Manager modules in `Packages/`:
-
-| Package | Exports | Cannot import |
+| Package | Exports | Imports |
 |---|---|---|
-| `DesignSystem` | Tokens, shimmer modifier | App target |
-| `Networking` | `NetworkClient`, `URLSessionNetworkClient` | App target |
+| **DesignSystem** | `DSSpacing`, `DSTypography`, `DSRadius`, `DSColor`, skeleton modifiers | Nothing from app |
+| **Networking** | `NetworkClient`, `URLSessionNetworkClient`, `NetworkError` | Foundation only |
 
-The **app target** owns features that cross-cut layers: Navigation (needs `POI`), DI (wires everything), Presentation screens.
+Views, ViewModels, UseCases, Repositories, DI, and Navigation remain in the app target.
 
-## Alternatives
+## Why I used packages at all
 
-| Approach | Verdict |
+**Boundaries.** Networking cannot accidentally import SwiftUI. DesignSystem cannot reference ViewModels.
+
+**Reuse.** Another target could depend on `Networking` without copying files.
+
+**Compile isolation.** Small packages rebuild faster when I touch unrelated app code.
+
+**Learning.** Modularization was its own chapter; I wanted the repo to show a split early, even for a small app.
+
+### What I did
+
+Two packages: visual tokens + HTTP transport. Everything feature-specific stays in the app.
+
+### Why (then)
+
+These were the only pieces that felt genuinely reusable and framework-free. Geoapify DTOs belong to this app, not a generic library.
+
+### What I'd reconsider
+
+If compile time or team size grew, I would extract `Domain`, then feature modules. Today one target is faster to open and debug than five local packages.
+
+## Why I did not modularize features
+
+Common next steps in bigger codebases:
+
+| Module | What it would contain |
 |---|---|
-| Single target | Rejected: no enforcement |
-| Xcode dynamic frameworks | Rejected: heavier than SPM for two modules |
-| **Local Swift Packages** | Chosen |
+| `HomeFeature` | `HomeView`, `HomeViewModel`, `HomeFactory` |
+| `DetailFeature` | Detail screen + factory |
+| `FavoritesFeature` | Favorites tab + SwiftData wiring |
+| `Domain` package | Entities + UseCase protocols |
+| `Data` package | Repositories, DTOs, mappers |
 
-## Trade-offs
+I did not do that here.
 
-- **Pro:** Compiler enforces dependency direction
-- **Pro:** Packages reusable for widgets/extensions later
-- **Pro:** Faster incremental builds as packages grow
-- **Con:** More Xcode targets to manage
-- **Con:** Navigation and DI stay monolithic in app target by design
+**App size.** Two tabs, one pushed screen. Feature modules pay off with parallel teams, slow builds, or optional binaries.
 
-## How Blueprint implements it
+**Navigation and DI cross cuts.** `AppRoute` references `POI` everywhere. `DIContainer` wires all tabs. Splitting features means deciding who owns routes and factories up front. Solvable, extra ceremony for a study app.
+
+**Thin Domain/Data.** A handful of entities and use cases. A `Domain` package shines with widgets, extensions, or multiple targets. Discover has one iOS app.
+
+I optimized for learning layer boundaries inside one target first. Feature modules feel like a later chapter, not a prerequisite for MVVM or repositories.
+
+## When I would split features
+
+- Compile time hurts on every View tweak
+- Two people conflict daily on the same target
+- A feature ships or A/B tests independently
+- A widget or App Clip needs Home without Favorites
+
+Rough target layout:
 
 ```
 Packages/
-├── DesignSystem/     DSSpacing, DSTypography, DSColor, DSRadius, SkeletonStyle
-└── Networking/       NetworkClient protocol, URLSessionNetworkClient, NetworkError
-
-App target (blueprint/)
-├── Domain/           No SwiftUI, SwiftData, or Geoapify imports
-├── Data/             Imports Domain + Networking
-├── Presentation/     Imports Domain + DesignSystem
-├── Navigation/       Imports Domain
-└── DI/               Imports all layers to assemble graph
+  DesignSystem/
+  Networking/
+  Domain/
+  Data/
+  Navigation/
+App/
+  DiscoverApp/         @main, DIContainer, TabView
+  HomeFeature/
+  DetailFeature/
+  FavoritesFeature/
 ```
 
-```mermaid
-flowchart TB
-  subgraph Packages["Packages/"]
-    DS[DesignSystem]
-    NET[Networking]
-  end
+Each feature depends on `Domain` and `Navigation`, not sibling features. The app target composes them in `DIContainer`.
 
-  subgraph App["blueprint/ app target"]
-    PRES[Presentation]
-    DATA[Data]
-    DOM[Domain]
-    NAV[Navigation]
-    DI[DI]
-  end
+## DesignSystem
 
-  PRES --> DOM
-  PRES --> DS
-  DATA --> DOM
-  DATA --> NET
-  DI --> PRES
-  DI --> DATA
-  NAV --> DOM
-```
+Shared tokens so screens do not hardcode `16` or `.blue`:
 
-## Related code
+- Spacing (`DSSpacing.md`)
+- Typography + Dynamic Type
+- Category colors for POI cards
+- Skeleton shimmer for loading
 
-- `Packages/DesignSystem/`
-- `Packages/Networking/`
-- `blueprint/Domain/`
-- `blueprint/Data/`
+Presentation imports `DesignSystem`. The package knows nothing about POIs.
 
-## Further reading
+## Networking package
 
-- [ADR 0001: Modularization](/decisions/0001-modularization/)
-- [Design System](/architecture/design-system/)
+HTTP abstraction only. Geoapify DTOs stay in app Data. See [Networking](/architecture/networking/) for why URL building also stayed in Repositories.
+
+## Could everything stay in one target?
+
+Yes. Many study apps do. I extracted DesignSystem and Networking to practice Package boundaries without the cost of feature modules.
+
+## Adding a package
+
+1. File → New → Package in Xcode (or folder + `Package.swift`)
+2. Add local package dependency to `blueprint` target
+3. Keep Domain entities out of packages unless multiple targets need them
+
+## Read next
+
 - [Networking](/architecture/networking/)
+- [Architecture Overview](/architecture/overview/)

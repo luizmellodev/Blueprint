@@ -5,93 +5,51 @@ slug: index
 
 ## What this is
 
-**Blueprint** is a public iOS architecture **study project** — code and documentation written while learning, not a shipped product or a copy-paste template.
+**Blueprint** is a public iOS architecture **study project**. Code and notes written while learning, not a shipped product or a copy-paste template.
 
-The repo holds two things:
-
-- **Discover**, a small SwiftUI app you can run in the simulator
-- **This site**, generated from Markdown in `Documentation/`
-
-Docs record what exists in the codebase and why certain choices were made. They are updated as the project grows; some chapters are ahead of others, and not everything here is battle-tested.
+The repo holds **Discover** (SwiftUI app) and **this site** (Markdown → Saga → static HTML).
 
 Adapted from [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
 
+## Getting started
+
+**Requirements:** Xcode 16+, iOS 17+ simulator, free [Geoapify API key](https://www.geoapify.com/).
+
+```bash
+git clone https://github.com/luizmellodev/Blueprint.git
+cd Blueprint
+cp Config.xcconfig.sample Config.xcconfig
+```
+
+Set your key in `Config.xcconfig` (gitignored). Open `blueprint.xcodeproj`, pick a simulator, ⌘R.
+
 ## Discover
 
-**Discover** lists places near you (restaurants, museums, parks, hotels) using the [Geoapify](https://www.geoapify.com/) API.
-
-Two tabs — **Discover** and **Favorites** — each with its own navigation stack. **Detail** is a pushed screen, not a tab. The scope stays small on purpose so the write-ups can focus on architecture instead of product features.
-
-| | |
-|---|---|
-| **App name** | Discover |
-| **Repository** | Blueprint |
-| **Minimum deployment** | iOS 17 |
-| **UI framework** | SwiftUI with `@Observable` |
-| **Product notes** | [About Discover](/guides/about-discover/) |
-
-Blueprint follows **Clean Architecture with protocol-driven boundaries**.
-
-| Layer | Protocol examples |
-|---|---|
-| Presentation | ViewModels depend on `FetchNearbyPOIsUseCaseProtocol`, `RouterProtocol` |
-| Domain | UseCases depend on `POIRepositoryProtocol`, `FavoritesRepositoryProtocol` |
-| Data | Repositories depend on `NetworkClient`, `ModelContext` (internal) |
-
-Presentation never calls Repositories directly. Data never imports SwiftUI.
-
-## Geoapify API
-
-Discover loads place data from Geoapify (free tier: 3,000 requests/day, no credit card).
-
-| | |
-|---|---|
-| **Used for** | Nearby places, place details, city geocoding |
-| **Authentication** | API key in `Config.xcconfig`, injected into `Info.plist` |
-| **Caching** | 5-minute TTL on disk via `POICacheService` |
-
-See [Getting Started](/guides/getting-started/) to configure the API key locally.
-
-## How this documentation is organized
-
-Markdown in `Documentation/Content/en/` is the source of truth. This site renders it.
-
-Articles describe **what the code does** and **which decisions were taken** — with links to ADRs when a choice was explicit. They are not step-by-step tutorials.
-
-| Section | Purpose |
-|---|---|
-| [Guides](/guides/) | Setup, tests, CI, product context |
-| [Architecture](/architecture/) | Layers, patterns, and how they map to the app |
-| [Concepts](/concepts/) | Cross-cutting patterns (Observation, Repository, …) |
-| [ADRs](/decisions/) | Decision records: context, choice, consequences |
-| [Website](/website/) | How this site is built (Saga, Tailwind, deploy) |
-| [Roadmap](/guides/roadmap/) | Chapter-by-chapter evolution |
-| [Future Directions](/guides/future-directions/) | Ideas not yet implemented |
-| [Contributing](/guides/contributing/) | PR format and local checks |
+**Discover** is the SwiftUI example app: nearby places via Geoapify, with a **Discover** tab (POI list, city search, pagination), a **Favorites** tab (SwiftData), and a shared **Detail** screen.
 
 ## Architecture
 
-Layer diagram, data flow, and feature breakdown:
+Discover follows **[Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)**. The pages below describe **how I built it** in this repo, not how every app should be built.
 
-**[Architecture Overview](/architecture/overview/)**
+See **[Architecture Overview](/architecture/overview/)** first.
 
-At a glance:
+| Topic | Page |
+|---|---|
+| MVVM on each screen | [MVVM](/architecture/mvvm/) |
+| Entities & Use Cases | [Domain](/architecture/domain/) |
+| Repositories vs Services | [Repositories & Services](/architecture/repositories-and-services/) |
+| HTTP & DTOs | [Networking](/architecture/networking/) |
+| Favorites on disk | [SwiftData](/architecture/swiftdata/) |
+| DIContainer & factories | [Dependency Injection](/architecture/dependency-injection/) |
+| AppRoute & stacks | [Navigation](/architecture/navigation/) |
+| Swift Packages | [Modularization](/architecture/modularization/) |
 
-```
-App Target (blueprint)
-├── Navigation/       AppRoute, AppRouter, RouterProtocol
-├── DI/               DIContainer, bundles, factories
-├── Domain/           Entities, UseCases (zero framework imports)
-├── Data/             Repositories, DTOs, SwiftData, cache
-└── Presentation/     Views, ViewModels, UIState
+## Roadmap
 
-Packages/
-├── DesignSystem/     Shared tokens (spacing, typography, radius)
-└── Networking/       NetworkClient protocol
-```
+Chapters v0.1–v0.12 shipped (setup through docs site). Planned: deep links, MapKit, Remote Config, DocC, pt-BR.
 
-## Next step
+[`Documentation/ROADMAP.md`](https://github.com/luizmellodev/Blueprint/blob/main/Documentation/ROADMAP.md)
 
-[Getting Started](/guides/getting-started/) — clone, API key, run the simulator.
+## This site
 
-For product vocabulary and screen map, see [About Discover](/guides/about-discover/).
+Built with [Saga](https://getsaga.dev/). Meta-docs: [Website](/website/) section.

@@ -1,104 +1,107 @@
 ---
 title: MVVM
-summary: Views, ViewModels, and UIState enums. Presentation talks to Domain through UseCases only.
-order: 2
+summary: How I used MVVM on Discover, and how that compares to MV or VIPER.
+order: 1
 ---
-# Why MVVM?
+# MVVM
 
-Discover separates SwiftUI views from screen logic using **Model-View-ViewModel**. The "Model" at this layer is Domain data (`POI`, `PlaceDetails`) plus `UIState` enums, not SwiftData models.
+*How I split screens into View + ViewModel in Discover.*
 
-## What problem does this solve?
+**MVVM** = Model · View · ViewModel.
 
-Without a ViewModel boundary, views accumulate networking calls, pagination rules, debounce logic, and error handling. That makes screens hard to test and impossible to reuse.
-
-Blueprint also avoids **Massive ViewModel** by pushing business rules into UseCases. ViewModels orchestrate UI state; UseCases orchestrate domain work.
-
-## Why this solution?
-
-| Piece | Role in Blueprint |
+| Piece | In Discover |
 |---|---|
-| **View** | Renders state, forwards user actions |
-| **ViewModel** | Holds `@Observable` state, calls UseCases |
-| **UIState** | Explicit screen phase: idle, loading, success, failure |
+| **Model** | Domain data the screen shows (`POI`, `AppError`) |
+| **View** | SwiftUI (`HomeView`) |
+| **ViewModel** | Screen state + actions (`HomeViewModel`) |
 
-ViewModels depend on **protocols** (`FetchNearbyPOIsUseCaseProtocol`, `RouterProtocol`), not concrete repositories.
+## How I use it
 
-## Alternatives
+Views stay declarative: they read ViewModel state and forward taps.
 
-| Approach | Verdict |
-|---|---|
-| Logic inside SwiftUI `View` | Simple for demos; untestable at scale |
-| MVC with UIViewController | UIKit pattern; fights SwiftUI |
-| TCA / Redux-style global store | Powerful; heavy for a teaching codebase |
-| **MVVM + UseCases** | Chosen: testable, layered, familiar |
+Each ViewModel holds:
 
-## Trade-offs
+- `@Observable` properties the View binds to
+- `HomeUIState` / `DetailUIState` (idle, loading, success, failure)
+- Calls to UseCase protocols
+- Calls to `RouterProtocol` for navigation
 
-- **Pro:** ViewModels tested with mocks (`HomeViewModelTests`, `HomeViewModelPaginationTests`)
-- **Pro:** Views stay declarative; state changes drive re-renders via `@Observable`
-- **Pro:** UseCases keep ViewModels thin
-- **Con:** More files per screen (View, ViewModel, UIState, Factory)
-- **Con:** Boilerplate compared to a single-file prototype
+Business rules sit in UseCases. HTTP and DTOs sit in Repositories. The ViewModel coordinates the screen.
 
-## How Blueprint implements it
+```swift
+enum HomeUIState: Equatable {
+  case idle
+  case loading
+  case success([POI])
+  case failure(AppError)
+}
+```
 
-**Screens today**
+ViewModels are `@MainActor` + `@Observable` (iOS 17).
 
-| Screen | View | ViewModel | UIState |
-|---|---|---|---|
-| Home | `HomeView` | `HomeViewModel` | `HomeUIState` |
-| Favorites | `FavoritesView` | `FavoritesViewModel` | `FavoritesUIState` |
-| Detail | `DetailView` | `DetailViewModel` | `DetailUIState` |
+| Screen | View | ViewModel |
+|---|---|---|
+| Home | `HomeView` | `HomeViewModel` |
+| Favorites | `FavoritesView` | `FavoritesViewModel` |
+| Detail | `DetailView` | `DetailViewModel` |
 
-**HomeViewModel responsibilities** (actual code):
+## Wiring
 
-- Resolve coordinates via `LocationServiceProtocol`
-- Fetch POIs via `FetchNearbyPOIsUseCaseProtocol`
-- Paginate with `pageSize = 20` and `loadMore()`
-- Debounce search with `Task.sleep` + cancel (300 ms text, 400 ms geocoding)
-- Guard `load()` with `guard case .idle` to avoid refetch when returning from Detail
-
-**DetailViewModel responsibilities**:
-
-- Start from `.success(poi)` passed by navigation
-- Load optional `PlaceDetails` asynchronously (silent failure)
-- Toggle favorites via `FavoritesUseCaseProtocol`
-- Read `.favorites` feature flag at init
-
-**Wiring**
-
-`HomeFactory` and `DetailFactory` assemble ViewModels. Views never call `init` on repositories.
+Factories assemble ViewModels. Views never construct repositories or use cases themselves.
 
 ```mermaid
 flowchart LR
-  V[HomeView / DetailView]
-  VM[ViewModel]
-  ST[HomeUIState / DetailUIState]
-  UC[UseCase protocols]
+  V["View"]
+  VM["ViewModel"]
+  ST["UIState"]
+  UC["UseCase protocols"]
   V -->|user action| VM
-  VM -->|@Observable state| V
+  VM -->|state update| V
   VM --> ST
   VM --> UC
 ```
 
-## Related code
+`HomeFactory` and `DetailFactory` live in `DI/`. See [Dependency Injection](/architecture/dependency-injection/).
 
-- `blueprint/Presentation/Views/Home/HomeView.swift`
-- `blueprint/Presentation/Views/Home/HomeViewModel.swift`
-- `blueprint/Presentation/Views/Home/HomeUIState.swift`
-- `blueprint/Presentation/Views/Favorites/FavoritesView.swift`
-- `blueprint/Presentation/Views/Favorites/FavoritesViewModel.swift`
-- `blueprint/Presentation/Views/Favorites/FavoritesUIState.swift`
-- `blueprint/Presentation/Views/Detail/DetailView.swift`
-- `blueprint/Presentation/Views/Detail/DetailViewModel.swift`
-- `blueprint/Presentation/Views/Detail/DetailUIState.swift`
-- `blueprint/DI/Factories/HomeFactory.swift`
-- `blueprint/DI/Factories/FavoritesFactory.swift`
-- `blueprint/DI/Factories/DetailFactory.swift`
+### What I did
 
-## Further reading
+One ViewModel per screen, UIState enum per screen, no Repository calls from Views.
 
-- [Observation](/architecture/observation/)
-- [Use Cases](/concepts/use-cases/)
-- [Dependency Injection](/architecture/dependency-injection/)
-- [Testing](/architecture/testing/)
+### Why (then)
+
+I wanted screen state and UseCase calls in types I could test without SwiftUI, and the same shape on Home, Favorites, and Detail so I did not reinvent the pattern each time.
+
+### What I'd reconsider
+
+`HomeViewModel` grew (pagination, debounced search, location picker). I might extract sub-ViewModels or move more logic into UseCases if I add features. The ViewModel is a coordinator, not a junk drawer forever.
+
+## Could I use MV instead?
+
+**MV** = Model + View only. No ViewModel type. In SwiftUI, often `@State` + `.task { }` with fetch logic in the View or in extensions.
+
+Discover could be built that way. Large production apps use MV too (extracted subviews, extensions, UseCases behind the scenes).
+
+I picked ViewModels here for testability and consistency across three screens. On a one-screen experiment I would probably skip them.
+
+## Could I use VIPER instead?
+
+**VIPER** splits each screen into View, Interactor, Presenter, Entity, and Router. More roles, more files; teams that commit to the ceremony get strong boundaries.
+
+Discover maps loosely to VIPER:
+
+| VIPER | Blueprint |
+|---|---|
+| View | SwiftUI View |
+| Presenter | ViewModel |
+| Interactor | UseCase |
+| Entity | Domain struct |
+| Router | `RouterProtocol` + `AppRoute` |
+
+I stopped short of full VIPER: fewer types per screen, no separate Presenter/Interactor file pair on every feature. Lighter to browse in Xcode for a study repo. I might go fuller VIPER if the team already standardized on it.
+
+Navigation detail: [Navigation](/architecture/navigation/).
+
+## Read next
+
+- [Domain](/architecture/domain/): UseCases and entities
+- [Dependency Injection](/architecture/dependency-injection/): factories wire ViewModels

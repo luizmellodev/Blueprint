@@ -1,78 +1,104 @@
 ---
 title: Navigation
-summary: NavigationStack, AppRoute enum, AppRouter, and RouterProtocol for typed programmatic routing.
-order: 6
+summary: How I typed routes and pushed screens from ViewModels.
+order: 7
 ---
-# Why Navigation?
+# Navigation
 
-Discover has three primary destinations: **Home**, **Favorites**, and **Detail(POI)**. Navigation must be type-safe, testable, and owned outside individual views.
+*How I navigated in SwiftUI with AppRoute and a small router.*
 
-## What problem does this solve?
+Discover uses `NavigationStack`, a typed route enum, and `RouterProtocol`. ViewModels call `router.push(...)` instead of hiding navigation inside Views.
 
-Views that mutate `NavigationPath` directly are hard to unit test and tightly coupled to SwiftUI APIs. ViewModels that know about `NavigationStack` cannot run in isolation.
+## AppRoute
 
-## Why this solution?
+Every push destination:
 
-| Piece | Role |
-|---|---|
-| `AppRoute` | Hashable enum: `.home`, `.detail(poi:)` |
-| `AppRouter` | `@Observable` holder of `path: [AppRoute]` |
-| `RouterProtocol` | ViewModels call `push` / `pop` / `popToRoot` |
-| `AppRouterView` | Root `TabView` + per-tab `NavigationStack`, injects container + routers |
-
-ViewModels depend on `any RouterProtocol`, not `AppRouter`.
-
-## Alternatives
-
-| Approach | Verdict |
-|---|---|
-| UIKit Coordinator | Rejected: heavy in SwiftUI-first app |
-| EnvironmentObject router | Rejected: implicit, harder to mock |
-| Untyped `[Hashable]` routes | Rejected: loses compile-time POI payload |
-| Single stack with modal favorites | Rejected: no dedicated list to browse saved places |
-| **TabView + NavigationStack per tab + AppRoute** | Chosen |
-
-## Trade-offs
-
-- **Pro:** Compiler validates route payloads (`POI` in `.detail`)
-- **Pro:** Router tested/mocked independently
-- **Pro:** `@Observable` router, no Combine
-- **Con:** Lives in app target (references Domain types)
-- **Con:** Zoom transitions require extra `Namespace` wiring in factory
-- **Con:** Each tab owns its own `AppRouter` instance (independent back stacks)
-
-## How Blueprint implements it
-
-`HomeViewModel` and `FavoritesViewModel` push `.detail(poi:)` through injected router.
-
-`AppRouterView` hosts a `TabView`. Discover and Favorites each get their own `NavigationStack` and `AppRouter`, so back navigation stays scoped per tab. Factories build screen roots and Detail destinations.
-
-iOS 18 zoom transition: `HomeFactory` receives `Namespace.ID` for matched geometry between list and detail on the Discover tab.
-
-```mermaid
-flowchart TB
-  TAB[TabView]
-  TAB --> DISC[Discover tab]
-  TAB --> FAV[Favorites tab]
-  DISC --> NS1[NavigationStack + homeRouter]
-  FAV --> NS2[NavigationStack + favoritesRouter]
-  NS1 --> HF[HomeFactory]
-  NS2 --> FF[FavoritesFactory]
-  NS1 --> DF[DetailFactory]
-  NS2 --> DF
+```swift
+enum AppRoute: Hashable {
+  case home
+  case detail(poi: POI)
+}
 ```
 
-## Related code
+`Hashable` so SwiftUI stores it in a navigation path and resolves `navigationDestination(for: AppRoute.self)`.
 
-- `blueprint/Navigation/AppRoute.swift`
-- `blueprint/Navigation/AppRouter.swift`
-- `blueprint/Navigation/RouterProtocol.swift`
-- `blueprint/Navigation/AppRouterView.swift`
-- `blueprint/Presentation/Views/Favorites/FavoritesView.swift`
-- `blueprint/Presentation/Views/Components/ZoomTransitionModifier.swift`
+A sealed list of screens, not string URLs. The compiler knows `.detail` needs a `POI`.
 
-## Further reading
+## Navigation path
 
-- [ADR 0002: Navigation](/decisions/0002-navigation/)
-- [Observation](/architecture/observation/)
+Each tab has its own stack and router:
+
+```swift
+@State private var homeRouter = AppRouter()
+@State private var favoritesRouter = AppRouter()
+```
+
+`AppRouter` holds:
+
+```swift
+var path: [AppRoute] = []
+
+func push(_ route: AppRoute) {
+  guard path.last != route else { return }
+  path.append(route)
+}
+```
+
+`NavigationStack(path: $homeRouter.path)` binds the stack. Two tabs = two independent paths.
+
+### What I did
+
+`AppRoute` enum + `AppRouter` class + `RouterProtocol` for ViewModels.
+
+### Why (then)
+
+I wanted ViewModels to trigger navigation without importing SwiftUI navigation APIs everywhere. Tests could record `push(.detail(poi:))` with a mock router.
+
+### What I'd reconsider
+
+`AppRouterView` got busy with two stacks, factories, and `navigationDestination`. I might extract a small coordinator per tab if routes multiply.
+
+## RouterProtocol
+
+ViewModels depend on the protocol, not `AppRouter`:
+
+```swift
+protocol RouterProtocol {
+  func push(_ route: AppRoute)
+  func pop()
+  func popToRoot()
+}
+```
+
+## Wiring in AppRouterView
+
+```swift
+NavigationStack(path: $homeRouter.path) {
+  container.homeFactory.makeView(router: homeRouter, namespace: zoomNamespace)
+    .navigationDestination(for: AppRoute.self) { route in
+      switch route {
+      case .home:
+        container.homeFactory.makeView(router: homeRouter, namespace: zoomNamespace)
+      case .detail(let poi):
+        container.detailFactory.makeView(poi: poi)
+      }
+    }
+}
+```
+
+Factory creates the root. `navigationDestination` maps each case to a View.
+
+## Could I navigate from the View only?
+
+Yes. `NavigationLink(value: poi)` in the list, no router. Fine for simple flows. I pushed navigation into ViewModels to match MVVM habits from UIKit and to test "user tapped row → detail route" without ViewInspector.
+
+## Coordinator, MVVM-C, or Router?
+
+UIKit teams often use a **Coordinator** to own navigation. SwiftUI literature mentions **MVVM-C**.
+
+I used `RouterProtocol` + `AppRouter`: same idea, smaller surface for three screens. A full Coordinator tree might help with deep links and modal flows I have not built yet.
+
+## Read next
+
+- [Dependency Injection](/architecture/dependency-injection/)
 - [MVVM](/architecture/mvvm/)
