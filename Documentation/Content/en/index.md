@@ -5,21 +5,22 @@ slug: index
 
 ## What this is
 
-**Blueprint** is a public iOS architecture **study project** built with modern SwiftUI. It is not a template, a snippet collection, or a course. Every technical decision exists to teach and to explore best practices in the open.
+**Blueprint** is a public iOS architecture **study project** — code and documentation written while learning, not a shipped product or a copy-paste template.
 
-**It should not be used as a 100% correct reference.** Architecture depends on each project: team size, product scope, client decisions, deadlines, and existing code. Use Blueprint to understand patterns and trade-offs, then adapt to your context.
+The repo holds two things:
 
-Adapted from Native Birds by Sebastian Panesso.
+- **Discover**, a small SwiftUI app you can run in the simulator
+- **This site**, generated from Markdown in `Documentation/`
 
-The repository ships a runnable example app and this documentation site. Markdown in `Documentation/` is the source of truth. The site is navigation and rendering.
+Docs record what exists in the codebase and why certain choices were made. They are updated as the project grows; some chapters are ahead of others, and not everything here is battle-tested.
+
+Adapted from [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
 
 ## Discover
 
-**Discover** is the example app you run in the simulator. It helps you find **places near you**: restaurants, museums, parks, hotels, and similar spots.
+**Discover** lists places near you (restaurants, museums, parks, hotels) using the [Geoapify](https://www.geoapify.com/) API.
 
-> **POI** = **P**oint **o**f **I**nterest. Industry jargon for "a place on a map." In code it is the main entity (`POI` struct). If that term is new, read **[About Discover](/guides/about-discover/)** first.
-
-The domain is deliberately small (Home list + Detail screen) so architecture stays in focus. Navigation, dependency injection, networking, caching, location, and persistence are the subject, not a full consumer product.
+Two tabs — **Discover** and **Favorites** — each with its own navigation stack. **Detail** is a pushed screen, not a tab. The scope stays small on purpose so the write-ups can focus on architecture instead of product features.
 
 | | |
 |---|---|
@@ -27,7 +28,7 @@ The domain is deliberately small (Home list + Detail screen) so architecture sta
 | **Repository** | Blueprint |
 | **Minimum deployment** | iOS 17 |
 | **UI framework** | SwiftUI with `@Observable` |
-| **Product intro** | [About Discover](/guides/about-discover/) |
+| **Product notes** | [About Discover](/guides/about-discover/) |
 
 Blueprint follows **Clean Architecture with protocol-driven boundaries**.
 
@@ -41,7 +42,7 @@ Presentation never calls Repositories directly. Data never imports SwiftUI.
 
 ## Geoapify API
 
-Discover loads POI data from [Geoapify](https://www.geoapify.com/), a free-tier geolocation API (3,000 requests/day, no credit card).
+Discover loads place data from Geoapify (free tier: 3,000 requests/day, no credit card).
 
 | | |
 |---|---|
@@ -53,24 +54,24 @@ See [Getting Started](/guides/getting-started/) to configure the API key locally
 
 ## How this documentation is organized
 
-**Code explains HOW.** The Swift codebase shows implementation: ViewModels, UseCases, Repositories, actors for cache.
+Markdown in `Documentation/Content/en/` is the source of truth. This site renders it.
 
-**Documentation explains WHY.** Each article records the problem, alternatives considered, and trade-offs accepted.
+Articles describe **what the code does** and **which decisions were taken** — with links to ADRs when a choice was explicit. They are not step-by-step tutorials.
 
 | Section | Purpose |
 |---|---|
-| [Guides](/guides/) | Practical setup and product context |
-| [Architecture](/architecture/) | Engineering decisions: layers, patterns, trade-offs |
-| [Concepts](/concepts/) | Cross-cutting patterns (Use Cases, Logging) |
-| [ADRs](/decisions/) | Formal decision records with context and consequences |
-| [Website](/website/) | How this docs site is built (Saga, Tailwind, deploy) |
-| [Roadmap](/guides/roadmap/) | Chapter-by-chapter project evolution |
-| [Future Directions](/guides/future-directions/) | Study ideas, alternatives, and fork prompts (open) |
-| [Contributing](/guides/contributing/) | PR format, ADR journal template, local checks |
+| [Guides](/guides/) | Setup, tests, CI, product context |
+| [Architecture](/architecture/) | Layers, patterns, and how they map to the app |
+| [Concepts](/concepts/) | Cross-cutting patterns (Observation, Repository, …) |
+| [ADRs](/decisions/) | Decision records: context, choice, consequences |
+| [Website](/website/) | How this site is built (Saga, Tailwind, deploy) |
+| [Roadmap](/guides/roadmap/) | Chapter-by-chapter evolution |
+| [Future Directions](/guides/future-directions/) | Ideas not yet implemented |
+| [Contributing](/guides/contributing/) | PR format and local checks |
 
 ## Architecture
 
-Start with the full layer diagram, data flow, and feature breakdown:
+Layer diagram, data flow, and feature breakdown:
 
 **[Architecture Overview](/architecture/overview/)**
 
@@ -91,4 +92,6 @@ Packages/
 
 ## Next step
 
-New to the project? Start with [About Discover](/guides/about-discover/) (what the app does and what POI means), then [Getting Started](/guides/getting-started/) to clone, add your Geoapify key, and run the simulator.
+[Getting Started](/guides/getting-started/) — clone, API key, run the simulator.
+
+For product vocabulary and screen map, see [About Discover](/guides/about-discover/).
