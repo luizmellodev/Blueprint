@@ -1,167 +1,176 @@
 # Blueprint
 
-A public iOS architecture **study project** built with modern SwiftUI. The example app, **Discover**, helps you explore **places near you** (restaurants, museums, parks, hotels) using the [Geoapify API](https://www.geoapify.com/).
+Public iOS architecture reference built with SwiftUI.
 
-**POI** means *Point of Interest*: any place worth showing on a map. See [About Discover](Documentation/Content/en/guides/about-discover.md) for a plain-language product intro.
+**Discover** is the example app: it lists places near you (restaurants, museums, parks, hotels) using the [Geoapify API](https://www.geoapify.com/). The goal is not to ship a product, but to show how layers, protocols, and tests fit together in a real codebase you can run and read.
 
-Blueprint is not a template, a snippet collection, or a course. Every technical decision exists to teach and to explore best practices in the open.
-
-**It should not be used as a 100% correct reference.** Architecture depends on each project: team size, product scope, client decisions, deadlines, and existing code. Use Blueprint to understand patterns and trade-offs, then adapt to your context.
-
-Adapted from Native Birds by Sebastian Panesso.
-
-Blueprint follows **Clean Architecture with protocol-driven boundaries**: Presentation and Data depend on Domain through protocols, so UseCases, Repositories, and services are testable in isolation.
+| | |
+|---|---|
+| **Docs (live)** | [ios-blueprint.vercel.app](https://ios-blueprint.vercel.app) |
+| **Example app** | Discover · iOS 17+ |
+| **License** | MIT |
 
 ---
 
-## What you'll learn
+## How Discover works
 
-- **Clean Architecture:** Domain, Data, and Presentation layers with strict dependency rules
-- **Dependency Injection:** DIContainer + Factories + dependency bundles, zero third-party frameworks
-- **Navigation:** `NavigationStack` + `AppRoute` enum + `RouterProtocol` for testable navigation
-- **Modern Swift:** `@Observable`, `async/await`, Swift Testing, `@MainActor`
-- **SwiftData:** persistence in the Data layer; Domain stays clean
-- **Design System:** local Swift Package with spacing, typography, color, and skeleton tokens
-- **Feature Flags:** type-safe `FeatureFlag` enum with a swappable backend
-- **Accessibility:** VoiceOver labels, Dynamic Type, `accessibilityElement` patterns
-- **CI/CD:** GitHub Actions with SwiftLint, build, and test on every PR
+The app has two tabs: **Discover** (nearby POIs with pagination, push to **Detail** for place info and optional map) and **Favorites** (saved POIs in SwiftData, same Detail navigation).
 
----
+ViewModels call UseCases. UseCases call Repositories through protocols. Repositories talk to Geoapify, disk cache, CoreLocation, or SwiftData. Presentation never imports those frameworks directly.
 
-## Architecture
+```mermaid
+flowchart TB
+  subgraph UI["Presentation"]
+    HV[HomeViewModel]
+    FV[FavoritesViewModel]
+    DV[DetailViewModel]
+  end
 
-Full overview with layer diagrams and data flow: **[Documentation/Content/en/architecture/overview.md](Documentation/Content/en/architecture/overview.md)** (also on the [docs site](https://github.com/luizmellodev/Blueprint) after deploy).
+  subgraph Domain["Domain"]
+    UC[UseCases]
+    EN[POI · PlaceDetails · AppError]
+  end
 
-```
-App Target (blueprint)
-├── App/                    @main entry point
-├── Navigation/             AppRoute, AppRouter, RouterProtocol, AppRouterView
-├── DI/
-│   ├── DIContainer         Root assembler (@MainActor, one instance)
-│   ├── Core/               Dependency bundles (Network, POI, Location, Persistence, FeatureFlags)
-│   └── Factories/          HomeFactory, DetailFactory
-├── Domain/
-│   ├── Entities/           POI, PlaceDetails, GeocodingResult, AppError, PagedResult
-│   ├── UseCases/           FetchNearbyPOIsUseCase, FetchPlaceDetailsUseCase,
-│   │                       SearchLocationUseCase, FavoritesUseCase
-│   └── Networking/         NetworkClient protocol (Networking Package re-export)
-├── Data/
-│   ├── DTO/                GeoapifyDTOs, GeocodingDTOs, PlaceDetailsDTOs + Mappers
-│   ├── Repositories/       POIRepository, PlaceDetailsRepository, GeocodingRepository
-│   ├── Cache/              POICacheService (5-min TTL, file-backed)
-│   ├── Location/           LocationService (CoreLocation)
-│   ├── Persistence/        FavoritePOI (@Model), FavoritesRepository (SwiftData)
-│   └── FeatureFlags/       FeatureFlag enum, LocalFeatureFlagService
-└── Presentation/
-    └── Views/
-        ├── Home/           HomeView, HomeViewModel, HomeUIState
-        └── Detail/         DetailView, DetailViewModel, DetailUIState
+  subgraph Data["Data"]
+    REPO[Repositories]
+    CACHE[POICacheService]
+    LOC[LocationService]
+    SD[SwiftData favorites]
+  end
 
-Packages/
-├── DesignSystem/           DSSpacing, DSTypography, DSColor, DSRadius, SkeletonStyle
-└── Networking/             NetworkClient protocol, URLSessionNetworkClient, NetworkError
+  EXT[Geoapify API]
+
+  HV --> UC
+  FV --> UC
+  DV --> UC
+  UC --> EN
+  UC --> REPO
+  REPO --> CACHE
+  REPO --> EXT
+  REPO --> LOC
+  REPO --> SD
 ```
 
----
+Loading nearby places (simplified):
 
-## Layer rules
+```mermaid
+sequenceDiagram
+  participant VM as HomeViewModel
+  participant Loc as LocationService
+  participant UC as FetchNearbyPOIsUseCase
+  participant Repo as POIRepository
+  participant API as Geoapify
 
-| Layer | Can depend on | Cannot depend on |
-|---|---|---|
-| Domain | nothing | Data, Presentation, UIKit, SwiftData |
-| Data | Domain | Presentation |
-| Presentation | Domain (via UseCases) | Data directly |
-| DesignSystem | nothing | App target |
-
----
-
-## Key patterns
-
-| Topic | Decision | Why |
-|---|---|---|
-| State management | `@Observable` (iOS 17+) | Granular tracking, no Combine |
-| Navigation | `NavigationStack` + `AppRoute` | Programmatic, type-safe |
-| Router abstraction | `RouterProtocol` | ViewModels depend on protocol, not concrete router |
-| DI | DIContainer + Factories, no framework | Explicit wiring, easy to trace |
-| Dependency grouping | Bundles (NetworkDependencies, etc.) | Prevents flat container from growing unmanageable |
-| UseCase | `struct` + `Sendable` | Stateless, value semantics |
-| Cache | File-backed JSON, 5-min TTL | Survives app restart, avoids API rate limits |
-| Persistence | SwiftData in Data layer only | Domain entity `POI` stays a plain struct |
-| Feature flags | `FeatureFlag` enum + protocol | Type-safe, swappable backend (local to Remote Config) |
-| Tests | Swift Testing (`@Test`, `#expect`) | Modern, ships with Xcode |
-
----
-
-## Getting started
-
-### Prerequisites
-
-- Xcode 16+
-- iOS 17+ simulator or device
-- Free [Geoapify API key](https://www.geoapify.com/) (3,000 requests/day)
-
-### Setup
-
-1. Clone the repository
-2. Copy `Config.xcconfig.sample` to `Config.xcconfig` and replace `your_api_key_here` with your Geoapify key (`Config.xcconfig` is gitignored; never commit it)
-3. Open `blueprint.xcodeproj` in Xcode
-4. Build and run on a simulator (⌘R)
-
-### Running tests
-
-```
-⌘U in Xcode, or:
-xcodebuild test -project blueprint.xcodeproj -scheme blueprint \
-  -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+  VM->>Loc: coordinates
+  Loc-->>VM: lat / lon
+  VM->>UC: execute
+  UC->>Repo: fetchNearby
+  alt cache hit
+    Repo-->>UC: cached POIs
+  else cache miss
+    Repo->>API: GET /v2/places
+    API-->>Repo: JSON
+  end
+  UC-->>VM: update UIState
 ```
 
-### Testing and quality
+**Dependency injection:** `DIContainer` wires bundles (`NetworkDependencies`, `POIDependencies`, …) and factories (`HomeFactory`, `DetailFactory`). Navigation uses `NavigationStack` + `AppRoute` behind `RouterProtocol`.
 
-- **Architecture:** Clean Architecture with protocol-driven boundaries (testable UseCases, Repositories, and services).
-- **Framework:** Swift Testing (`@Test`, `#expect`).
-- **Coverage target:** 70% on the `blueprint` app target (long-term goal).
-- **CI floor:** GitHub Actions fails PRs below **20%** via `scripts/check-coverage.sh`.
-- **How to measure:** Xcode → Report navigator → Coverage, or see [Running Tests](Documentation/Content/en/guides/running-tests.md).
+For layer diagrams, feature breakdown, and ADRs, see **[Architecture Overview](Documentation/Content/en/architecture/overview.md)** on the site.
 
 ---
 
-## Roadmap
+## How the documentation site works
 
-| Week | Topics | Status |
-|---|---|---|
-| 1 | Project setup, Packages, Navigation, DI | Done |
-| 2 | Networking, API, Cache, Swift Testing | Done |
-| 3 | Location, SwiftData, Feature Flags, Accessibility, CI | Done |
-| 4 | Documentation, Website, Deploy | In progress |
+Markdown in `Documentation/Content/en/` is the source of truth. [Saga](https://getsaga.dev/) (Swift static site generator) reads those files, applies Tailwind + Mermaid, and writes HTML to `Website/deploy/`.
+
+```mermaid
+flowchart LR
+  MD["Documentation/Content/en/"]
+  SRC["Website/Sources/ · templates · Tailwind"]
+  BUILD["saga build · macOS"]
+  OUT["Website/deploy/"]
+  GH["GitHub Actions"]
+  VC["Vercel"]
+
+  MD --> BUILD
+  SRC --> BUILD
+  BUILD --> OUT
+  GH --> BUILD
+  GH --> VC
+  OUT --> VC
+```
+
+- **Local preview:** `./scripts/saga dev --port 3000`
+- **Production:** GitHub Actions builds on macOS, Vercel serves the static output (Saga does not run on Vercel's build servers).
+- **CI split:** changes only under `Website/` or `Documentation/` skip the iOS workflow.
+
+Site stack and deploy details: **[Website/README.md](Website/README.md)** and **[Build & Preview](Documentation/Content/en/website/deploy.md)**.
+
+---
+
+## Repository layout
+
+```
+Blueprint/
+├── blueprint/              App target — Presentation, Data, Domain, DI, Navigation
+├── Packages/
+│   ├── DesignSystem/       Spacing, typography, color, skeleton tokens
+│   └── Networking/         NetworkClient protocol + URLSession implementation
+├── blueprintTests/         Swift Testing — ViewModels, UseCases, mappers
+├── Documentation/Content/  Docs source (en + pt-BR placeholder)
+├── Website/                Saga pipeline → Website/deploy/
+└── scripts/                saga wrapper, coverage check
+```
+
+---
+
+## Quick start
+
+**Requirements:** Xcode 16+, iOS 17 simulator, free [Geoapify key](https://www.geoapify.com/) (3,000 req/day).
+
+```bash
+git clone https://github.com/luizmellodev/Blueprint.git
+cd Blueprint
+cp Config.xcconfig.sample Config.xcconfig   # add your GEOAPIFY_API_KEY
+open blueprint.xcodeproj
+```
+
+Run with **⌘R**. Tests with **⌘U**.
+
+Step-by-step setup, API key injection, and simulator notes: **[Getting Started](Documentation/Content/en/guides/getting-started.md)**.
 
 ---
 
 ## Documentation
 
-Blueprint documentation lives in [`Documentation/`](Documentation/). Markdown is the source of truth. The site is navigation only.
+| Section | Topics |
+|---|---|
+| [Guides](Documentation/Content/en/guides/) | Setup, tests, CI/CD, contributing |
+| [Architecture](Documentation/Content/en/architecture/) | Layers, MVVM, DI, networking, persistence |
+| [Concepts](Documentation/Content/en/concepts/) | Observation, Repository, UseCase patterns |
+| [Decisions](Documentation/Content/en/decisions/) | ADRs — why each choice was made |
+| [Website](Documentation/Content/en/website/) | Saga, Tailwind, Mermaid, deploy |
 
-```
-Documentation/
-├── ROADMAP.md
-└── Content/
-    ├── en/
-    │   ├── guides/           Setup, tests, CI, deploy
-    │   ├── architecture/     Engineering decisions by layer
-    │   ├── concepts/         Patterns (Observation, Repository, etc.)
-    │   └── decisions/        ADRs
-    └── pt-BR/                Coming soon
-```
+**Read online:** [ios-blueprint.vercel.app](https://ios-blueprint.vercel.app)
 
-**Philosophy:** Code explains HOW. Documentation explains WHY.
+Code shows *how*. Docs explain *why*.
 
-```bash
-brew install loopwerk/tap/saga
-./scripts/saga dev --port 3000
-```
+---
 
-Deploy instructions: [`Website/README.md`](Website/README.md).
+## Quality
 
-Contributing: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+GitHub Actions runs SwiftLint and `xcodebuild test` when Swift sources change. Coverage floor is **20%** on the app target today; **70%** is the long-term goal. See [Running Tests](Documentation/Content/en/guides/running-tests.md) and [CI/CD](Documentation/Content/en/guides/ci-cd.md).
+
+Contributing: **[CONTRIBUTING.md](CONTRIBUTING.md)**
+
+---
+
+## Author
+
+**Luiz Mello** — [@luizmellodevo](https://github.com/luizmellodevo)
+
+Architecture patterns adapted from [Native Birds](https://github.com/spanesso/native-birds) by Sebastian Panesso.
 
 ---
 
