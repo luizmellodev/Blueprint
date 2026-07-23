@@ -70,7 +70,7 @@ jobs:
             "${{ secrets.VERCEL_PROJECT_ID }}" > Website/deploy/.vercel/project.json
 
       - name: Install Vercel CLI
-        run: npm install -g vercel@39
+        run: npm install -g vercel@latest
 
       - name: Deploy to Vercel
         working-directory: Website/deploy
