@@ -53,7 +53,7 @@ Each Markdown file becomes an HTML page. Section folders get an `index.html` lis
 Pull requests and pushes to `main` run `.github/workflows/website.yml`:
 
 1. Restore `Website/.build` cache (Swift compile + Saga read cache)
-2. `swift build -c release` and run the `Website` executable (no Homebrew `saga` in CI)
+2. `swift build` (debug) and run the `Website` executable (no Homebrew `saga` in CI)
 3. Verify `Website/deploy/index.html` exists
 4. Upload `deploy/` as a CI artifact (retained 7 days)
 

@@ -110,7 +110,7 @@ The [Website workflow](https://github.com/luizmellodev/Blueprint/blob/main/.gith
 
 Pushes that only change the root `README.md`, Swift sources, or other paths **do not** trigger this workflow. The iOS CI workflow is separate and uses its own path filters.
 
-When it runs: `swift build -c release` + run the `Website` executable on macOS, then `vercel deploy --prod` from `Website/deploy/` (CLI `vercel@latest` in CI). Local dev still uses `brew install saga` and `./scripts/saga dev`.
+When it runs: `swift build` + run the `Website` executable on macOS (debug; fast enough for CI), then `vercel deploy --prod` from `Website/deploy/`.
 
 GitHub Actions caches `Website/.build` (SPM compile output and Saga's `.build/saga-cache`) plus the SwiftPM download cache. The cache key follows `Package.resolved` and `Package.swift`, so dependency changes invalidate it while doc-only edits reuse the compiled `Website` executable.
 
