@@ -54,5 +54,5 @@ enum Theme {
   static let badgeDate = "inline-flex rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
 
   static let siteFooter = "border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
-  static let siteFooterInner = "mx-auto max-w-7xl px-4 py-6 text-sm text-zinc-500 sm:px-6 lg:px-8"
+  static let siteFooterInner = "mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 lg:px-8"
 }
