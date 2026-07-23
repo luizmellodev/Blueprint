@@ -7,7 +7,7 @@ order: 4
 
 ## Pipeline
 
-Every pull request to `main` runs on `macos-15`:
+Every pull request to `main` runs on `macos-15` when Swift/iOS files change (`blueprint/`, `Packages/`, tests, Xcode project, SwiftLint config). Pushes that only touch `Website/` or `Documentation/` skip this workflow; the [Website workflow](/website/deploy/) handles docs deploys separately.
 
 1. **SwiftLint** (`swiftlint lint --strict`)
 2. **Select Xcode** (`latest-stable` on the runner)

@@ -3,8 +3,26 @@ name: CI
 on:
   push:
     branches: [main]
+    paths:
+      - 'blueprint/**'
+      - 'Packages/**'
+      - 'blueprint.xcodeproj/**'
+      - 'blueprintTests/**'
+      - 'blueprintUITests/**'
+      - '.swiftlint.yml'
+      - 'scripts/check-coverage.sh'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'blueprint/**'
+      - 'Packages/**'
+      - 'blueprint.xcodeproj/**'
+      - 'blueprintTests/**'
+      - 'blueprintUITests/**'
+      - '.swiftlint.yml'
+      - 'scripts/check-coverage.sh'
+      - '.github/workflows/ci.yml'
 
 jobs:
   lint:
