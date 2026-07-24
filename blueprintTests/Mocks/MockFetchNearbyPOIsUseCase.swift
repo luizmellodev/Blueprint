@@ -14,9 +14,13 @@ final class MockFetchNearbyPOIsUseCase: FetchNearbyPOIsUseCaseProtocol {
     var queuedResults: [Result<PagedResult<POI>, Error>] = []
     var firstCallDelayNanoseconds: UInt64 = 0
     var executeCallCount = 0
+    var lastLat: Double?
+    var lastLon: Double?
 
     func execute(lat: Double, lon: Double, limit: Int, offset: Int = 0) async throws -> PagedResult<POI> {
         executeCallCount += 1
+        lastLat = lat
+        lastLon = lon
         if executeCallCount == 1, firstCallDelayNanoseconds > 0 {
             try await Task.sleep(nanoseconds: firstCallDelayNanoseconds)
         }
