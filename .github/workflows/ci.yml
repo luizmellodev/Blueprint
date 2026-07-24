@@ -103,4 +103,4 @@ jobs:
             | xcpretty
 
       - name: Check coverage threshold
-        run: chmod +x scripts/check-coverage.sh && ./scripts/check-coverage.sh build/coverage.xcresult 20
+        run: chmod +x scripts/check-coverage.sh && ./scripts/check-coverage.sh build/coverage.xcresult 70

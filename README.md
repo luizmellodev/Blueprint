@@ -156,7 +156,7 @@ Step-by-step setup and architecture: **[live docs](https://ios-blueprint.vercel.
 
 ## Quality
 
-GitHub Actions runs SwiftLint and `xcodebuild test` when Swift sources change. Coverage floor is **20%** on the app target today; **70%** is the long-term goal.
+GitHub Actions runs SwiftLint and `xcodebuild test` when Swift sources change. Coverage floor is **70%** on logic layers (ViewModels, Domain, Data, DI, Navigation). SwiftUI `*View.swift` files are excluded from the threshold.
 
 Contributing: **[CONTRIBUTING.md](CONTRIBUTING.md)**
 
