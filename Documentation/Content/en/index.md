@@ -43,6 +43,7 @@ See **[Architecture Overview](/architecture/overview/)** first.
 | DIContainer & factories | [Dependency Injection](/architecture/dependency-injection/) |
 | AppRoute & stacks | [Navigation](/architecture/navigation/) |
 | Swift Packages | [Modularization](/architecture/modularization/) |
+| Launch to first screen (step-by-step) | [App Flow](/architecture/app-flow/) |
 
 ## Roadmap
 

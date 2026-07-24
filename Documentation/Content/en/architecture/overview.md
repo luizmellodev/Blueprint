@@ -151,3 +151,4 @@ Yes. Discover could be three Views with `@State` and API calls in extensions. I 
 | DIContainer & factories | [Dependency Injection](/architecture/dependency-injection/) |
 | AppRoute & stacks | [Navigation](/architecture/navigation/) |
 | Swift Packages | [Modularization](/architecture/modularization/) |
+| Boot to first POI on screen | [App Flow](/architecture/app-flow/) |

@@ -33,6 +33,7 @@ let siteCatalog: [SiteEntry] = [
   SiteEntry(section: .architecture, slug: "dependency-injection", title: "Dependency Injection", order: 6),
   SiteEntry(section: .architecture, slug: "navigation", title: "Navigation", order: 7),
   SiteEntry(section: .architecture, slug: "modularization", title: "Modularization", order: 8),
+  SiteEntry(section: .architecture, slug: "app-flow", title: "App Flow", order: 9),
   SiteEntry(section: .website, slug: "overview", title: "Site Overview", order: 0),
   SiteEntry(section: .website, slug: "implementation", title: "Implementation", order: 1),
   SiteEntry(section: .website, slug: "deploy", title: "Build & Preview", order: 2),
