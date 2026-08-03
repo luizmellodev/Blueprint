@@ -17,7 +17,7 @@ enum GeoapifyMapper {
             coords.count >= 2
         else { return nil }
 
-        return POI(
+        return try? POI(
             id: props.place_id,
             name: name,
             categories: (props.categories ?? []).compactMap { PlaceCategory(rawValue: $0) },

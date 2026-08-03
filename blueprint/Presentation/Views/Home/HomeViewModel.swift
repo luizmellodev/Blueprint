@@ -75,7 +75,7 @@ final class HomeViewModel {
             try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else { return }
             guard case .success = state else { return }
-            visiblePOIs = filtered(allPOIs)
+            visiblePOIs = allPOIs.filtered(by: searchQuery)
         }
     }
 
@@ -139,7 +139,7 @@ final class HomeViewModel {
             allPOIs = offset == 0 ? result.items : allPOIs + result.items
             currentOffset = allPOIs.count
             hasMore = result.hasMore
-            visiblePOIs = filtered(allPOIs)
+            visiblePOIs = allPOIs.filtered(by: searchQuery)
             state = .success
         } catch {
             guard generation == fetchGeneration else { return }
@@ -147,19 +147,12 @@ final class HomeViewModel {
         }
     }
 
-    private func filtered(_ pois: [POI]) -> [POI] {
-        guard !searchQuery.isEmpty else { return pois }
-        return pois.filter {
-            $0.name.localizedCaseInsensitiveContains(searchQuery) ||
-            ($0.city ?? "").localizedCaseInsensitiveContains(searchQuery)
-        }
-    }
-
     private func resolveCoordinates() async throws -> (latitude: Double, longitude: Double) {
         if let last = lastCoordinates { return last }
         let status = await locationService.requestAuthorization()
         guard status == .authorized else {
-            return (latitude: -23.5505, longitude: -46.6333)
+            let fallback = LocationDefaults.saoPaulo
+            return (latitude: fallback.latitude, longitude: fallback.longitude)
         }
         let coords = try await locationService.getCurrentCoordinates()
         return (latitude: coords.latitude, longitude: coords.longitude)

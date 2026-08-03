@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct POI: Hashable, Sendable, Codable {
     let id: String
@@ -19,11 +20,52 @@ struct POI: Hashable, Sendable, Codable {
     let openingHours: String?
     let website: URL?
     let phone: String?
+    
+    init(
+        id: String,
+        name: String,
+        categories: [PlaceCategory] = [],
+        latitude: Double,
+        longitude: Double,
+        address: String? = nil,
+        city: String? = nil,
+        country: String? = nil,
+        openingHours: String? = nil,
+        website: URL? = nil,
+        phone: String? = nil
+    ) throws {
+        guard !id.isEmpty else { throw ValidationError.emptyID }
+        guard !name.isEmpty else { throw ValidationError.emptyName }
+        guard (-90...90).contains(latitude) else { throw ValidationError.invalidLatitude }
+        guard (-180...180).contains(longitude) else { throw ValidationError.invalidLongitude }
+        
+        self.id = id
+        self.name = name
+        self.categories = categories
+        self.latitude = latitude
+        self.longitude = longitude
+        self.address = address
+        self.city = city
+        self.country = country
+        self.openingHours = openingHours
+        self.website = website
+        self.phone = phone
+    }
 }
 
 extension POI {
+    var formattedAddress: String {
+        [address, city, country]
+            .compactMap { $0 }
+            .joined(separator: ", ")
+    }
+    
+    var displayCategories: String {
+        categories.map { $0.rawValue.capitalized }.joined(separator: ", ")
+    }
+    
     static func preview() -> POI {
-        POI(
+        try! POI(
             id: "preview-1",
             name: "Museu do Ipiranga",
             categories: [.tourism],
